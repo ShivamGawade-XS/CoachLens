@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Trash2, Clock, Trophy, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Trash2, Clock, Trophy, ChevronRight, Activity, Users, Target } from 'lucide-react';
 import { storageService } from '../../services/storageService';
-import ThemeToggle from '../ThemeToggle/ThemeToggle';
 
-export default function Dashboard({ onNewAnalysis, onViewMatch }) {
+export default function Dashboard() {
   const [matches, setMatches] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     storageService.seedDemoMatches();
@@ -30,166 +31,146 @@ export default function Dashboard({ onNewAnalysis, onViewMatch }) {
       : 'bg-liability-bg text-liability-text border border-liability-border';
   };
 
-  const MatchItem = ({ match, index }) => (
-    <div 
-      onClick={() => onViewMatch(match)}
-      className="group relative glass-card rounded-xl p-4 cursor-pointer"
-      style={{ animationDelay: `${index * 60}ms` }}
-    >
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-center gap-2 text-xs text-textTertiary">
-          <Clock size={11} />
-          {formatDate(match.date)}
-        </div>
-        {match.result && (
-          <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md ${getResultBadge(match.result)}`}>
-            {match.result}
-          </span>
-        )}
-      </div>
-      
-      <div className="text-sm font-medium mb-1 truncate text-textPrimary group-hover:text-accent transition-colors">
-        {match.teamName || 'Match Analysis'}
-        {match.opponent && (
-          <span className="text-textSecondary font-normal"> vs {match.opponent}</span>
-        )}
-      </div>
-      
-      <div className="flex items-center justify-between">
-        <div className="text-xs text-textTertiary">{match.format} · {match.phase}</div>
-        <ChevronRight size={14} className="text-textTertiary opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-      </div>
+  // Mock computed metrics
+  const totalMatches = matches.length;
+  const wins = matches.filter(m => m.result === 'Won').length;
+  const winRate = totalMatches > 0 ? Math.round((wins / totalMatches) * 100) : 0;
 
-      {!match.isDemo && (
-        <button
-          onClick={(e) => handleDelete(e, match.id)}
-          className="absolute top-3 right-3 p-1.5 rounded-lg text-textTertiary hover:text-liability-text hover:bg-liability-bg opacity-0 group-hover:opacity-100 transition-all"
-          title="Delete match"
-        >
-          <Trash2 size={12} />
-        </button>
-      )}
+  const MetricCard = ({ title, value, subtitle, icon, trend, isPositive }) => (
+    <div className="glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden group">
+      <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+        {icon}
+      </div>
+      <h3 className="text-[11px] font-mono uppercase tracking-[0.2em] text-textSecondary mb-2">{title}</h3>
+      <div className="text-3xl font-display text-textPrimary mb-2">{value}</div>
+      <div className="flex items-center gap-2 mt-auto">
+        <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${isPositive ? 'bg-aggressor-bg text-aggressor-text' : 'bg-surface3 text-textTertiary'}`}>
+          {trend}
+        </span>
+        <span className="text-[10px] text-textTertiary uppercase tracking-wider">{subtitle}</span>
+      </div>
     </div>
   );
 
   return (
-    <div className="flex h-screen bg-primary relative overflow-hidden">
-      {/* Ambient gradient */}
-      <div className="ambient-gradient" />
-
-      {/* ── Sidebar (Desktop) ── */}
-      <div className="hidden md:flex w-80 border-r border-border glass flex-col relative z-10">
-        {/* Brand Header */}
-        <div className="p-5 border-b border-border">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <img src="/logo.png" alt="CoachLens" className="h-10 object-contain dark:brightness-100 brightness-0" />
-            </div>
-            <ThemeToggle />
-          </div>
+    <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-10">
+      
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-display-xl font-display text-textPrimary mb-2">Welcome back, Coach</h1>
+          <p className="text-textSecondary text-sm">Here is your team's operational intelligence overview.</p>
         </div>
-        
-        {/* Match History List */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="px-4 py-4">
-            <h2 className="text-[10px] text-textSecondary uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-              <Trophy size={10} />
-              Match History
-            </h2>
-            
-            {matches.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-sm text-textTertiary">No matches analyzed yet.</p>
-                <p className="text-xs text-textTertiary mt-1">Paste a scorecard to start.</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {matches.map((match, index) => (
-                  <MatchItem key={match.id} match={match} index={index} />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* New Analysis Button */}
-        <div className="p-4 border-t border-border">
-          <button 
-            onClick={onNewAnalysis}
-            className="w-full flex items-center justify-center bg-accent hover:bg-accentHover text-white font-mono font-bold py-3 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-amber"
-          >
-            <Plus size={16} className="mr-2" /> New Analysis
-          </button>
-        </div>
-      </div>
-
-      {/* ── Main Panel (Desktop) ── */}
-      <div className="hidden md:flex flex-1 flex-col items-center justify-center p-8 text-center relative z-10">
-        {/* Cricket stumps icon */}
-        <div className="w-24 h-24 rounded-2xl glass flex items-center justify-center mb-8 relative">
-          <div className="absolute inset-0 rounded-2xl animate-pulse-glow" />
-          <svg width="36" height="36" viewBox="0 0 32 32" fill="none" className="relative z-10">
-            <rect x="10" y="4" width="2.5" height="20" rx="1" fill="rgb(var(--color-accent))" opacity="0.8"/>
-            <rect x="15" y="4" width="2.5" height="20" rx="1" fill="rgb(var(--color-accent))"/>
-            <rect x="20" y="4" width="2.5" height="20" rx="1" fill="rgb(var(--color-accent))" opacity="0.8"/>
-            <rect x="9" y="6" width="15" height="2" rx="1" fill="rgb(var(--color-accent))" opacity="0.5"/>
-            <rect x="9" y="10" width="15" height="2" rx="1" fill="rgb(var(--color-accent))" opacity="0.5"/>
-          </svg>
-        </div>
-        
-        <h2 className="text-2xl font-display mb-3 text-textPrimary">No match selected</h2>
-        <p className="text-textSecondary text-sm mb-8 max-w-md leading-relaxed">
-          Select a match from your history to view its post-match analysis, or paste a new scorecard to generate a fresh coaching brief.
-        </p>
         <button 
-          onClick={onNewAnalysis}
-          className="bg-accent hover:bg-accentHover text-white font-mono font-bold px-8 py-3.5 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-amber"
+          onClick={() => navigate('/analyze')}
+          className="flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white px-6 py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press"
         >
-          + New Analysis
+          <Plus size={16} /> New Analysis
         </button>
       </div>
 
-      {/* ── Mobile Layout ── */}
-      <div className="flex md:hidden flex-col w-full relative z-10">
-        {/* Mobile Header */}
-        <div className="p-4 border-b border-border glass">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <img src="/logo.png" alt="CoachLens" className="h-8 object-contain dark:brightness-100 brightness-0" />
-            </div>
-            <ThemeToggle />
-          </div>
+      {/* Metrics Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <MetricCard 
+          title="Matches Analyzed" 
+          value={totalMatches} 
+          subtitle="This season" 
+          icon={<Activity size={64} />} 
+          trend="+2 this week" 
+          isPositive={true} 
+        />
+        <MetricCard 
+          title="Win Rate" 
+          value={`${winRate}%`} 
+          subtitle="Last 10 matches" 
+          icon={<Trophy size={64} />} 
+          trend="Top 10%" 
+          isPositive={true} 
+        />
+        <MetricCard 
+          title="Players Tracked" 
+          value="24" 
+          subtitle="Active Roster" 
+          icon={<Users size={64} />} 
+          trend="No changes" 
+          isPositive={false} 
+        />
+      </div>
+
+      {/* Recent Matches */}
+      <div>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-[12px] text-textSecondary uppercase tracking-[0.2em] flex items-center gap-2 font-medium">
+            <Target size={12} /> Recent Analyses
+          </h2>
+          <button className="text-[10px] text-accent uppercase tracking-wider font-mono hover:text-accentHover">View All</button>
         </div>
 
-        {/* Mobile Content */}
-        <div className="flex-1 overflow-y-auto p-4">
-          <div className="mb-6">
+        {matches.length === 0 ? (
+          <div className="glass-card rounded-2xl p-12 text-center">
+            <div className="w-16 h-16 rounded-full bg-surface2 border border-border flex items-center justify-center mx-auto mb-4 text-textTertiary">
+              <Activity size={24} />
+            </div>
+            <h3 className="text-lg font-display text-textPrimary mb-2">No data yet</h3>
+            <p className="text-textSecondary text-sm mb-6 max-w-sm mx-auto">Upload your first scorecard to generate player insights and team reports.</p>
             <button 
-              onClick={onNewAnalysis}
-              className="w-full flex items-center justify-center bg-accent hover:bg-accentHover text-white font-mono font-bold py-4 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-amber"
+              onClick={() => navigate('/analyze')}
+              className="bg-surface2 hover:bg-surface3 border border-border text-textPrimary px-6 py-2.5 rounded-xl text-xs font-mono font-bold tracking-wider uppercase transition-all"
             >
-              <Plus size={16} className="mr-2" /> New Analysis
+              Start Analysis
             </button>
           </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {matches.map((match, index) => (
+              <div 
+                key={match.id}
+                onClick={() => navigate(`/match/${match.id}`)}
+                className="group relative glass-card rounded-xl p-5 cursor-pointer flex flex-col h-full card-interactive"
+                style={{ animationDelay: `${index * 60}ms` }}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-2 text-xs text-textTertiary">
+                    <Clock size={11} /> {formatDate(match.date)}
+                  </div>
+                  {match.result && (
+                    <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md ${getResultBadge(match.result)}`}>
+                      {match.result}
+                    </span>
+                  )}
+                </div>
+                
+                <div className="flex-1">
+                  <h3 className="text-base font-display mb-1 truncate text-textPrimary group-hover:text-accent transition-colors">
+                    {match.teamName || 'Match Analysis'}
+                  </h3>
+                  {match.opponent && (
+                    <p className="text-sm text-textSecondary font-mono mb-4">vs {match.opponent}</p>
+                  )}
+                </div>
+                
+                <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                  <div className="text-xs text-textTertiary px-2 py-1 bg-surface2 rounded-md">{match.format} · {match.phase}</div>
+                  <div className="w-6 h-6 rounded-full bg-surface2 flex items-center justify-center group-hover:bg-accent transition-colors">
+                    <ChevronRight size={12} className="text-textTertiary group-hover:text-white transition-colors" />
+                  </div>
+                </div>
 
-          <h2 className="text-[10px] text-textSecondary uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
-            <Trophy size={10} />
-            Match History
-          </h2>
-
-          {matches.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-sm text-textTertiary">No matches analyzed yet.</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {matches.map((match, index) => (
-                <MatchItem key={match.id} match={match} index={index} />
-              ))}
-            </div>
-          )}
-        </div>
+                {!match.isDemo && (
+                  <button
+                    onClick={(e) => handleDelete(e, match.id)}
+                    className="absolute top-4 right-4 p-1.5 rounded-lg text-textTertiary hover:text-liability-text hover:bg-liability-bg opacity-0 group-hover:opacity-100 transition-all"
+                    title="Delete match"
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+
     </div>
   );
 }
