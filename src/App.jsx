@@ -12,6 +12,7 @@ import Dashboard from './components/Dashboard/Dashboard';
 import AnalysisFlow from './pages/AnalysisFlow';
 import MatchResults from './pages/MatchResults';
 import { About, PrivacyPolicy, TermsOfService } from './pages/LegalPages';
+import Teams, { Settings } from './pages/AppPages';
 
 /* ─── Global Toast System ─── */
 function Toast({ message, type = 'info', onClose }) {
@@ -50,6 +51,14 @@ function Toast({ message, type = 'info', onClose }) {
   );
 }
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   const [toasts, setToasts] = useState([]);
 
@@ -85,10 +94,8 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/analyze" element={<AnalysisFlow addToast={addToast} />} />
           <Route path="/match/:id" element={<MatchResults />} />
-          
-          {/* Catch-all mock routes */}
-          <Route path="/teams" element={<Navigate to="/dashboard" />} />
-          <Route path="/settings" element={<Navigate to="/dashboard" />} />
+          <Route path="/teams" element={<Teams />} />
+          <Route path="/settings" element={<Settings />} />
         </Route>
 
         {/* 404 Fallback */}

@@ -1,18 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { Plus, Clock, Trophy, ChevronRight, Home, Settings, LogOut } from 'lucide-react';
+import { Plus, Trophy, ChevronRight, Home, Settings, LogOut, LayoutDashboard, Menu, X } from 'lucide-react';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
 
 export default function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleNewAnalysis = () => {
+    setIsMobileMenuOpen(false);
     navigate('/analyze');
   };
 
   const navItems = [
-    { icon: <Home size={18} />, label: 'Dashboard', path: '/dashboard' },
+    { icon: <LayoutDashboard size={18} />, label: 'Dashboard', path: '/dashboard' },
     { icon: <Trophy size={18} />, label: 'My Teams', path: '/teams' },
     { icon: <Settings size={18} />, label: 'Settings', path: '/settings' },
   ];
@@ -42,7 +44,7 @@ export default function AppLayout() {
               to={item.path}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-mono text-sm ${
                 location.pathname === item.path
-                  ? 'bg-surface2 text-accent border border-border font-medium'
+                  ? 'bg-accent/10 text-accent border border-accent/20 font-bold shadow-[0_0_15px_rgba(232,160,32,0.1)]'
                   : 'text-textSecondary hover:text-textPrimary hover:bg-surface2/50 border border-transparent'
               }`}
             >
@@ -78,28 +80,59 @@ export default function AppLayout() {
         </div>
       </div>
 
-      {/* ── Mobile Header ── */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-16 glass border-b border-border z-30 flex items-center justify-between px-4">
-        <Link to="/" className="flex items-center">
-          <img src="/logo.png" alt="CoachLens" className="h-7 object-contain dark:brightness-100 brightness-0" />
-        </Link>
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={handleNewAnalysis}
-            className="w-8 h-8 flex items-center justify-center bg-accent text-white rounded-lg shadow-glow-amber"
-          >
-            <Plus size={16} />
-          </button>
-          <ThemeToggle />
+      {/* ── Mobile Shell ── */}
+      <div className="flex flex-col flex-1 relative z-10 overflow-hidden">
+        {/* Mobile Header */}
+        <div className="md:hidden h-16 glass border-b border-border flex items-center justify-between px-4 shrink-0">
+          <Link to="/" className="flex items-center">
+            <img src="/logo.png" alt="CoachLens" className="h-7 object-contain dark:brightness-100 brightness-0" />
+          </Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 text-textPrimary bg-surface2 rounded-lg border border-border"
+            >
+              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* ── Main Content Area ── */}
-      <main className="flex-1 relative z-10 overflow-y-auto pt-16 md:pt-0">
-        <div className="min-h-full">
+        {/* Mobile Slide-over Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden fixed inset-0 z-40">
+            <div className="absolute inset-0 bg-primary/60 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
+            <div className="absolute top-16 left-0 right-0 glass border-b border-border p-6 space-y-4 animate-fade-in">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-4 rounded-xl transition-all font-mono text-sm ${
+                    location.pathname === item.path
+                      ? 'bg-accent/10 text-accent border border-accent/20'
+                      : 'text-textSecondary hover:text-textPrimary bg-surface2 border border-border'
+                  }`}
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              ))}
+              <button 
+                onClick={handleNewAnalysis}
+                className="w-full flex items-center justify-center bg-accent text-white font-mono font-bold py-4 rounded-xl text-sm uppercase tracking-wider"
+              >
+                <Plus size={16} className="mr-2" /> New Analysis
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Main Content Area ── */}
+        <main className="flex-1 overflow-y-auto">
           <Outlet />
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }
