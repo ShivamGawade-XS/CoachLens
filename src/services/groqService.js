@@ -23,6 +23,8 @@ Return this exact structure:
       "name": "player name",
       "role": "batsman/bowler/allrounder",
       "tag": "Anchor|Aggressor|Liability|Improving",
+      "key_stat": "e.g. 45 (30) or 2-24 (if applicable)",
+      "match_impact": "impact score out of 10",
       "what_worked": "specific and factual",
       "what_failed": "specific and factual",
       "next_match_instruction": "one concrete actionable change",
