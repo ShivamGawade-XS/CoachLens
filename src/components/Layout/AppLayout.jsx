@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { Plus, Trophy, ChevronRight, Home, Settings, LogOut, LayoutDashboard, Menu, X } from 'lucide-react';
+import { Plus, Trophy, Home, Settings, LogOut, LayoutDashboard, Menu, X } from 'lucide-react';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
+import { useAuth } from '../../contexts/AuthContext';
 
-export default function AppLayout() {
+export default function AppLayout({ addToast }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleNewAnalysis = () => {
@@ -13,11 +15,21 @@ export default function AppLayout() {
     navigate('/analyze');
   };
 
+  const handleLogout = () => {
+    logout();
+    addToast?.('Logged out successfully', 'info');
+    navigate('/login');
+  };
+
   const navItems = [
     { icon: <LayoutDashboard size={18} />, label: 'Dashboard', path: '/dashboard' },
     { icon: <Trophy size={18} />, label: 'My Teams', path: '/teams' },
     { icon: <Settings size={18} />, label: 'Settings', path: '/settings' },
   ];
+
+  const userInitials = user?.avatar || user?.fullName?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?';
+  const userName = user?.fullName || 'Coach';
+  const userRole = user?.role || 'Coach';
 
   return (
     <div className="flex h-screen bg-primary relative overflow-hidden">
@@ -54,7 +66,7 @@ export default function AppLayout() {
           ))}
         </div>
 
-        {/* User Profile Mock & Actions */}
+        {/* User Profile & Actions */}
         <div className="p-4 border-t border-border flex flex-col gap-4">
           <button 
             onClick={handleNewAnalysis}
@@ -65,17 +77,17 @@ export default function AppLayout() {
           
           <div className="flex items-center justify-between px-2 pt-2">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-surface3 border border-border flex items-center justify-center text-textPrimary font-mono font-bold text-xs">
-                SG
+              <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center text-accent font-mono font-bold text-xs">
+                {userInitials}
               </div>
               <div className="flex flex-col">
-                <span className="text-xs font-medium text-textPrimary">Coach Shivam</span>
-                <span className="text-[10px] text-textTertiary">Pro Plan</span>
+                <span className="text-xs font-medium text-textPrimary truncate max-w-[120px]">{userName}</span>
+                <span className="text-[10px] text-textTertiary">{userRole}</span>
               </div>
             </div>
-            <Link to="/" className="text-textTertiary hover:text-liability-text transition-colors">
+            <button onClick={handleLogout} className="text-textTertiary hover:text-liability-text transition-colors" title="Log out">
               <LogOut size={14} />
-            </Link>
+            </button>
           </div>
         </div>
       </div>
@@ -123,6 +135,12 @@ export default function AppLayout() {
                 className="w-full flex items-center justify-center bg-accent text-white font-mono font-bold py-4 rounded-xl text-sm uppercase tracking-wider"
               >
                 <Plus size={16} className="mr-2" /> New Analysis
+              </button>
+              <button 
+                onClick={() => { setIsMobileMenuOpen(false); handleLogout(); }}
+                className="w-full flex items-center justify-center gap-2 bg-surface2 border border-border text-textSecondary font-mono py-3 rounded-xl text-sm"
+              >
+                <LogOut size={14} /> Sign Out
               </button>
             </div>
           </div>

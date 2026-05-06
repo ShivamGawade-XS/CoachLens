@@ -86,7 +86,7 @@
   }
 
   .text-gradient-amber {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-accent to-accent-hover font-extrabold tracking-tight;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-accent to-accentHover font-extrabold tracking-tight;
   }
 
   /* Tag Glows */

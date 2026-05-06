@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Clock, Trophy, ChevronRight, Activity, Users, Target } from 'lucide-react';
 import { storageService } from '../../services/storageService';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Dashboard() {
   const [matches, setMatches] = useState([]);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
     storageService.seedDemoMatches();
@@ -31,10 +33,20 @@ export default function Dashboard() {
       : 'bg-liability-bg text-liability-text border border-liability-border';
   };
 
-  // Mock computed metrics
+  // Computed metrics
   const totalMatches = matches.length;
   const wins = matches.filter(m => m.result === 'Won').length;
   const winRate = totalMatches > 0 ? Math.round((wins / totalMatches) * 100) : 0;
+
+  // Get teams count from localStorage
+  const teamsCount = (() => {
+    try {
+      const data = localStorage.getItem(`coachlens_teams_${user?.id}`);
+      return data ? JSON.parse(data).length : 0;
+    } catch { return 0; }
+  })();
+
+  const firstName = user?.fullName?.split(' ')[0] || 'Coach';
 
   const MetricCard = ({ title, value, subtitle, icon, trend, isPositive }) => (
     <div className="glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden group">
@@ -58,7 +70,7 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-display-xl font-display text-textPrimary mb-2">Welcome back, Coach</h1>
+          <h1 className="text-display-xl font-display text-textPrimary mb-2">Welcome back, {firstName}</h1>
           <p className="text-textSecondary text-sm">Here is your team's operational intelligence overview.</p>
         </div>
         <button 
@@ -76,24 +88,24 @@ export default function Dashboard() {
           value={totalMatches} 
           subtitle="This season" 
           icon={<Activity size={64} />} 
-          trend="+2 this week" 
-          isPositive={true} 
+          trend={`${totalMatches} total`}
+          isPositive={totalMatches > 0} 
         />
         <MetricCard 
           title="Win Rate" 
           value={`${winRate}%`} 
-          subtitle="Last 10 matches" 
+          subtitle={`${wins} won / ${totalMatches - wins} lost`}
           icon={<Trophy size={64} />} 
-          trend="Top 10%" 
-          isPositive={true} 
+          trend={winRate >= 50 ? 'Winning' : 'Needs work'} 
+          isPositive={winRate >= 50} 
         />
         <MetricCard 
-          title="Players Tracked" 
-          value="24" 
-          subtitle="Active Roster" 
+          title="Teams Managed" 
+          value={teamsCount} 
+          subtitle="Active rosters" 
           icon={<Users size={64} />} 
-          trend="No changes" 
-          isPositive={false} 
+          trend={teamsCount > 0 ? `${teamsCount} active` : 'Add a team'} 
+          isPositive={teamsCount > 0} 
         />
       </div>
 

@@ -3,9 +3,11 @@ import { Outlet, Link } from 'react-router-dom';
 import Footer from '../Footer/Footer';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import { ChevronRight, Menu, X } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function PublicLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   return (
     <div className="min-h-screen bg-primary flex flex-col relative overflow-hidden">
@@ -29,18 +31,29 @@ export default function PublicLayout() {
 
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Link 
-              to="/dashboard"
-              className="hidden sm:flex items-center gap-2 bg-surface2 hover:bg-surface3 border border-border text-textPrimary px-4 py-2 rounded-xl text-sm font-mono font-medium transition-all"
-            >
-              Log In
-            </Link>
-            <Link 
-              to="/analyze"
-              className="hidden sm:flex items-center gap-2 bg-accent hover:bg-accentHover text-white px-5 py-2.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press"
-            >
-              Get Started <ChevronRight size={16} />
-            </Link>
+            {isAuthenticated ? (
+              <Link 
+                to="/dashboard"
+                className="hidden sm:flex items-center gap-2 bg-accent hover:bg-accentHover text-white px-5 py-2.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press"
+              >
+                Dashboard <ChevronRight size={16} />
+              </Link>
+            ) : (
+              <>
+                <Link 
+                  to="/login"
+                  className="hidden sm:flex items-center gap-2 bg-surface2 hover:bg-surface3 border border-border text-textPrimary px-4 py-2 rounded-xl text-sm font-mono font-medium transition-all"
+                >
+                  Log In
+                </Link>
+                <Link 
+                  to="/signup"
+                  className="hidden sm:flex items-center gap-2 bg-accent hover:bg-accentHover text-white px-5 py-2.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press"
+                >
+                  Get Started <ChevronRight size={16} />
+                </Link>
+              </>
+            )}
             
             {/* Mobile Menu Toggle */}
             <button 
@@ -59,8 +72,14 @@ export default function PublicLayout() {
             <a href="#features" onClick={() => setIsMenuOpen(false)} className="block text-sm font-mono text-textPrimary py-2">Features</a>
             <a href="#pricing" onClick={() => setIsMenuOpen(false)} className="block text-sm font-mono text-textPrimary py-2">Pricing</a>
             <hr className="border-border" />
-            <Link to="/dashboard" onClick={() => setIsMenuOpen(false)} className="block w-full text-center bg-surface2 text-textPrimary py-3 rounded-xl text-sm font-mono font-bold">Log In</Link>
-            <Link to="/analyze" onClick={() => setIsMenuOpen(false)} className="block w-full text-center bg-accent text-white py-3 rounded-xl text-sm font-mono font-bold">Get Started</Link>
+            {isAuthenticated ? (
+              <Link to="/dashboard" onClick={() => setIsMenuOpen(false)} className="block w-full text-center bg-accent text-white py-3 rounded-xl text-sm font-mono font-bold">Dashboard</Link>
+            ) : (
+              <>
+                <Link to="/login" onClick={() => setIsMenuOpen(false)} className="block w-full text-center bg-surface2 text-textPrimary py-3 rounded-xl text-sm font-mono font-bold">Log In</Link>
+                <Link to="/signup" onClick={() => setIsMenuOpen(false)} className="block w-full text-center bg-accent text-white py-3 rounded-xl text-sm font-mono font-bold">Get Started</Link>
+              </>
+            )}
           </div>
         )}
       </nav>

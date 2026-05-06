@@ -28,16 +28,16 @@ export default function LandingPage() {
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
             <Link 
-              to="/analyze"
+              to="/signup"
               className="w-full sm:w-auto bg-accent hover:bg-accentHover text-white px-8 py-4 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press flex items-center justify-center gap-2"
             >
-              Start Analyzing <ArrowRight size={18} />
+              Get Started Free <ArrowRight size={18} />
             </Link>
             <Link 
-              to="/dashboard"
+              to="/login"
               className="w-full sm:w-auto bg-surface2 hover:bg-surface3 border border-border text-textPrimary px-8 py-4 rounded-xl text-sm font-mono font-medium transition-all text-center"
             >
-              View Demo Dashboard
+              Sign In to Dashboard
             </Link>
           </div>
         </div>
@@ -91,10 +91,10 @@ export default function LandingPage() {
           <h2 className="text-4xl font-display text-textPrimary mb-6">Ready to upgrade your coaching?</h2>
           <p className="text-textSecondary mb-10 font-mono">No credit card required. Try it on your last match scorecard right now.</p>
           <Link 
-            to="/analyze"
+            to="/signup"
             className="inline-flex bg-accent hover:bg-accentHover text-white px-10 py-5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press items-center gap-2"
           >
-            Start Analyzing Now <ChevronRight size={18} />
+            Create Free Account <ChevronRight size={18} />
           </Link>
         </div>
       </section>

@@ -2,12 +2,18 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { X, AlertCircle, CheckCircle, Info } from 'lucide-react';
 
+// Auth
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+
 // Layouts
 import PublicLayout from './components/Layout/PublicLayout';
 import AppLayout from './components/Layout/AppLayout';
 
 // Pages
 import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
 import Dashboard from './components/Dashboard/Dashboard';
 import AnalysisFlow from './pages/AnalysisFlow';
 import MatchResults from './pages/MatchResults';
@@ -51,14 +57,6 @@ function Toast({ message, type = 'info', onClose }) {
   );
 }
 
-function ScrollToTop() {
-  const { pathname } = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-  return null;
-}
-
 function App() {
   const [toasts, setToasts] = useState([]);
 
@@ -72,36 +70,42 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      {/* Global Toasts */}
-      <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2">
-        {toasts.map(toast => (
-          <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
-        ))}
-      </div>
+    <AuthProvider>
+      <BrowserRouter>
+        {/* Global Toasts */}
+        <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2">
+          {toasts.map(toast => (
+            <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
+          ))}
+        </div>
 
-      <Routes>
-        {/* Public Routes */}
-        <Route element={<PublicLayout />}>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/terms" element={<TermsOfService />} />
-        </Route>
+        <Routes>
+          {/* Public Routes */}
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
+          </Route>
 
-        {/* Authenticated App Routes */}
-        <Route element={<AppLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/analyze" element={<AnalysisFlow addToast={addToast} />} />
-          <Route path="/match/:id" element={<MatchResults />} />
-          <Route path="/teams" element={<Teams />} />
-          <Route path="/settings" element={<Settings />} />
-        </Route>
+          {/* Auth Routes (standalone, no layout wrapper) */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
 
-        {/* 404 Fallback */}
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </BrowserRouter>
+          {/* Authenticated App Routes */}
+          <Route element={<ProtectedRoute><AppLayout addToast={addToast} /></ProtectedRoute>}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/analyze" element={<AnalysisFlow addToast={addToast} />} />
+            <Route path="/match/:id" element={<MatchResults />} />
+            <Route path="/teams" element={<Teams addToast={addToast} />} />
+            <Route path="/settings" element={<Settings addToast={addToast} />} />
+          </Route>
+
+          {/* 404 Fallback */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
