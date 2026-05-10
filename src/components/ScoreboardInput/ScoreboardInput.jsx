@@ -136,26 +136,50 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
               )}
             </div>
             
-            <textarea 
-              value={scorecardText}
-              onChange={(e) => { setScorecardText(e.target.value); setError(null); }}
-              placeholder="Paste CricHeroes scorecard, plain text, or any structured data here..."
-              className="w-full h-52 bg-surface2 border border-border rounded-xl p-4 text-textPrimary placeholder-textTertiary focus:outline-none focus:border-accent focus:shadow-glow-amber font-mono text-sm resize-y transition-all duration-200"
-            />
-            
-            <div className="flex items-center justify-between mt-2">
-              <div>
-                {error && (
-                  <p className="text-liability-text text-xs flex items-center gap-1.5 animate-fade-in">
-                    <AlertCircle size={12} />
-                    {error}
+            {inputMode === 'paste' ? (
+              <>
+                <textarea 
+                  value={scorecardText}
+                  onChange={(e) => { setScorecardText(e.target.value); setError(null); }}
+                  placeholder="Paste CricHeroes scorecard, plain text, or any structured data here..."
+                  className="w-full h-52 bg-surface2 border border-border rounded-xl p-4 text-textPrimary placeholder-textTertiary focus:outline-none focus:border-accent focus:shadow-glow-amber font-mono text-sm resize-y transition-all duration-200"
+                />
+                
+                <div className="flex items-center justify-between mt-2">
+                  <div>
+                    {error && (
+                      <p className="text-liability-text text-xs flex items-center gap-1.5 animate-fade-in">
+                        <AlertCircle size={12} />
+                        {error}
+                      </p>
+                    )}
+                  </div>
+                  <span className="text-[10px] text-textTertiary">
+                    {scorecardText.length} characters
+                  </span>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-4 animate-fade-in">
+                <div className="bg-surface2/50 border border-border rounded-xl p-6 text-center">
+                  <div className="w-12 h-12 bg-accent/10 text-accent rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Clipboard size={20} />
+                  </div>
+                  <h3 className="text-sm font-medium text-textPrimary mb-1">CricHeroes Auto-Import</h3>
+                  <p className="text-xs text-textSecondary mb-4 max-w-sm mx-auto">
+                    Paste a CricHeroes match URL to automatically extract the scorecard and over-by-over momentum data.
                   </p>
-                )}
+                  <input 
+                    type="url"
+                    placeholder="https://cricheroes.in/scorecard/..."
+                    className="w-full bg-primary border border-border rounded-lg px-4 py-3 text-sm text-textPrimary focus:outline-none focus:border-accent font-mono transition-colors"
+                  />
+                  <button className="mt-4 bg-surface3 text-textPrimary border border-border px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-surface3/80 transition-colors w-full sm:w-auto">
+                    Import Match Data
+                  </button>
+                </div>
               </div>
-              <span className="text-[10px] text-textTertiary">
-                {scorecardText.length} characters
-              </span>
-            </div>
+            )}
           </div>
 
           {/* Analyze Button */}
