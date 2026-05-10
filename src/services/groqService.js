@@ -105,6 +105,21 @@ If the coach asks something unrelated to cricket or their teams, steer them back
 CONTEXT:
 {context}`;
 
+const FORMAL_REPORT_PROMPT = `You are the Head Coach of a cricket team submitting a formal post-match report to club management.
+Using the provided match data, generate a highly professional, well-structured markdown report.
+
+The report MUST include:
+1. **Match Summary:** A clear, objective 2-3 sentence overview of the result and overall performance.
+2. **Top Performers:** Bulleted list of 2-3 standout players with their stats and impact.
+3. **Areas of Concern:** 1-2 points detailing weaknesses or where the match was lost/struggled (e.g. death bowling, top-order collapse).
+4. **Next Steps / Action Items:** 2 concrete practice goals or tactical changes for the upcoming week.
+
+Tone: Professional, analytical, objective, and authoritative.
+Formatting: Use standard markdown headers (##), bold text, and bullet points. Do not wrap in a code block. Do not add conversational filler.
+
+Match Data:
+{matchData}`;
+
 export const groqService = {
   getTurningPoint: async (overData) => {
     let apiKey = import.meta.env.VITE_GROQ_API_KEY;
@@ -353,6 +368,34 @@ export const groqService = {
         messages: apiMessages,
         temperature: 0.5,
         max_tokens: 800
+      })
+    });
+
+    if (!response.ok) throw new Error(`API error: ${response.statusText}`);
+    const data = await response.json();
+    return data.choices[0].message.content;
+  },
+
+  generateFormalReport: async (matchData) => {
+    let apiKey = import.meta.env.VITE_GROQ_API_KEY;
+    if (!apiKey && typeof window !== 'undefined') {
+      apiKey = localStorage.getItem('GROQ_API_KEY');
+    }
+    if (!apiKey) throw new Error("No API key");
+
+    const prompt = FORMAL_REPORT_PROMPT.replace('{matchData}', JSON.stringify(matchData, null, 2));
+
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.3,
+        max_tokens: 1000
       })
     });
 

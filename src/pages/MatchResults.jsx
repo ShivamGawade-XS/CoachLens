@@ -9,6 +9,7 @@ import PlayerCard from '../components/PlayerCard/PlayerCard';
 import TeamReport from '../components/TeamReport/TeamReport';
 import CoachBrief from '../components/CoachBrief/CoachBrief';
 import WhatsAppModal from '../components/WhatsAppModal/WhatsAppModal';
+import FormalReportModal from '../components/FormalReportModal/FormalReportModal';
 import { detectRoleMismatches } from '../utils/mismatchLogic';
 
 export default function MatchResults() {
@@ -18,6 +19,7 @@ export default function MatchResults() {
   const [activeTab, setActiveTab] = useState('players');
   const [isExporting, setIsExporting] = useState(false);
   const [showWhatsApp, setShowWhatsApp] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const [whatsAppMessages, setWhatsAppMessages] = useState([]);
   const [isGeneratingWA, setIsGeneratingWA] = useState(false);
 
@@ -138,6 +140,13 @@ export default function MatchResults() {
               </span>
             )}
             <button
+              onClick={() => setShowReport(true)}
+              className="hidden sm:flex items-center gap-1.5 text-xs font-mono tracking-wider uppercase bg-surface2 hover:bg-surface3 border border-border text-textPrimary px-3 py-1.5 rounded-lg transition-colors mr-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+              Report
+            </button>
+            <button
               onClick={handleExportPDF}
               disabled={isExporting}
               className="hidden sm:flex items-center gap-1.5 text-xs font-mono tracking-wider uppercase bg-surface2 hover:bg-surface3 border border-border text-textPrimary px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
@@ -237,6 +246,14 @@ export default function MatchResults() {
           messages={whatsAppMessages}
           isGenerating={isGeneratingWA}
           onClose={() => setShowWhatsApp(false)}
+        />
+      )}
+
+      {/* Formal Report Modal */}
+      {showReport && (
+        <FormalReportModal 
+          match={match} 
+          onClose={() => setShowReport(false)} 
         />
       )}
     </div>
