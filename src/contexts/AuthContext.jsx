@@ -16,24 +16,24 @@ export function AuthProvider({ children }) {
     setIsLoading(false);
   }, []);
 
-  const login = useCallback((email, password) => {
-    const result = authService.login(email, password);
+  const login = useCallback(async (email, password) => {
+    const result = await authService.login(email, password);
     if (result.success) {
       setUser(result.user);
     }
     return result;
   }, []);
 
-  const signup = useCallback((userData) => {
-    const result = authService.register(userData);
+  const signup = useCallback(async (userData) => {
+    const result = await authService.register(userData);
     if (result.success) {
       setUser(result.user);
     }
     return result;
   }, []);
 
-  const logout = useCallback(() => {
-    authService.logout();
+  const logout = useCallback(async () => {
+    await authService.logout();
     setUser(null);
   }, []);
 
