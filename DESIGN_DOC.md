@@ -212,7 +212,8 @@ Full-screen overlay. Centered.
 │                                                                 │
 │  ┌─────────────────────────────────────┐                        │
 │  │  ● RAHUL SHARMA        [LIABILITY]  │  ← Red tag            │
-│  │  Batsman · #3                       │                        │
+│  │  Batsman · #3           [4.5 PASSIVE] │  ← Intent Score       │
+│  │                         [⚡ RISK]     │  ← Pressure Index     │
 │  │  ─────────────────────────────────  │                        │
 │  │  ✓ WHAT WORKED                      │                        │
 │  │  Scored 19 off 28 balls.            │                        │
@@ -243,9 +244,11 @@ Full-screen overlay. Centered.
 **Card anatomy:**
 - Left border: 3px solid — coloured by performance tag
 - Player name: `heading-md`, `DM Serif Display`
+- Intent Score Gauge: 1-10 numerical scale with textual label (High Intent / Passive / Coasting). Monospace, bordered.
+- Pressure Index Badge: Conditional display. `Clutch 🧊` (amber) or `Pressure Risk ⚡` (red).
 - All stat values: `IBM Plex Mono`, amber highlight
 - Section labels (WHAT WORKED, WHAT FAILED): monospace, uppercase, 10px letter-spacing, secondary text colour
-- Share Card button: ghost button, secondary colour, top-right corner
+- Share Card (WhatsApp) button: ghost button, opens WhatsApp pre-filled with AI-generated feedback message.
 
 ---
 
@@ -291,6 +294,12 @@ Full-screen overlay. Centered.
 │  ┌─────────────────────────────────────────────────────────┐    │
 │  │  PRE-MATCH DECISION BRIEF             [Export PDF ↓]   │    │
 │  │  ─────────────────────────────────────────────────────  │    │
+│  │                                                         │    │
+│  │  [!] FLAGGED TACTICAL MISMATCHES                        │    │
+│  │      - Rahul Sharma (Anchor) batting too low at #8.     │    │
+│  │                                                         │    │
+│  │  [?] AI TOSS ADVISOR                                    │    │
+│  │      Recommend: FIELD FIRST. 75% win rate chasing.      │    │
 │  │                                                         │    │
 │  │  01  BATTING ORDER                                      │    │
 │  │      Move Rahul from #3 → #5.                           │    │

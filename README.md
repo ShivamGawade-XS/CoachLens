@@ -28,10 +28,11 @@ This gap exists for 3 lakh+ amateur cricket teams across India. IPL franchises p
 | Feature | Description |
 |---|---|
 | 🎯 **Smart Scorecard Input** | Paste raw text scorecard or enter stats manually. Supports T20 and ODI formats. |
-| 👤 **Player Intelligence Cards** | Colour-coded per-player cards: Performance Tag, what worked, what failed, one drill. |
+| 👤 **Player Intelligence Cards** | Colour-coded per-player cards: Performance Tag, Intent Score, Pressure Index, one drill. |
 | 📊 **Team Pattern Report** | Match turning point, strongest partnership, bowling inefficiency, scoring pattern vs par. |
-| 📋 **Coach Decision Brief** | Selection calls, batting order changes, bowling rotation, one tactical focus for next game. |
-| 🔗 **Shareable Player Cards** | Individual feedback cards shareable via link — private, not public. |
+| 📋 **Coach Decision Brief** | Selection calls, batting order changes, bowling rotation, Toss Advisor, Tactical Mismatch Detection. |
+| 📱 **WhatsApp Integration** | Generate 2-sentence personalized feedback messages for every player and send directly to WhatsApp. |
+| 📈 **Season Form Engine** | Client-side engine calculating player consistency, Clutch Factor, and team W/L form across all matches. |
 | 🗂️ **Match History Dashboard** | Past analyses stored locally, accessible anytime. |
 
 ---
@@ -203,15 +204,16 @@ CricHeroes and CoachLens are complementary. Phase 2 of CoachLens pulls directly 
 
 ### Phase 1 — MVP (Current)
 - [x] Smart scorecard input (paste + manual)
-- [x] Player Intelligence Cards
+- [x] Player Intelligence Cards (with Intent & Pressure metrics)
 - [x] Team Pattern Report
-- [x] Coach Decision Brief
+- [x] Coach Decision Brief (with Toss Advisor & Mismatch Logic)
+- [x] WhatsApp Coach Integration
+- [x] Season Form & Clutch Factor Engine
 - [x] Pre-seeded demo data + API fallback
 
 ### Phase 2 — Month 1–3
 - [ ] CricHeroes API integration (auto scorecard import)
 - [ ] Mobile-responsive PWA
-- [ ] Player shareable cards with unique links
 - [ ] Supabase persistence (multi-device match history)
 - [ ] Multi-sport support (football, kabaddi)
 

@@ -84,6 +84,8 @@ For every player in the scorecard, the AI generates a colour-coded intelligence 
 | Field | Description |
 |---|---|
 | **Performance Tag** | Anchor / Aggressor / Liability / Improving |
+| **Intent Score** | 1-10 pure-client gauge scoring player effort/intent |
+| **Pressure Index** | Badge identifying 'Clutch' vs 'Pressure Risk' behavior |
 | **What Worked** | Specific, number-backed observation |
 | **What Failed** | Specific, number-backed observation |
 | **Next Match Instruction** | One concrete, actionable change |
@@ -126,12 +128,14 @@ A single-page team-level analysis identifying:
 ### 3.4 Feature 4 — Coach Decision Brief
 **Priority:** P0 (MVP)
 
-Pre-match intelligence document covering three decisions:
+Pre-match intelligence document covering decisions and tactical flaws:
 
-1. **Selection Call** — Who earned their spot; who is on notice and why
-2. **Batting Order Adjustment** — Specific positional swap with number-backed reason
-3. **Bowling Rotation Suggestion** — Specific change with reason
-4. **One Tactical Focus** — Single sentence priority for next match
+1. **AI Toss Advisor** — Analyzes past win/loss records when batting vs fielding first to recommend a Toss decision.
+2. **Tactical Mismatch Warnings** — Flags logical errors like using Anchors at #8 or Liability bowlers in death overs.
+3. **Selection Call** — Who earned their spot; who is on notice and why
+4. **Batting Order Adjustment** — Specific positional swap with number-backed reason
+5. **Bowling Rotation Suggestion** — Specific change with reason
+6. **One Tactical Focus** — Single sentence priority for next match
 
 **Acceptance Criteria:**
 - Decisions are concrete and specific (e.g., "Move Rahul from #3 to #5; his powerplay dot ball % of 61% makes him unsuitable for top order")
@@ -140,13 +144,21 @@ Pre-match intelligence document covering three decisions:
 
 ---
 
-### 3.5 Feature 5 — Player Shareable Cards
-**Priority:** P1 (Post-MVP)
+### 3.5 Feature 5 — WhatsApp Coach Integration
+**Priority:** P0 (MVP)
 
-- Each player receives a unique shareable link to their individual feedback card
-- Card contains only their personal stats and feedback — not the team's full report
-- Designed for WhatsApp sharing (coach sends individually)
-- Private by default — no public leaderboard
+- "Send to Player" button on every card opens a WhatsApp modal.
+- LLM generates a personalized, 2-sentence feedback message based on the player's tag and stats.
+- Opens native WhatsApp Web/App pre-filled with the message.
+
+---
+
+### 3.6 Feature 6 — Season Form Engine
+**Priority:** P0 (MVP)
+
+- Dashboard table aggregating consistency across all stored matches.
+- **Clutch Factor:** Flags "Big Match Players" (better in losses) vs "Frontrunners" (only perform in wins).
+- **Trend Indicators:** Shows if a player's last 2 matches are trending up, down, or flat.
 
 **Acceptance Criteria:**
 - Link generates from individual player card in one click

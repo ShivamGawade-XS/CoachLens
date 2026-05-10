@@ -201,11 +201,12 @@ Return this exact structure:
     "bowling_inefficiency": "specific bowler and overs",
     "pattern": "one key team-level tactical observation"
   },
-  "players": [
+    "players": [
     {
       "name": "player name",
       "role": "batsman/bowler/allrounder",
       "tag": "Anchor/Aggressor/Liability/Improving",
+      "match_impact": "impact score out of 10",
       "what_worked": "specific and factual",
       "what_failed": "specific and factual",
       "next_match_instruction": "one concrete actionable change",
@@ -247,6 +248,24 @@ const parseAnalysis = (rawResponse) => {
   }
 };
 ```
+
+---
+
+## 4. Client-Side Heuristics Layer
+
+Not everything requires an API call. CoachLens employs a strict **pure client-side logic layer** to extract secondary intelligence instantly without burning LLM tokens.
+
+### 4.1 Player Metrics (`coachingMetrics.js`)
+- **Intent Score (1-10):** Regex parsing of the AI's `what_failed` text for passive keywords (e.g., "dot balls", "slow") vs active keywords ("boundary", "attack"). Calculates a 1-10 gauge instantly.
+- **Pressure Index:** Scans AI text for collapse vs death-over keywords to tag players as `Clutch 🧊` or `Pressure Risk ⚡`.
+
+### 4.2 Tactical Mismatch Logic (`mismatchLogic.js`)
+- Heuristic checks on the combined AI data to find logical errors.
+- E.g., `if (player.tag === 'Anchor' && player.role.includes('#8')) -> return "Warning: Anchor batting too low"`
+
+### 4.3 Season Form Engine (`seasonScoring.js`)
+- Aggregates `match_impact` across all `localStorage` matches.
+- **Clutch Factor:** Computes average impact in Won vs Lost matches to flag "Big Match Players" (better in losses).
 
 ---
 
