@@ -13,12 +13,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchMatches = async () => {
-      await storageService.seedDemoMatches();
+      if (user) await storageService.seedDemoMatches(user.id);
       const fetchedMatches = await storageService.getMatches();
       setMatches(fetchedMatches);
     };
     fetchMatches();
-  }, []);
+  }, [user]);
 
   const formatDate = (isoString) => {
     const d = new Date(isoString);
