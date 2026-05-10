@@ -5,6 +5,7 @@ import { storageService } from '../services/storageService';
 import { groqService } from '../services/groqService';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import PlayerCard from '../components/PlayerCard/PlayerCard';
 import TeamReport from '../components/TeamReport/TeamReport';
 import CoachBrief from '../components/CoachBrief/CoachBrief';
 import WhatsAppModal from '../components/WhatsAppModal/WhatsAppModal';
