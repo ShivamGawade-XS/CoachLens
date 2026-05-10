@@ -12,8 +12,13 @@ export const detectRoleMismatches = (players, rawScorecard) => {
   const lines = rawScorecard.split('\n').map(l => l.trim()).filter(Boolean);
 
   players.forEach(player => {
+    const roleLower = (player.role || '').toLowerCase();
+    const isBatsman = roleLower.includes('batsman') || roleLower.includes('bat');
+    const isBowler = roleLower.includes('bowler') || roleLower.includes('bowl');
+    const isAllrounder = roleLower.includes('allrounder') || roleLower.includes('all-rounder');
+
     // 1. Batting Order Mismatches
-    if (player.role?.toLowerCase() === 'batsman' || player.role?.toLowerCase() === 'allrounder') {
+    if (isBatsman || isAllrounder) {
       // Find approximate batting position by finding the first line their name appears in
       // that looks like a batting line (contains ' b ' or ' c ' or ' not out ')
       const battingIndex = lines.findIndex(line => 
@@ -53,7 +58,7 @@ export const detectRoleMismatches = (players, rawScorecard) => {
     }
 
     // 2. Bowling Mismatches
-    if (player.role?.toLowerCase() === 'bowler' || player.role?.toLowerCase() === 'allrounder') {
+    if (isBowler || isAllrounder) {
       const failedText = (player.what_failed || '').toLowerCase();
       const statText = (player.key_stat || '').toLowerCase();
       

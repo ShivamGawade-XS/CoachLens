@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Download, MessageCircle, Link as LinkIcon, CheckCircle, AlertTriangle, ArrowRight } from 'lucide-react';
 import html2canvas from 'html2canvas';
+import { calculateIntentScore, getPressureIndex } from '../../utils/coachingMetrics';
 
 const tagConfig = {
   Aggressor: { bg: "bg-aggressor-bg", text: "text-aggressor-text", border: "border-aggressor-border", glow: "tag-glow-green", icon: "⚡" },
@@ -13,6 +14,8 @@ export default function PlayerCard({ player, hideActions = false, mismatch, onVi
   const [copied, setCopied] = useState(false);
   const config = tagConfig[player.tag] || tagConfig.Anchor;
   const cardId = `player-card-${player.name.replace(/\s+/g, '-')}`;
+  const intent = calculateIntentScore(player);
+  const pressure = getPressureIndex(player);
 
   const handleShare = async () => {
     const element = document.getElementById(cardId);
@@ -84,9 +87,23 @@ export default function PlayerCard({ player, hideActions = false, mismatch, onVi
             </div>
           )}
         </div>
-        <div className={`${config.bg} ${config.text} border ${config.border} px-2.5 py-1 rounded-lg text-[10px] uppercase font-bold tracking-wider animate-scale-pop flex items-center gap-1`}>
-          <span>{config.icon}</span>
-          {player.tag}
+        <div className="flex flex-col items-end gap-1.5">
+          <div className={`${config.bg} ${config.text} border ${config.border} px-2.5 py-1 rounded-lg text-[10px] uppercase font-bold tracking-wider animate-scale-pop flex items-center gap-1`}>
+            <span>{config.icon}</span>
+            {player.tag}
+          </div>
+          {/* Intent Score */}
+          <div className={`flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-${intent.color}-bg text-${intent.color}-text border border-${intent.color}-border`}>
+            <span className="font-bold">{intent.score}</span>
+            <span>{intent.label}</span>
+          </div>
+          {/* Pressure Index */}
+          {pressure && (
+            <div className={`flex items-center gap-1 text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-${pressure.color}-bg text-${pressure.color}-text border border-${pressure.color}-border`}>
+              <span>{pressure.icon}</span>
+              <span>{pressure.label}</span>
+            </div>
+          )}
         </div>
       </div>
       

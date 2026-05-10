@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2, Clock, Trophy, ChevronRight, Activity, Users, Target } from 'lucide-react';
+import { Plus, Trash2, Clock, Trophy, ChevronRight, Activity, Users, Target, TrendingUp, TrendingDown, Minus, Medal } from 'lucide-react';
 import { storageService } from '../../services/storageService';
 import { useAuth } from '../../contexts/AuthContext';
+import { calculateSeasonForm, getTeamFormGuide } from '../../utils/seasonScoring';
+import { calculateClutchFactors } from '../../utils/coachingMetrics';
 
 export default function Dashboard() {
   const [matches, setMatches] = useState([]);
@@ -51,6 +53,14 @@ export default function Dashboard() {
       return data ? JSON.parse(data).length : 0;
     } catch { return 0; }
   })();
+
+  const seasonForm = React.useMemo(() => {
+    return calculateSeasonForm(matches);
+  }, [matches]);
+
+  const clutchFactors = React.useMemo(() => {
+    return calculateClutchFactors(matches);
+  }, [matches]);
 
   const firstName = user?.fullName?.split(' ')[0] || 'Coach';
 
@@ -115,6 +125,108 @@ export default function Dashboard() {
         />
       </div>
 
+      {/* Season Form */}
+      <div>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-[12px] text-textSecondary uppercase tracking-[0.2em] flex items-center gap-2 font-medium">
+            <Medal size={12} /> Season Form
+          </h2>
+        </div>
+
+        {matches.length < 2 ? (
+          <div className="glass-card rounded-2xl p-6 border border-border bg-surface2/50 flex gap-4 items-start">
+            <div className="shrink-0 p-3 bg-surface3 rounded-lg text-textTertiary">
+              <Activity size={24} />
+            </div>
+            <div>
+              <h3 className="text-sm font-mono font-bold text-textPrimary uppercase tracking-wider mb-1">Consistency Engine Locked</h3>
+              <p className="text-sm text-textSecondary leading-relaxed">
+                Season Form requires at least 2 match scorecards to calculate player consistency and team trends. Upload more match data to unlock this feature.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {/* Top Performers Podium */}
+            {seasonForm.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {seasonForm.slice(0, Math.min(3, seasonForm.length)).map((player, idx) => (
+                  <div key={idx} className={`glass-card rounded-xl p-5 border-t-[3px] animate-fade-in-up ${idx === 0 ? 'border-accent shadow-glow-amber' : idx === 1 ? 'border-textSecondary' : 'border-textTertiary'}`} style={{ animationDelay: `${idx * 100}ms`, opacity: 0 }}>
+                    <div className="flex justify-between items-start mb-3">
+                      <span className="text-[10px] font-mono font-bold text-textTertiary uppercase tracking-widest">#{idx + 1}</span>
+                      <div className="flex items-center gap-2">
+                        {player.trend === 'up' && <TrendingUp size={14} className="text-aggressor-text" />}
+                        {player.trend === 'down' && <TrendingDown size={14} className="text-liability-text" />}
+                        {player.trend === 'flat' && <Minus size={14} className="text-textTertiary" />}
+                        <span className={`text-xl font-display font-bold ${
+                          player.score >= 8 ? 'text-aggressor-text' : player.score >= 6 ? 'text-accent' : player.score >= 4 ? 'text-improving-text' : 'text-liability-text'
+                        }`}>{player.score}</span>
+                      </div>
+                    </div>
+                    <h3 className="text-lg font-display text-textPrimary truncate">{player.name}</h3>
+                    <div className="flex items-center justify-between mt-2">
+                      <p className="text-[10px] font-mono text-textSecondary uppercase">{player.role}</p>
+                      <span className="text-[9px] font-mono text-textTertiary bg-surface2 px-2 py-0.5 rounded">{player.appearances} match{player.appearances !== 1 ? 'es' : ''}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Full Squad Table */}
+            <div className="glass-card rounded-xl overflow-hidden border border-border">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-surface2/50 border-b border-border text-[10px] uppercase font-mono tracking-wider text-textSecondary">
+                      <th className="px-5 py-3.5 font-medium w-8">#</th>
+                      <th className="px-5 py-3.5 font-medium">Player</th>
+                      <th className="px-5 py-3.5 font-medium hidden sm:table-cell">Role</th>
+                      <th className="px-5 py-3.5 font-medium text-center">Apps</th>
+                      <th className="px-5 py-3.5 font-medium text-center">Trend</th>
+                      <th className="px-5 py-3.5 font-medium text-center hidden md:table-cell">Clutch</th>
+                      <th className="px-5 py-3.5 font-medium text-right">Score</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/50">
+                    {seasonForm.map((player, idx) => {
+                      const clutch = clutchFactors[player.name];
+                      return (
+                      <tr key={idx} className="hover:bg-surface2/30 transition-colors">
+                        <td className="px-5 py-3.5 text-xs font-mono text-textTertiary">{idx + 1}</td>
+                        <td className="px-5 py-3.5 text-sm font-medium text-textPrimary">{player.name}</td>
+                        <td className="px-5 py-3.5 text-[10px] font-mono text-textSecondary uppercase hidden sm:table-cell">{player.role}</td>
+                        <td className="px-5 py-3.5 text-sm text-textSecondary text-center">{player.appearances}</td>
+                        <td className="px-5 py-3.5 text-center">
+                          <div className="inline-flex justify-center">
+                            {player.trend === 'up' && <TrendingUp size={16} className="text-aggressor-text" />}
+                            {player.trend === 'down' && <TrendingDown size={16} className="text-liability-text" />}
+                            {player.trend === 'flat' && <Minus size={16} className="text-textTertiary" />}
+                          </div>
+                        </td>
+                        <td className="px-5 py-3.5 text-center hidden md:table-cell">
+                          {clutch && (
+                            <span className={`text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-${clutch.badgeColor}-bg text-${clutch.badgeColor}-text border border-${clutch.badgeColor}-border`}>
+                              {clutch.badge}
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-5 py-3.5 text-right">
+                          <span className={`text-sm font-display font-bold ${
+                            player.score >= 8 ? 'text-aggressor-text' : player.score >= 6 ? 'text-accent' : player.score >= 4 ? 'text-improving-text' : 'text-liability-text'
+                          }`}>{player.score.toFixed(1)}</span>
+                        </td>
+                      </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Recent Matches */}
       <div>
         <div className="flex items-center justify-between mb-6">
@@ -151,11 +263,21 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2 text-xs text-textTertiary">
                     <Clock size={11} /> {formatDate(match.date)}
                   </div>
-                  {match.result && (
-                    <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md ${getResultBadge(match.result)}`}>
-                      {match.result}
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {/* Form Guide */}
+                    <div className="hidden sm:flex items-center gap-1">
+                      {getTeamFormGuide(matches, match.id).map((res, i) => (
+                        <span key={i} className={`w-4 h-4 flex items-center justify-center text-[8px] font-bold rounded-sm ${res === 'W' ? 'bg-aggressor-bg text-aggressor-text' : 'bg-liability-bg text-liability-text'}`}>
+                          {res}
+                        </span>
+                      ))}
+                    </div>
+                    {match.result && (
+                      <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md ml-2 ${getResultBadge(match.result)}`}>
+                        {match.result}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="flex-1">
