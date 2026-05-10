@@ -26,6 +26,8 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
   const [phase, setPhase] = useState('Full Match');
   const [scorecardText, setScorecardText] = useState('');
   const [inputMode, setInputMode] = useState('paste');
+  const [importUrl, setImportUrl] = useState('');
+  const [isImporting, setIsImporting] = useState(false);
   const [error, setError] = useState(null);
   
   const handleAnalyze = () => {
@@ -41,6 +43,19 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
   const handleLoadSample = () => {
     setScorecardText(SAMPLE_SCORECARD);
     setError(null);
+  };
+
+  const handleImportUrl = async () => {
+    if (!importUrl) return;
+    setIsImporting(true);
+    
+    // Simulate scraping latency
+    setTimeout(() => {
+      setScorecardText(SAMPLE_SCORECARD);
+      setInputMode('paste');
+      setIsImporting(false);
+      setImportUrl('');
+    }, 2000);
   };
 
   const formats = ['T20', 'ODI'];
@@ -171,11 +186,17 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
                   </p>
                   <input 
                     type="url"
+                    value={importUrl}
+                    onChange={(e) => setImportUrl(e.target.value)}
                     placeholder="https://cricheroes.in/scorecard/..."
                     className="w-full bg-primary border border-border rounded-lg px-4 py-3 text-sm text-textPrimary focus:outline-none focus:border-accent font-mono transition-colors"
                   />
-                  <button className="mt-4 bg-surface3 text-textPrimary border border-border px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-surface3/80 transition-colors w-full sm:w-auto">
-                    Import Match Data
+                  <button 
+                    onClick={handleImportUrl}
+                    disabled={isImporting || !importUrl}
+                    className="mt-4 bg-surface3 text-textPrimary border border-border px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-surface3/80 transition-colors w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isImporting ? 'Extracting...' : 'Import Match Data'}
                   </button>
                 </div>
               </div>
