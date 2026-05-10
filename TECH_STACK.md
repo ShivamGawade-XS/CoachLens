@@ -2,7 +2,7 @@
 # CoachLens — Technical Architecture & Implementation Guide
 
 **Version:** 1.0  
-**Author:** Shivam Mahesh Gawade (AI Integration + Prompt Engineering)  
+**Authors:** Crimson Syndicate (Shivam Mahesh Gawade, Ashwith Ashok Shetty, Rahul Ravi Rathod)  
 **Hackathon:** GBOA Code Premier League 2026 — Round 2
 
 ---

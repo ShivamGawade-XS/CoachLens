@@ -2,7 +2,7 @@
 # CoachLens — AI Coaching Intelligence for Amateur Cricket
 
 **Version:** 1.0  
-**Author:** Shivam Mahesh Gawade (AI Integration Lead)  
+**Authors:** Crimson Syndicate (Shivam Mahesh Gawade, Ashwith Ashok Shetty, Rahul Ravi Rathod)  
 **Hackathon:** GBOA Code Premier League 2026 — Round 2  
 **Institution:** Agnel Institute of Technology and Design (AITD), Goa University  
 **Last Updated:** May 2026

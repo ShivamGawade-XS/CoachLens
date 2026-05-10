@@ -4,7 +4,7 @@
 
 CoachLens is an AI-powered post-match analysis tool for amateur cricket coaches. It transforms raw scorecard data into actionable player feedback, team pattern reports, and pre-match decision briefs — the intelligence layer that currently does not exist at the grassroots level.
 
-Built for **GBOA Code Premier League 2026 — Round 2** by Team AITD, Goa.
+Built for **GBOA Code Premier League 2026 — Round 2** by Crimson Syndicate (AITD, Goa).
 
 ---
 
@@ -235,13 +235,13 @@ CricHeroes and CoachLens are complementary. Phase 2 of CoachLens pulls directly 
 
 ---
 
-## Team
+## Team: Crimson Syndicate
 
-| Member | Role | Skills |
-|---|---|---|
-| **Shivam Mahesh Gawade** | AI Integration + Prompt Engineering | Full-stack, Claude/Groq API, cybersecurity |
-| Teammate 2 | Frontend — UI, Player Cards, Report Layout | React, Tailwind CSS, component design |
-| Teammate 3 | Research, Documentation, Demo Video, User Validation | Content, communication, user research |
+| Member | Role |
+|---|---|
+| **Shivam Mahesh Gawade** | AI Integration + Prompt Engineering |
+| **Ashwith Ashok Shetty** | Frontend — UI, Player Cards, Report Layout |
+| **Rahul Ravi Rathod** | Research, Documentation, Demo Video, User Validation |
 
 **Institution:** Agnel Institute of Technology and Design (AITD), North Goa  
 **Affiliated:** Goa University
