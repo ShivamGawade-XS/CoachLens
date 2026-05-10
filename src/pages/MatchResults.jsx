@@ -137,7 +137,12 @@ export default function MatchResults() {
 
         {activeTab === 'team' && (
           <div className="animate-fade-in">
-            <TeamReport report={match.analysis.team_summary} />
+            <TeamReport
+              report={match.analysis.team_summary}
+              rawScorecard={match.rawScorecard}
+              teamName={match.teamName}
+              opponent={match.opponent}
+            />
           </div>
         )}
 

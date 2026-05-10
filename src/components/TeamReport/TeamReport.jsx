@@ -1,4 +1,5 @@
 import React from 'react';
+import MomentumChart from '../MomentumChart/MomentumChart';
 
 const sectionConfig = [
   { key: 'what_won_lost_match', label: 'Match Turning Point', icon: '⚡', accentColor: 'text-accent' },
@@ -7,7 +8,7 @@ const sectionConfig = [
   { key: 'pattern', label: 'Team Pattern', icon: '📊', accentColor: 'text-anchor-text' },
 ];
 
-export default function TeamReport({ report }) {
+export default function TeamReport({ report, rawScorecard, teamName, opponent }) {
   if (!report) return null;
 
   const highlightNumbers = (text) => {
@@ -41,6 +42,16 @@ export default function TeamReport({ report }) {
           </div>
         ))}
       </div>
+
+      {/* Momentum Visualization */}
+      <div className="animate-fade-in-up" style={{ animationDelay: '400ms', opacity: 0 }}>
+        <MomentumChart
+          rawScorecard={rawScorecard}
+          teamName={teamName}
+          opponent={opponent}
+        />
+      </div>
     </div>
   );
 }
+
