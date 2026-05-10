@@ -21,6 +21,8 @@ import PublicPlayerCard from './pages/PublicPlayerCard';
 import { About, PrivacyPolicy, TermsOfService } from './pages/LegalPages';
 import { Features, Pricing, Changelog, Documentation, ApiReference, Community, Blog } from './pages/MarketingPages';
 import Teams, { Settings } from './pages/AppPages';
+import TeamProfile from './pages/TeamProfile';
+import PlayerProfile from './pages/PlayerProfile';
 
 /* ─── Global Toast System ─── */
 function Toast({ message, type = 'info', onClose }) {
@@ -108,6 +110,8 @@ function App() {
             <Route path="/analyze" element={<AnalysisFlow addToast={addToast} />} />
             <Route path="/match/:id" element={<MatchResults />} />
             <Route path="/teams" element={<Teams addToast={addToast} />} />
+            <Route path="/teams/:teamId" element={<TeamProfile />} />
+            <Route path="/player/:playerName" element={<PlayerProfile />} />
             <Route path="/settings" element={<Settings addToast={addToast} />} />
           </Route>
 

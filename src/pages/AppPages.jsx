@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Trophy, Users, Shield, ArrowRight, Plus, X, Trash2, ChevronDown, ChevronUp, AlertCircle, User, Bell, Monitor, Key, Palette } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -110,16 +111,9 @@ export default function Teams({ addToast }) {
                   <div className="text-xl font-display text-textPrimary">{team.matches}</div>
                 </div>
               </div>
-              <button onClick={() => setExpanded(expanded === team.id ? null : team.id)} className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-surface2 hover:bg-surface3 text-textPrimary text-xs font-mono font-bold uppercase tracking-wider transition-all">
-                {expanded === team.id ? <>Collapse <ChevronUp size={14} /></> : <>View Details <ChevronDown size={14} /></>}
-              </button>
-              {expanded === team.id && (
-                <div className="mt-4 p-4 bg-surface2 rounded-xl border border-border animate-fade-in text-sm text-textSecondary space-y-2">
-                  <div className="flex justify-between"><span className="font-mono text-xs text-textTertiary">Squad size</span><span className="font-mono text-textPrimary">{team.players} players</span></div>
-                  <div className="flex justify-between"><span className="font-mono text-xs text-textTertiary">Created</span><span className="font-mono text-textPrimary">{formatDate(team.createdAt)}</span></div>
-                  <div className="flex justify-between"><span className="font-mono text-xs text-textTertiary">Matches analyzed</span><span className="font-mono text-textPrimary">{team.matches}</span></div>
-                </div>
-              )}
+              <Link to={`/teams/${encodeURIComponent(team.name)}`} className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-surface2 hover:bg-surface3 text-textPrimary text-xs font-mono font-bold uppercase tracking-wider transition-all border border-border">
+                View Team Profile <ArrowRight size={14} />
+              </Link>
             </div>
           ))}
         </div>

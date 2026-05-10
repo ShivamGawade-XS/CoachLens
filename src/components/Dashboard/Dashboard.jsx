@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Plus, Trash2, Clock, Trophy, ChevronRight, Activity, Users, Target, TrendingUp, TrendingDown, Minus, Medal } from 'lucide-react';
 import { storageService } from '../../services/storageService';
 import { useAuth } from '../../contexts/AuthContext';
@@ -194,7 +194,11 @@ export default function Dashboard() {
                       return (
                       <tr key={idx} className="hover:bg-surface2/30 transition-colors">
                         <td className="px-5 py-3.5 text-xs font-mono text-textTertiary">{idx + 1}</td>
-                        <td className="px-5 py-3.5 text-sm font-medium text-textPrimary">{player.name}</td>
+                        <td className="px-5 py-3.5 text-sm font-medium text-textPrimary">
+                          <Link to={`/player/${encodeURIComponent(player.name)}`} className="hover:text-accent transition-colors underline decoration-border underline-offset-2 hover:decoration-accent/50">
+                            {player.name}
+                          </Link>
+                        </td>
                         <td className="px-5 py-3.5 text-[10px] font-mono text-textSecondary uppercase hidden sm:table-cell">{player.role}</td>
                         <td className="px-5 py-3.5 text-sm text-textSecondary text-center">{player.appearances}</td>
                         <td className="px-5 py-3.5 text-center">
