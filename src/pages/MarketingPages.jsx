@@ -62,7 +62,7 @@ export function Pricing() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center max-w-4xl mx-auto">
         <div className="glass-card p-8 rounded-2xl">
           <h3 className="text-lg font-mono text-textPrimary mb-2 uppercase tracking-widest">Free</h3>
-          <div className="text-4xl font-display text-textPrimary mb-6">$0<span className="text-sm text-textSecondary font-sans">/mo</span></div>
+          <div className="text-4xl font-display text-textPrimary mb-6">₹0<span className="text-sm text-textSecondary font-sans">/mo</span></div>
           <ul className="space-y-4 mb-8">
             <li className="flex items-center gap-2 text-sm text-textSecondary"><CheckCircle size={16} className="text-accent"/> 5 match analyses per month</li>
             <li className="flex items-center gap-2 text-sm text-textSecondary"><CheckCircle size={16} className="text-accent"/> Basic Momentum Charts</li>
@@ -73,7 +73,7 @@ export function Pricing() {
         <div className="glass-card p-8 rounded-2xl border-2 border-accent relative transform md:-translate-y-4 shadow-glow-amber">
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-white px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">Most Popular</div>
           <h3 className="text-lg font-mono text-textPrimary mb-2 uppercase tracking-widest">Pro Coach</h3>
-          <div className="text-4xl font-display text-textPrimary mb-6">$19<span className="text-sm text-textSecondary font-sans">/mo</span></div>
+          <div className="text-4xl font-display text-textPrimary mb-6">₹299<span className="text-sm text-textSecondary font-sans">/mo</span></div>
           <ul className="space-y-4 mb-8">
             <li className="flex items-center gap-2 text-sm text-textSecondary"><CheckCircle size={16} className="text-accent"/> Unlimited Match Analyses</li>
             <li className="flex items-center gap-2 text-sm text-textSecondary"><CheckCircle size={16} className="text-accent"/> WhatsApp Integration</li>
@@ -84,7 +84,7 @@ export function Pricing() {
 
         <div className="glass-card p-8 rounded-2xl">
           <h3 className="text-lg font-mono text-textPrimary mb-2 uppercase tracking-widest">Academy</h3>
-          <div className="text-4xl font-display text-textPrimary mb-6">$99<span className="text-sm text-textSecondary font-sans">/mo</span></div>
+          <div className="text-4xl font-display text-textPrimary mb-6">₹999<span className="text-sm text-textSecondary font-sans">/mo</span></div>
           <ul className="space-y-4 mb-8">
             <li className="flex items-center gap-2 text-sm text-textSecondary"><CheckCircle size={16} className="text-accent"/> Unlimited Teams</li>
             <li className="flex items-center gap-2 text-sm text-textSecondary"><CheckCircle size={16} className="text-accent"/> Custom AI Prompts</li>
