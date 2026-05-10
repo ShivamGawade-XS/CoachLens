@@ -58,7 +58,6 @@ export default function AnalysisFlow({ addToast }) {
   const runAnalysis = async (format, phase, scorecardText) => {
     setIsAnalyzing(true);
     const startTime = Date.now();
-    let isFallback = false;
     let analysisData;
     
     // Timer to update elapsed seconds UI smoothly
@@ -76,12 +75,11 @@ export default function AnalysisFlow({ addToast }) {
     try {
       analysisData = await groqService.analyze(format, phase, scorecardText, handleProgress);
     } catch (error) {
-      console.warn("Analysis failed, using fallback:", error);
-      isFallback = true;
-      analysisData = FALLBACK_ANALYSES.demo_live;
-      // Force UI to complete
-      setActiveStep(3);
-      setProgress(100);
+      console.error("Analysis failed:", error);
+      clearInterval(timerInterval);
+      setIsAnalyzing(false);
+      addToast(`Analysis Error: ${error.message}`, 'error');
+      return;
     }
 
     clearInterval(timerInterval);
@@ -117,16 +115,11 @@ export default function AnalysisFlow({ addToast }) {
         teamName: teams.teamName,
         opponent: teams.opponent,
         result: analysisData?.team_summary?.result || null,
-        isFallback,
         processingTime: totalTimeMs
       };
       const savedMatch = await storageService.saveMatch(newMatchRecord);
       
-      if (isFallback) {
-        addToast('Using cached analysis — API unavailable', 'warning');
-      } else {
-        addToast('Analysis complete', 'success');
-      }
+      addToast('Analysis complete', 'success');
       navigate(`/match/${savedMatch.id}`);
     }, 500);
   };

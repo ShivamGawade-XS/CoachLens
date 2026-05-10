@@ -168,9 +168,8 @@ export const groqService = {
       apiKey = localStorage.getItem('GROQ_API_KEY');
     }
     
-    if (!apiKey) {
-      console.warn("No Groq API key found. Triggering fallback.");
-      throw new Error("No API key");
+    if (!apiKey || apiKey.trim() === '') {
+      throw new Error("No Groq API key configured. Please add it in Settings.");
     }
 
     const runCall = async (promptTemplate) => {
@@ -381,7 +380,9 @@ export const groqService = {
     if (!apiKey && typeof window !== 'undefined') {
       apiKey = localStorage.getItem('GROQ_API_KEY');
     }
-    if (!apiKey) throw new Error("No API key");
+    if (!apiKey) {
+      throw new Error("No Groq API key configured.");
+    }
 
     const prompt = FORMAL_REPORT_PROMPT.replace('{matchData}', JSON.stringify(matchData, null, 2));
 

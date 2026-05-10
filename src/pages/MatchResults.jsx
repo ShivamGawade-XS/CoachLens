@@ -105,13 +105,6 @@ export default function MatchResults() {
 
   return (
     <div className="min-h-full">
-      {/* Fallback Banner */}
-      {match.isFallback && (
-        <div className="bg-accent/20 border-b border-accent/30 text-accent px-4 py-2 text-xs font-mono text-center">
-          ✨ Demo Mode: Showing sample AI analysis
-        </div>
-      )}
-
       {/* Sticky Header */}
       <header className="glass border-b border-border sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
