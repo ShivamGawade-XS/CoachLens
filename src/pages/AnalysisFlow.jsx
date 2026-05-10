@@ -89,7 +89,7 @@ export default function AnalysisFlow({ addToast }) {
     setElapsed(totalTimeMs / 1000);
 
     // Minor delay to let the user see 100% complete
-    setTimeout(() => {
+    setTimeout(async () => {
       const newMatchRecord = { 
         format, 
         phase, 
@@ -98,7 +98,7 @@ export default function AnalysisFlow({ addToast }) {
         isFallback,
         processingTime: totalTimeMs
       };
-      const savedMatch = storageService.saveMatch(newMatchRecord);
+      const savedMatch = await storageService.saveMatch(newMatchRecord);
       
       if (isFallback) {
         addToast('Using cached analysis — API unavailable', 'warning');
