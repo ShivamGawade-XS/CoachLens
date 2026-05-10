@@ -36,7 +36,7 @@ export default function TeamProfile() {
     if (!user) return;
     const allTeams = getTeams(user.id);
     const currentTeamForSchedule = allTeams.find(t => t.name === teamName);
-    setScheduledMatches((currentTeamForSchedule?.schedule || []).sort((a, b) => new Date(a.date + 'T' + (a.time || '00:00')) - new Date(b.date + 'T' + (b.time || '00:00'))));
+    setScheduledMatches([...(currentTeamForSchedule?.schedule || [])].sort((a, b) => new Date(a.date + 'T' + (a.time || '00:00')) - new Date(b.date + 'T' + (b.time || '00:00'))));
     const currentTeam = allTeams.find(t => t.name === teamName);
     setTeamObj(currentTeam);
 
@@ -58,10 +58,12 @@ export default function TeamProfile() {
         playersMap.set(p.name, { ...p, appearances: 0, lastTag: 'Untested' });
       });
     }
+    const activeNames = new Set((currentTeam?.roster || []).map(p => p.name));
+
     teamMatches.forEach(match => {
       (match.analysis?.players || []).forEach(p => {
         if (!playersMap.has(p.name)) {
-          playersMap.set(p.name, { name: p.name, role: p.role, jerseyNo: '', phone: '', appearances: 1, lastTag: p.tag });
+          playersMap.set(p.name, { name: p.name, role: p.role, jerseyNo: '', phone: '', appearances: 1, lastTag: p.tag, isInactive: !activeNames.has(p.name) });
         } else {
           const ex = playersMap.get(p.name);
           ex.appearances = (ex.appearances || 0) + 1;
@@ -101,15 +103,46 @@ export default function TeamProfile() {
     loadData();
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (!editPlayer) return;
     const allTeams = getTeams(user.id);
     const idx = allTeams.findIndex(t => t.name === teamName);
     if (idx === -1) return;
+
+    const oldName = editPlayer.originalName;
+    const newName = editPlayer.name.trim();
+
     allTeams[idx].roster = (allTeams[idx].roster || []).map(p =>
-      p.name === editPlayer.originalName ? { name: editPlayer.name, role: editPlayer.role, jerseyNo: editPlayer.jerseyNo, phone: editPlayer.phone } : p
+      p.name === oldName ? { name: newName, role: editPlayer.role, jerseyNo: editPlayer.jerseyNo, phone: editPlayer.phone } : p
     );
     saveTeams(user.id, allTeams);
+
+    // Update match history to fix Ghost Player bug
+    if (oldName !== newName) {
+      const allMatches = await storageService.getMatches();
+      let matchesUpdated = false;
+      const updatedMatches = allMatches.map(m => {
+        if (m.teamName === teamName && m.analysis && m.analysis.players) {
+          const hasPlayer = m.analysis.players.find(p => p.name === oldName);
+          if (hasPlayer) {
+            matchesUpdated = true;
+            return {
+              ...m,
+              analysis: {
+                ...m.analysis,
+                players: m.analysis.players.map(p => p.name === oldName ? { ...p, name: newName } : p)
+              }
+            };
+          }
+        }
+        return m;
+      });
+      
+      if (matchesUpdated) {
+        localStorage.setItem('coachlens_matches', JSON.stringify(updatedMatches));
+      }
+    }
+
     setEditPlayer(null);
     loadData();
   };
@@ -255,7 +288,10 @@ export default function TeamProfile() {
                         {player.jerseyNo ? <span className="text-accent font-bold">#{player.jerseyNo}</span> : <span className="text-textTertiary">{idx + 1}</span>}
                       </td>
                       <td className="px-4 py-3.5">
-                        <div className="font-display text-textPrimary text-sm leading-tight">{player.name}</div>
+                        <div className="font-display text-textPrimary text-sm leading-tight flex items-center gap-2">
+                          {player.name}
+                          {player.isInactive && <span className="text-[8px] bg-surface3 text-textTertiary px-1.5 py-0.5 rounded-sm uppercase tracking-widest font-mono">Inactive</span>}
+                        </div>
                         {player.phone && (
                           <a href={`https://wa.me/91${player.phone}`} target="_blank" rel="noreferrer" className="text-[10px] font-mono text-aggressor-text hover:underline flex items-center gap-0.5 mt-0.5">
                             <Phone size={9} /> {player.phone}
