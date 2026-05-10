@@ -223,10 +223,25 @@ export const groqService = {
         const briefData = await runCall(BRIEF_PROMPT);
         if (onProgress) onProgress('stage4');
 
+        const extractKey = (obj, expectedKey) => {
+          if (!obj) return null;
+          if (obj[expectedKey]) return obj[expectedKey];
+          const key = Object.keys(obj).find(k => k.toLowerCase() === expectedKey.toLowerCase());
+          if (key) return obj[key];
+          const values = Object.values(obj);
+          if (expectedKey === 'players') {
+            if (Array.isArray(obj)) return obj;
+            if (values.length === 1 && Array.isArray(values[0])) return values[0];
+          } else {
+            if (values.length === 1 && typeof values[0] === 'object') return values[0];
+          }
+          return null;
+        };
+
         return {
-          players: playersData.players || [],
-          team_summary: teamData.team_summary || {},
-          coach_decisions: briefData.coach_decisions || {}
+          players: extractKey(playersData, 'players') || [],
+          team_summary: extractKey(teamData, 'team_summary') || {},
+          coach_decisions: extractKey(briefData, 'coach_decisions') || {}
         };
       } catch (err) {
         throw err;
