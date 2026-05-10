@@ -23,6 +23,7 @@ import { Features, Pricing, Changelog, Documentation, ApiReference, Community, B
 import Teams, { Settings } from './pages/AppPages';
 import TeamProfile from './pages/TeamProfile';
 import PlayerProfile from './pages/PlayerProfile';
+import ChatAssistant from './components/ChatAssistant/ChatAssistant';
 
 /* ─── Global Toast System ─── */
 function Toast({ message, type = 'info', onClose }) {
@@ -82,6 +83,8 @@ function App() {
             <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
           ))}
         </div>
+
+        <ChatAssistant />
 
         <Routes>
           {/* Public Routes */}

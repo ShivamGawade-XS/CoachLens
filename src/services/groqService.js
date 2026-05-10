@@ -95,6 +95,16 @@ Return ONLY a JSON object. No preamble.
   "reason": "One clear sentence citing a specific stat (e.g. 'Batting first yields a 75% win rate due to strong powerplay scoring.')"
 }`;
 
+const CHAT_SYSTEM_PROMPT = `You are 'CoachLens AI', an expert cricket coaching assistant. 
+You are speaking directly to a head coach who manages multiple teams.
+Use the provided JSON context about their teams, rosters, and recent match performances to answer their questions.
+Be concise, analytical, and highly specific. Cite stats from the context when making recommendations.
+Do NOT output markdown code blocks containing JSON, just converse naturally in text.
+If the coach asks something unrelated to cricket or their teams, steer them back politely.
+
+CONTEXT:
+{context}`;
+
 export const groqService = {
   getTurningPoint: async (overData) => {
     let apiKey = import.meta.env.VITE_GROQ_API_KEY;
@@ -314,5 +324,40 @@ export const groqService = {
       const cleaned = rawResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       return JSON.parse(cleaned);
     }
+  },
+
+  chatWithCoachLens: async (messages, contextData) => {
+    let apiKey = import.meta.env.VITE_GROQ_API_KEY;
+    if (!apiKey && typeof window !== 'undefined') {
+      apiKey = localStorage.getItem('GROQ_API_KEY');
+    }
+
+    if (!apiKey) throw new Error("No API key");
+
+    const systemPrompt = CHAT_SYSTEM_PROMPT.replace('{context}', JSON.stringify(contextData));
+    
+    // Construct messages array starting with system prompt
+    const apiMessages = [
+      { role: "system", content: systemPrompt },
+      ...messages.map(m => ({ role: m.role, content: m.content }))
+    ];
+
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: apiMessages,
+        temperature: 0.5,
+        max_tokens: 800
+      })
+    });
+
+    if (!response.ok) throw new Error(`API error: ${response.statusText}`);
+    const data = await response.json();
+    return data.choices[0].message.content;
   }
 };
