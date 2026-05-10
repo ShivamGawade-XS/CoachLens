@@ -25,8 +25,8 @@ export default function PublicLayout() {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
             <Link to="/about" className="text-sm font-mono text-textSecondary hover:text-textPrimary transition-colors">About</Link>
-            <a href="#features" className="text-sm font-mono text-textSecondary hover:text-textPrimary transition-colors">Features</a>
-            <a href="#pricing" className="text-sm font-mono text-textSecondary hover:text-textPrimary transition-colors">Pricing</a>
+            <Link to="/features" className="text-sm font-mono text-textSecondary hover:text-textPrimary transition-colors">Features</Link>
+            <Link to="/pricing" className="text-sm font-mono text-textSecondary hover:text-textPrimary transition-colors">Pricing</Link>
           </div>
 
           <div className="flex items-center gap-3">
@@ -69,8 +69,8 @@ export default function PublicLayout() {
         {isMenuOpen && (
           <div className="md:hidden glass border-b border-border p-6 space-y-4 animate-fade-in">
             <Link to="/about" onClick={() => setIsMenuOpen(false)} className="block text-sm font-mono text-textPrimary py-2">About</Link>
-            <a href="#features" onClick={() => setIsMenuOpen(false)} className="block text-sm font-mono text-textPrimary py-2">Features</a>
-            <a href="#pricing" onClick={() => setIsMenuOpen(false)} className="block text-sm font-mono text-textPrimary py-2">Pricing</a>
+            <Link to="/features" onClick={() => setIsMenuOpen(false)} className="block text-sm font-mono text-textPrimary py-2">Features</Link>
+            <Link to="/pricing" onClick={() => setIsMenuOpen(false)} className="block text-sm font-mono text-textPrimary py-2">Pricing</Link>
             <hr className="border-border" />
             {isAuthenticated ? (
               <Link to="/dashboard" onClick={() => setIsMenuOpen(false)} className="block w-full text-center bg-accent text-white py-3 rounded-xl text-sm font-mono font-bold">Dashboard</Link>

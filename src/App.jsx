@@ -19,6 +19,7 @@ import AnalysisFlow from './pages/AnalysisFlow';
 import MatchResults from './pages/MatchResults';
 import PublicPlayerCard from './pages/PublicPlayerCard';
 import { About, PrivacyPolicy, TermsOfService } from './pages/LegalPages';
+import { Features, Pricing, Changelog, Documentation, ApiReference, Community, Blog } from './pages/MarketingPages';
 import Teams, { Settings } from './pages/AppPages';
 
 /* ─── Global Toast System ─── */
@@ -87,6 +88,13 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/features" element={<Features />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/changelog" element={<Changelog />} />
+            <Route path="/docs" element={<Documentation />} />
+            <Route path="/api" element={<ApiReference />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/blog" element={<Blog />} />
           </Route>
 
           {/* Auth Routes (standalone, no layout wrapper) */}

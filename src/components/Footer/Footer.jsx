@@ -17,10 +17,10 @@ export default function Footer() {
               AI-powered cricket intelligence. Turn raw scorecards into actionable coaching briefs in seconds.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="text-textTertiary hover:text-accent transition-colors"><Twitter size={18} /></a>
-              <a href="#" className="text-textTertiary hover:text-accent transition-colors"><Github size={18} /></a>
-              <a href="#" className="text-textTertiary hover:text-accent transition-colors"><Linkedin size={18} /></a>
-              <a href="#" className="text-textTertiary hover:text-accent transition-colors"><Mail size={18} /></a>
+              <a href="https://x.com/Rahhhul21" target="_blank" rel="noreferrer" className="text-textTertiary hover:text-accent transition-colors"><Twitter size={18} /></a>
+              <a href="https://github.com/ShivamGawade-XS" target="_blank" rel="noreferrer" className="text-textTertiary hover:text-accent transition-colors"><Github size={18} /></a>
+              <a href="https://www.linkedin.com/in/shivam-gawade-96a94031b" target="_blank" rel="noreferrer" className="text-textTertiary hover:text-accent transition-colors"><Linkedin size={18} /></a>
+              <a href="mailto:shivamgawdenoise@gmail.com" className="text-textTertiary hover:text-accent transition-colors"><Mail size={18} /></a>
             </div>
           </div>
 
@@ -30,8 +30,8 @@ export default function Footer() {
             <ul className="space-y-3">
               <li><Link to="/analyze" className="text-sm text-textSecondary hover:text-accent transition-colors">Start Analysis</Link></li>
               <li><Link to="/dashboard" className="text-sm text-textSecondary hover:text-accent transition-colors">Dashboard</Link></li>
-              <li><a href="#" className="text-sm text-textSecondary hover:text-accent transition-colors">Pricing</a></li>
-              <li><a href="#" className="text-sm text-textSecondary hover:text-accent transition-colors">Changelog</a></li>
+              <li><Link to="/pricing" className="text-sm text-textSecondary hover:text-accent transition-colors">Pricing</Link></li>
+              <li><Link to="/changelog" className="text-sm text-textSecondary hover:text-accent transition-colors">Changelog</Link></li>
             </ul>
           </div>
 
@@ -39,10 +39,10 @@ export default function Footer() {
           <div>
             <h3 className="text-[11px] font-mono font-semibold uppercase tracking-widest mb-4 text-textPrimary">Resources</h3>
             <ul className="space-y-3">
-              <li><a href="#" className="text-sm text-textSecondary hover:text-accent transition-colors">Documentation</a></li>
-              <li><a href="#" className="text-sm text-textSecondary hover:text-accent transition-colors">API Reference</a></li>
-              <li><a href="#" className="text-sm text-textSecondary hover:text-accent transition-colors">Community</a></li>
-              <li><a href="#" className="text-sm text-textSecondary hover:text-accent transition-colors">Blog</a></li>
+              <li><Link to="/docs" className="text-sm text-textSecondary hover:text-accent transition-colors">Documentation</Link></li>
+              <li><Link to="/api" className="text-sm text-textSecondary hover:text-accent transition-colors">API Reference</Link></li>
+              <li><Link to="/community" className="text-sm text-textSecondary hover:text-accent transition-colors">Community</Link></li>
+              <li><Link to="/blog" className="text-sm text-textSecondary hover:text-accent transition-colors">Blog</Link></li>
             </ul>
           </div>
 
@@ -53,7 +53,7 @@ export default function Footer() {
               <li><Link to="/about" className="text-sm text-textSecondary hover:text-accent transition-colors">About Us</Link></li>
               <li><Link to="/privacy" className="text-sm text-textSecondary hover:text-accent transition-colors">Privacy Policy</Link></li>
               <li><Link to="/terms" className="text-sm text-textSecondary hover:text-accent transition-colors">Terms of Service</Link></li>
-              <li><a href="#" className="text-sm text-textSecondary hover:text-accent transition-colors">Contact</a></li>
+              <li><a href="mailto:shivamgawdenoise@gmail.com" className="text-sm text-textSecondary hover:text-accent transition-colors">Contact</a></li>
             </ul>
           </div>
 
