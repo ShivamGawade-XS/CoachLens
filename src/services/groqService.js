@@ -219,7 +219,10 @@ export const groqService = {
         })
       });
 
-      if (!response.ok) throw new Error(`API error: ${response.statusText}`);
+      if (!response.ok) {
+        const errData = await response.json().catch(() => null);
+        throw new Error(`API error: ${errData?.error?.message || response.statusText}`);
+      }
       const data = await response.json();
       const rawResponse = data.choices[0].message.content;
       try {
@@ -232,19 +235,19 @@ export const groqService = {
     const analysisTask = async () => {
       try {
         // Stage 1: Reading is fast, notify immediately
-        if (onProgress) onProgress('stage1');
+        if (progressCallback) progressCallback('stage1');
         
         // Stage 2: Players
         const playersData = await runCall(PLAYER_PROMPT);
-        if (onProgress) onProgress('stage2');
+        if (progressCallback) progressCallback('stage2');
 
         // Stage 3: Team Report
         const teamData = await runCall(TEAM_PROMPT);
-        if (onProgress) onProgress('stage3');
+        if (progressCallback) progressCallback('stage3');
 
         // Stage 4: Coach Brief
         const briefData = await runCall(BRIEF_PROMPT);
-        if (onProgress) onProgress('stage4');
+        if (progressCallback) progressCallback('stage4');
 
         const extractKey = (obj, expectedKey) => {
           if (!obj) return null;

@@ -1,39 +1,74 @@
 import React, { useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 
-export default function RunRateChart({ report, teamName, opponent }) {
-  // Generate realistic looking over-by-over data since we don't have ball-by-ball
-  // We'll create a 20-over T20 match progression
+export default function RunRateChart({ report, rawScorecard, teamName, opponent }) {
+  // Parse real over-by-over data from the raw scorecard text
   const data = useMemo(() => {
-    let currentScore = 0;
-    let reqRate = 8.0;
     const progression = [];
     
-    // Base run rate variance
+    if (rawScorecard) {
+      // Match lines like "Over 1: 5 runs, 0 wickets"
+      const overRegex = /over\s*(\d+)\s*:\s*(\d+)\s*runs?/gi;
+      let match;
+      let cumulativeRuns = 0;
+      const overs = [];
+      
+      while ((match = overRegex.exec(rawScorecard)) !== null) {
+        overs.push({ over: parseInt(match[1]), runs: parseInt(match[2]) });
+      }
+      
+      // Use only first innings data (first 20 overs if duplicates exist)
+      const firstInnings = overs.slice(0, 20);
+      
+      if (firstInnings.length > 0) {
+        let target = null;
+        // Try to extract target from scorecard (e.g. "Total: 146/4")
+        const totalMatch = rawScorecard.match(/total\s*:\s*(\d+)/i);
+        if (totalMatch) target = parseInt(totalMatch[1]);
+        
+        firstInnings.forEach((o, idx) => {
+          cumulativeRuns += o.runs;
+          const overNum = o.over;
+          const crr = parseFloat((cumulativeRuns / overNum).toFixed(1));
+          
+          // Calculate required rate if we have a target
+          let rrr = null;
+          if (target && overNum < 20) {
+            const remaining = 20 - overNum;
+            rrr = parseFloat(((target + 1 - cumulativeRuns) / remaining).toFixed(1));
+            if (rrr < 0) rrr = 0;
+          }
+          
+          progression.push({ over: overNum, crr, rrr });
+        });
+        
+        return progression;
+      }
+    }
+    
+    // Fallback: generate seeded data if no real data available
+    let score = 0;
+    let rr = 7.5;
     for (let i = 1; i <= 20; i++) {
-      // simulate some run scoring
-      const overRuns = Math.max(2, Math.floor(Math.random() * 12) + (i > 15 ? 4 : 0));
-      currentScore += overRuns;
-      
-      const crr = (currentScore / i).toFixed(1);
-      
-      // simulate required rate jumping around
-      if (i > 5) reqRate += (Math.random() * 1.5) - 0.5;
-      
+      // Use a simple deterministic pattern instead of Math.random
+      const base = [5, 8, 4, 12, 6, 15, 3, 9, 11, 7, 5, 8, 4, 14, 3, 12, 6, 9, 5, 16];
+      score += base[i - 1];
+      const crr = parseFloat((score / i).toFixed(1));
+      if (i > 5) rr += (base[i - 1] > 8 ? 0.4 : -0.3);
       progression.push({
         over: i,
-        crr: parseFloat(crr),
-        rrr: i < 20 ? parseFloat(reqRate.toFixed(1)) : null
+        crr,
+        rrr: i < 20 ? parseFloat(rr.toFixed(1)) : null
       });
     }
     return progression;
-  }, []);
+  }, [rawScorecard]);
 
   // Try to extract an over number from the turning point text (e.g., "Over 14.3" -> 14)
   const turningPointOver = useMemo(() => {
     const text = report?.what_won_lost_match || '';
     const match = text.match(/over\s*(\d+)/i);
-    return match ? parseInt(match[1], 10) : 14; // Default to over 14 if not found
+    return match ? parseInt(match[1], 10) : 14;
   }, [report]);
 
   return (

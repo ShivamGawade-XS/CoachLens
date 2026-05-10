@@ -107,6 +107,26 @@ export default function MatchResults() {
     }
   };
 
+  const handleReanalyze = async () => {
+    if (!match?.rawScorecard) {
+      alert("Old mock data cannot be reanalyzed. Generate a new match to test this feature.");
+      return;
+    }
+    setIsReanalyzing(true);
+    try {
+      const newAnalysis = await groqService.analyze(match.rawScorecard, match.format, match.phase, tone);
+      const updatedMatch = { ...match, analysis: newAnalysis };
+      const matches = await storageService.getMatches();
+      const updatedMatches = matches.map(m => m.id === match.id ? updatedMatch : m);
+      localStorage.setItem('coachlens_matches', JSON.stringify(updatedMatches));
+      setMatch(updatedMatch);
+    } catch (err) {
+      alert(`Reanalysis failed: ${err.message}`);
+    } finally {
+      setIsReanalyzing(false);
+    }
+  };
+
   return (
     <div className="min-h-full">
       {/* Sticky Header */}

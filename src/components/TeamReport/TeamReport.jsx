@@ -36,6 +36,7 @@ export default function TeamReport({ report, rawScorecard, teamName, opponent })
       <div className="animate-fade-in-up" style={{ animationDelay: '100ms', opacity: 0 }}>
         <RunRateChart 
           report={report} 
+          rawScorecard={rawScorecard}
           teamName={teamName} 
           opponent={opponent} 
         />
