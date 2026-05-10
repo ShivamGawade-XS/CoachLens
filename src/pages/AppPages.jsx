@@ -165,14 +165,16 @@ export default function Teams({ addToast }) {
 
   const loadSampleTeams = () => {
     const now = new Date();
-    const samples = [
+    
+    // 1. Create Sample Teams
+    const sampleTeams = [
       {
         id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString() + '1',
         name: 'Vasco Vikings',
         emoji: '🌊',
         matches: 0,
         createdAt: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-        roster: [{ name: 'Sunil Chhetri', role: 'Batsman' }, { name: 'Gaurav Desai', role: 'Bowler' }]
+        roster: [{ name: 'Sunil Chhetri', role: 'Batsman' }, { name: 'Gaurav Desai', role: 'Bowler' }, { name: 'Rohan Naik', role: 'Allrounder' }]
       },
       {
         id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString() + '2',
@@ -180,7 +182,7 @@ export default function Teams({ addToast }) {
         emoji: '🦅',
         matches: 0,
         createdAt: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-        roster: [{ name: 'Prathamesh Shet', role: 'Allrounder' }]
+        roster: [{ name: 'Prathamesh Shet', role: 'Allrounder' }, { name: 'Amit Singh', role: 'Batsman' }]
       },
       {
         id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString() + '3',
@@ -188,14 +190,52 @@ export default function Teams({ addToast }) {
         emoji: '🛡️',
         matches: 0,
         createdAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        roster: []
+        roster: [{ name: 'Deepak Kamat', role: 'Bowler' }]
       }
     ];
 
-    const updated = [...samples, ...teams];
-    saveTeams(user.id, updated);
-    setTeams(updated);
-    addToast?.('Added 3 sample teams', 'success');
+    // 2. Generate Random Matches for them
+    const randomMatches = [];
+    const results = ['Won', 'Lost', 'Won', 'Lost', 'Won', 'Won']; // Slight bias to winning
+    const tags = ['Aggressor', 'Anchor', 'Liability', 'Improving'];
+    
+    sampleTeams.forEach(team => {
+      // 5 matches per team
+      for(let i=0; i<5; i++) {
+        const matchDate = new Date(now);
+        matchDate.setDate(matchDate.getDate() - (i * 2 + 1)); // Matches spread over last 10 days
+        
+        const playersAnalysis = team.roster.map(p => ({
+          name: p.name,
+          role: p.role,
+          tag: tags[Math.floor(Math.random() * tags.length)],
+          match_impact: (Math.random() * 5 + 5).toFixed(1) // Random score 5.0 to 10.0
+        }));
+
+        randomMatches.push({
+          id: `sample-match-${team.id}-${i}`,
+          date: matchDate.toISOString(),
+          format: 'T20',
+          phase: 'Full Match',
+          teamName: team.name,
+          opponent: 'Unknown Rivals',
+          result: results[Math.floor(Math.random() * results.length)],
+          analysis: { players: playersAnalysis },
+          isDemo: true
+        });
+      }
+    });
+
+    // 3. Save matches
+    const allMatches = getAllMatches();
+    localStorage.setItem('coachlens_matches', JSON.stringify([...randomMatches, ...allMatches]));
+
+    // 4. Save teams
+    const updatedTeams = [...sampleTeams, ...teams];
+    saveTeams(user.id, updatedTeams);
+    setTeams(updatedTeams);
+    
+    addToast?.('Added sample teams with match history!', 'success');
     loadTeams();
   };
 
