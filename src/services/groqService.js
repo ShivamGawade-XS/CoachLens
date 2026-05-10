@@ -62,6 +62,27 @@ Return ONLY a JSON object with this exact structure:
 
 No preamble. No explanation outside JSON. The reason must reference a specific stat (runs, wickets, dot balls, etc).`;
 
+const WHATSAPP_PROMPT = `You are a cricket team coach writing short personal WhatsApp messages to your players after a match. For each player, write a message that:
+1. Is exactly 2 sentences maximum
+2. References ONE specific number from their stats (runs scored, strike rate, wickets, economy, etc.)
+3. Ends with one concrete practice instruction for the coming week
+4. Uses a warm, motivational but professional tone
+5. Does NOT use emojis
+
+Player data:
+{players}
+
+Return ONLY a JSON object. No preamble:
+{
+  "messages": [
+    {
+      "name": "player name",
+      "role": "batsman/bowler/allrounder",
+      "message": "the 2-sentence WhatsApp message"
+    }
+  ]
+}`;
+
 export const groqService = {
   getTurningPoint: async (overData) => {
     let apiKey = import.meta.env.VITE_GROQ_API_KEY;
