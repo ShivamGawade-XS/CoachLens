@@ -88,6 +88,25 @@ export default function AnalysisFlow({ addToast }) {
     const totalTimeMs = Date.now() - startTime;
     setElapsed(totalTimeMs / 1000);
 
+    // Extract team names from scorecard text
+    const extractTeams = (text) => {
+      // Try "Team A vs Team B" pattern
+      const vsMatch = text.match(/^(.+?)\s+(?:vs\.?|versus)\s+(.+?)(?:\s*[-–—]|\n)/im);
+      if (vsMatch) return { teamName: vsMatch[1].trim(), opponent: vsMatch[2].trim() };
+      
+      // Try "Team Innings" headers
+      const inningsMatches = text.match(/^(.+?)\s+(?:innings|batting)/gim);
+      if (inningsMatches && inningsMatches.length >= 2) {
+        const t1 = inningsMatches[0].replace(/\s*(innings|batting).*/i, '').trim();
+        const t2 = inningsMatches[1].replace(/\s*(innings|batting).*/i, '').trim();
+        return { teamName: t1, opponent: t2 };
+      }
+      
+      return { teamName: 'Team A', opponent: 'Team B' };
+    };
+
+    const teams = extractTeams(scorecardText);
+
     // Minor delay to let the user see 100% complete
     setTimeout(async () => {
       const newMatchRecord = { 
@@ -95,6 +114,9 @@ export default function AnalysisFlow({ addToast }) {
         phase, 
         rawScorecard: scorecardText, 
         analysis: analysisData,
+        teamName: teams.teamName,
+        opponent: teams.opponent,
+        result: analysisData?.team_summary?.result || null,
         isFallback,
         processingTime: totalTimeMs
       };
