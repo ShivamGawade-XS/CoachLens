@@ -34,14 +34,16 @@ export default function LoginPage() {
 
     setIsSubmitting(true);
 
-    // Small delay for UX feel
-    await new Promise(r => setTimeout(r, 400));
-
-    const result = login(form.email, form.password);
-    if (result.success) {
-      navigate(from, { replace: true });
-    } else {
-      setError(result.error);
+    try {
+      const result = await login(form.email, form.password);
+      if (result.success) {
+        navigate(from, { replace: true });
+      } else {
+        setError(result.error || 'Failed to sign in. Please check your credentials.');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
       setIsSubmitting(false);
     }
   };
