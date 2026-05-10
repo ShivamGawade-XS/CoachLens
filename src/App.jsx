@@ -17,6 +17,7 @@ import SignupPage from './pages/SignupPage';
 import Dashboard from './components/Dashboard/Dashboard';
 import AnalysisFlow from './pages/AnalysisFlow';
 import MatchResults from './pages/MatchResults';
+import PublicPlayerCard from './pages/PublicPlayerCard';
 import { About, PrivacyPolicy, TermsOfService } from './pages/LegalPages';
 import Teams, { Settings } from './pages/AppPages';
 
@@ -91,6 +92,7 @@ function App() {
           {/* Auth Routes (standalone, no layout wrapper) */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/card" element={<PublicPlayerCard />} />
 
           {/* Authenticated App Routes */}
           <Route element={<ProtectedRoute><AppLayout addToast={addToast} /></ProtectedRoute>}>
