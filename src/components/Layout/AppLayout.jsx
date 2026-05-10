@@ -75,17 +75,17 @@ export default function AppLayout({ addToast }) {
             <Plus size={16} className="mr-2" /> New Analysis
           </button>
           
-          <div className="flex items-center justify-between px-2 pt-2">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center text-accent font-mono font-bold text-xs">
+          <div className="flex items-center justify-between pt-2">
+            <Link to="/settings" className="flex items-center gap-3 hover:bg-surface2/60 p-2 rounded-xl transition-colors flex-1 min-w-0 group">
+              <div className="shrink-0 w-8 h-8 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center text-accent font-mono font-bold text-xs group-hover:bg-accent group-hover:text-white transition-colors">
                 {userInitials}
               </div>
-              <div className="flex flex-col">
-                <span className="text-xs font-medium text-textPrimary truncate max-w-[120px]">{userName}</span>
-                <span className="text-[10px] text-textTertiary">{userRole}</span>
+              <div className="flex flex-col flex-1 min-w-0">
+                <span className="text-xs font-medium text-textPrimary truncate group-hover:text-accent transition-colors">{userName}</span>
+                <span className="text-[10px] text-textTertiary truncate">{userRole}</span>
               </div>
-            </div>
-            <button onClick={handleLogout} className="text-textTertiary hover:text-liability-text transition-colors" title="Log out">
+            </Link>
+            <button onClick={handleLogout} className="shrink-0 p-2 text-textTertiary hover:text-liability-text hover:bg-liability-bg/20 transition-colors rounded-xl" title="Log out">
               <LogOut size={14} />
             </button>
           </div>
