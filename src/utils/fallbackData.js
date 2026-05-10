@@ -149,6 +149,101 @@ export const FALLBACK_ANALYSES = {
     }
   },
 
+  panaji_vs_vasco: {
+    teamName: "Panaji Panthers",
+    opponent: "Vasco Warriors",
+    result: "Lost",
+    format: "T20",
+    phase: "Middle Overs",
+    rawScorecard: "Panaji Panthers vs Vasco Warriors - T20\nBatting: Rahul 45(35), Vikas 12(8), Suresh 22(25), Karan 15(15), Rohit 35(20)\nTotal: 135/5 (20 overs)\nOver 1: 5 runs\nOver 2: 8 runs\nOver 3: 4 runs\nOver 4: 12 runs\nOver 5: 6 runs\nOver 6: 15 runs\nOver 7: 3 runs\nOver 8: 9 runs\nOver 9: 11 runs\nOver 10: 7 runs\nOver 11: 5 runs\nOver 12: 8 runs\nOver 13: 4 runs\nOver 14: 14 runs\nOver 15: 3 runs\nOver 16: 12 runs\nOver 17: 6 runs\nOver 18: 9 runs\nOver 19: 5 runs\nOver 20: 10 runs\nBowling: Dev Kumar 4-0-32-1, Priya 4-0-45-0",
+    analysis: {
+      team_summary: {
+        what_won_lost_match: "Middle overs stagnation (overs 7-15) where team scored only 45 runs for 3 wickets.",
+        strongest_partnership: "Rahul & Rohit — 48 runs, overs 14–18. Late recovery.",
+        bowling_inefficiency: "Priya — 4 overs, 45 runs (ER: 11.2). Bowled in powerplay and leaked boundaries.",
+        pattern: "Team consistently struggles against wrist spin between overs 8-12."
+      },
+      players: [
+        { name: "Rahul Sharma", role: "Batsman · #1", tag: "Anchor", key_stat: "45 (35)", match_impact: "8.5",
+          what_worked: "Opened the batting. Anchored the innings well.",
+          what_failed: "Failed to accelerate after getting set. Only 3 boundaries.",
+          next_match_instruction: "Convert starts into 60+ scores.",
+          practice_drill: "Range hitting in final 5 overs." },
+        { name: "Vikas Patel", role: "Batsman · #2", tag: "Aggressor", key_stat: "12 (8)", match_impact: "3",
+          what_worked: "Early boundary in over 1.",
+          what_failed: "Got out trying to force the pace too early.",
+          next_match_instruction: "Value your wicket in the first 2 overs.",
+          practice_drill: "Leaving balls outside off stump." },
+        { name: "Suresh Raina", role: "Allrounder · #6", tag: "Anchor", key_stat: "22 (25)", match_impact: "4.5",
+          what_worked: "Stopped the collapse.",
+          what_failed: "Batted too low to make a significant impact. Required run rate climbed.",
+          next_match_instruction: "Needs to bat higher in the order.",
+          practice_drill: "Rotating strike against spin." },
+        { name: "Dev Kumar", role: "Bowler · Pace", tag: "Improving", key_stat: "1/32 (4)", match_impact: "7",
+          what_worked: "Economical in the middle overs.",
+          what_failed: "Lacked wicket-taking deliveries in death overs.",
+          next_match_instruction: "Focus on variations in death overs.",
+          practice_drill: "Slower bouncers and wide yorkers." },
+        { name: "Priya Desai", role: "Bowler · Spin", tag: "Liability", key_stat: "0/45 (4)", match_impact: "2",
+          what_worked: "Nothing notable.",
+          what_failed: "Extremely expensive in powerplay. Bowled too short.",
+          next_match_instruction: "Needs to bowl fuller lengths.",
+          practice_drill: "Target practice with fuller lengths." }
+      ],
+      coach_decisions: {
+        batting_order_change: "Suresh must bat at #4. Rahul continues opening.",
+        bowling_rotation: "Priya taken off powerplay duties.",
+        player_on_notice: "Vikas needs a big score.",
+        tactical_focus_next_game: "Improve middle overs scoring rate."
+      }
+    }
+  },
+
+  panaji_vs_ponda: {
+    teamName: "Panaji Panthers",
+    opponent: "Ponda Eagles",
+    result: "Won",
+    format: "T20",
+    phase: "Death Overs",
+    rawScorecard: "Panaji Panthers vs Ponda Eagles - T20\nBatting: Rahul 60(40), Vikas 25(15), Suresh 55(35), Karan 10(5), Rohit 2(2)\nTotal: 175/3 (20 overs)\nOver 1: 5 runs\nOver 2: 8 runs\nOver 3: 4 runs\nOver 4: 12 runs\nOver 5: 6 runs\nOver 6: 15 runs\nOver 7: 3 runs\nOver 8: 9 runs\nOver 9: 11 runs\nOver 10: 7 runs\nOver 11: 5 runs\nOver 12: 8 runs\nOver 13: 4 runs\nOver 14: 14 runs\nOver 15: 3 runs\nOver 16: 12 runs\nOver 17: 6 runs\nOver 18: 9 runs\nOver 19: 5 runs\nOver 20: 10 runs\nBowling: Dev Kumar 4-0-28-2, Priya 2-0-15-1",
+    analysis: {
+      team_summary: {
+        what_won_lost_match: "Brilliant death bowling and a huge 100-run partnership for the 2nd wicket.",
+        strongest_partnership: "Rahul & Suresh — 105 runs, overs 5–15. Dominated the spin.",
+        bowling_inefficiency: "None. Clinical performance.",
+        pattern: "Team is executing plans well when openers provide a solid start."
+      },
+      players: [
+        { name: "Rahul Sharma", role: "Batsman · #1", tag: "Aggressor", key_stat: "60 (40)", match_impact: "9.5",
+          what_worked: "Excellent pacing of the innings. Accelerated perfectly after powerplay.",
+          what_failed: "Slightly slow start (10 off first 12).",
+          next_match_instruction: "Continue this template.",
+          practice_drill: "Hitting gaps in powerplay." },
+        { name: "Suresh Raina", role: "Allrounder · #3", tag: "Aggressor", key_stat: "55 (35)", match_impact: "9.0",
+          what_worked: "Capitalized on the platform. Took down their lead spinner.",
+          what_failed: "Ran out Vikas due to miscommunication.",
+          next_match_instruction: "Work on calling and running between wickets.",
+          practice_drill: "Running drills under fatigue." },
+        { name: "Dev Kumar", role: "Bowler · Pace", tag: "Improving", key_stat: "2/28 (4)", match_impact: "8",
+          what_worked: "Nailed the yorkers in overs 18 and 20.",
+          what_failed: "Leaked 12 runs in his opening over.",
+          next_match_instruction: "Warm up properly before first over.",
+          practice_drill: "Executing yorkers under pressure." },
+        { name: "Priya Desai", role: "Bowler · Spin", tag: "Improving", key_stat: "1/15 (2)", match_impact: "6",
+          what_worked: "Bowled tighter lines. Picked up a crucial middle-order wicket.",
+          what_failed: "Only trusted with 2 overs.",
+          next_match_instruction: "Build on this confidence.",
+          practice_drill: "Bowling to aggressive field settings." }
+      ],
+      coach_decisions: {
+        batting_order_change: "Top order is set.",
+        bowling_rotation: "Dev is our premium death bowler.",
+        player_on_notice: "None.",
+        tactical_focus_next_game: "Maintain this momentum."
+      }
+    }
+  },
+
   get demo_live() {
     return this.panaji_vs_margao.analysis;
   }

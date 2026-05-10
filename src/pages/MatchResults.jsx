@@ -33,6 +33,12 @@ export default function MatchResults() {
     fetchMatch();
   }, [id, navigate]);
 
+  // Calculate purely client-side role mismatches
+  const roleMismatches = React.useMemo(() => {
+    if (!match?.analysis?.players || !match?.rawScorecard) return [];
+    return detectRoleMismatches(match.analysis.players, match.rawScorecard);
+  }, [match]);
+
   if (!match) return null;
 
   const tabs = [
@@ -40,12 +46,6 @@ export default function MatchResults() {
     { key: 'team', label: 'Team Report', icon: '📊' },
     { key: 'brief', label: 'Coach Brief', icon: '📋' },
   ];
-
-  // Calculate purely client-side role mismatches
-  const roleMismatches = React.useMemo(() => {
-    if (!match?.analysis?.players || !match?.rawScorecard) return [];
-    return detectRoleMismatches(match.analysis.players, match.rawScorecard);
-  }, [match]);
 
   const handleExportPDF = async () => {
     const element = document.getElementById('export-content-area');

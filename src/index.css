@@ -59,15 +59,15 @@
   }
   
   .glass-card {
-    @apply glass border shadow-sm transition-all duration-300;
-  }
-
-  .glass-card:hover {
-    @apply border-accent/20 shadow-lg shadow-accent/5;
+    @apply bg-surface1/60 backdrop-blur-md border border-border shadow-2xl;
   }
 
   .card-interactive {
-    @apply hover:-translate-y-1 hover:shadow-xl hover:shadow-accent/10 active:scale-[0.98] transition-all;
+    @apply transition-all duration-300;
+  }
+
+  .card-interactive:hover {
+    @apply -translate-y-1 shadow-glow-amber border-accent/30;
   }
 
   .btn-press {

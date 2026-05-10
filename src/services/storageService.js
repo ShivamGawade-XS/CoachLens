@@ -80,7 +80,7 @@ export const storageService = {
       const alreadySeeded = localStorage.getItem(SEEDED_KEY);
       if (alreadySeeded) return false;
 
-      const demoKeys = ['panaji_vs_margao', 'margao_vs_vasco', 'vasco_vs_ponda'];
+      const demoKeys = ['panaji_vs_margao', 'margao_vs_vasco', 'vasco_vs_ponda', 'panaji_vs_vasco', 'panaji_vs_ponda'];
       const now = new Date();
       
       const demoMatches = demoKeys.map((key, index) => {
