@@ -6,13 +6,13 @@ import { useAuth } from '../contexts/AuthContext';
 const TEAMS_KEY = (userId) => `coachlens_teams_${userId}`;
 const SETTINGS_KEY = (userId) => `coachlens_settings_${userId}`;
 
-function getTeams(userId) {
+export function getTeams(userId) {
   try {
     const d = localStorage.getItem(TEAMS_KEY(userId));
     return d ? JSON.parse(d) : [];
   } catch { return []; }
 }
-function saveTeams(userId, teams) {
+export function saveTeams(userId, teams) {
   localStorage.setItem(TEAMS_KEY(userId), JSON.stringify(teams));
 }
 function getSettings(userId) {
@@ -50,6 +50,7 @@ export default function Teams({ addToast }) {
       id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
       name: newTeam.name.trim(),
       players: playerCount,
+      roster: [], // manual roster entries
       matches: 0,
       createdAt: new Date().toISOString(),
     };
