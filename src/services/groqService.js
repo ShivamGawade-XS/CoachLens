@@ -384,7 +384,9 @@ export const groqService = {
       throw new Error("No Groq API key configured.");
     }
 
-    const prompt = FORMAL_REPORT_PROMPT.replace('{matchData}', JSON.stringify(matchData, null, 2));
+    // Strip rawScorecard to save massive token overhead and prevent Payload Too Large errors
+    const { rawScorecard, ...leanMatchData } = matchData;
+    const prompt = FORMAL_REPORT_PROMPT.replace('{matchData}', JSON.stringify(leanMatchData, null, 2));
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -400,7 +402,11 @@ export const groqService = {
       })
     });
 
-    if (!response.ok) throw new Error(`API error: ${response.statusText}`);
+    if (!response.ok) {
+      const errData = await response.json().catch(() => null);
+      const errMsg = errData?.error?.message || response.statusText;
+      throw new Error(`API error: ${errMsg}`);
+    }
     const data = await response.json();
     return data.choices[0].message.content;
   }

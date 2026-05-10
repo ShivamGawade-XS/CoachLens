@@ -58,7 +58,7 @@ export default function FormalReportModal({ match, onClose }) {
       } catch (err) {
         console.error("Report generation failed:", err);
         if (isMounted) {
-          setError("Failed to generate report. Please check your API key and try again.");
+          setError(`Report Error: ${err.message || 'Unknown API failure'}`);
           setIsLoading(false);
         }
       }
