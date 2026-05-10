@@ -480,6 +480,8 @@ export function Settings({ addToast }) {
   const [saving, setSaving] = useState(false);
   const [pwdError, setPwdError] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [groqApiKey, setGroqApiKey] = useState(localStorage.getItem('GROQ_API_KEY') || '');
+  const [apiSaveMsg, setApiSaveMsg] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -530,6 +532,12 @@ export function Settings({ addToast }) {
       localStorage.removeItem(SETTINGS_KEY(user.id));
     }
     addToast?.('All app data cleared', 'success');
+  };
+
+  const handleSaveApiKey = () => {
+    localStorage.setItem('GROQ_API_KEY', groqApiKey.trim());
+    setApiSaveMsg('API Key saved successfully');
+    setTimeout(() => setApiSaveMsg(''), 3000);
   };
 
   const SectionHeader = ({ icon, title }) => (
@@ -585,6 +593,42 @@ export function Settings({ addToast }) {
           <button onClick={handleSaveProfile} disabled={saving} className="w-full bg-accent hover:bg-accentHover disabled:opacity-60 text-white py-3.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press">
             {saving ? 'Saving...' : 'Save Profile'}
           </button>
+        </div>
+      </div>
+
+      <div className="glass-card rounded-2xl p-6 space-y-4">
+        <SectionHeader icon={<Key size={12} />} title="API Configuration" />
+        <p className="text-xs text-textSecondary font-mono leading-relaxed">CoachLens uses Groq's blazing fast Llama 3 models for match analysis. If your local environment variable isn't working, provide your key here.</p>
+        <div className="space-y-1.5">
+          <input 
+            type="password" 
+            placeholder="gsk_..." 
+            value={groqApiKey} 
+            onChange={e => setGroqApiKey(e.target.value)} 
+            className="w-full bg-surface2 border border-border rounded-xl px-4 py-2.5 text-sm text-textPrimary placeholder:text-textTertiary focus:outline-none focus:border-accent transition-all font-mono" 
+          />
+        </div>
+        <div className="flex items-center gap-4">
+          <button onClick={handleSaveApiKey} className="flex-1 bg-surface2 hover:bg-surface3 border border-border text-textPrimary py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all">Save API Key</button>
+          {apiSaveMsg && <span className="text-xs font-mono text-aggressor-text animate-fade-in">{apiSaveMsg}</span>}
+        </div>
+      </div>
+
+      <div className="glass-card rounded-2xl p-6 space-y-4">
+        <SectionHeader icon={<Key size={12} />} title="API Configuration" />
+        <p className="text-xs text-textSecondary font-mono leading-relaxed">CoachLens uses Groq's blazing fast Llama 3 models for match analysis. If your local environment variable isn't working, provide your key here.</p>
+        <div className="space-y-1.5">
+          <input 
+            type="password" 
+            placeholder="gsk_..." 
+            value={groqApiKey} 
+            onChange={e => setGroqApiKey(e.target.value)} 
+            className="w-full bg-surface2 border border-border rounded-xl px-4 py-2.5 text-sm text-textPrimary placeholder:text-textTertiary focus:outline-none focus:border-accent transition-all font-mono" 
+          />
+        </div>
+        <div className="flex items-center gap-4">
+          <button onClick={handleSaveApiKey} className="flex-1 bg-surface2 hover:bg-surface3 border border-border text-textPrimary py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all">Save API Key</button>
+          {apiSaveMsg && <span className="text-xs font-mono text-aggressor-text animate-fade-in">{apiSaveMsg}</span>}
         </div>
       </div>
 
