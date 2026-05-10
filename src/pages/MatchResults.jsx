@@ -200,7 +200,7 @@ export default function MatchResults() {
 
         {activeTab === 'brief' && (
           <div className="animate-fade-in">
-            <CoachBrief brief={match.analysis.coach_decisions} />
+            <CoachBrief match={match} brief={match.analysis.coach_decisions} />
           </div>
         )}
 

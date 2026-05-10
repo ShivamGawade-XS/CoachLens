@@ -37,6 +37,21 @@ export const storageService = {
     return matches.find(m => m.id === id);
   },
 
+  updateMatch: async (id, updates) => {
+    try {
+      const matches = await storageService.getMatches();
+      const index = matches.findIndex(m => m.id === id);
+      if (index === -1) return null;
+      
+      matches[index] = { ...matches[index], ...updates };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(matches));
+      return matches[index];
+    } catch (e) {
+      console.error('Error updating match', e);
+      return null;
+    }
+  },
+
   deleteMatch: async (id) => {
     try {
       const matches = await storageService.getMatches();

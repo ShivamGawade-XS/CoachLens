@@ -83,6 +83,18 @@ Return ONLY a JSON object. No preamble:
   ]
 }`;
 
+const TOSS_PROMPT = `You are an expert cricket tactician. Analyze this team's recent match history and stats to recommend a toss decision for their next match.
+
+Team History:
+{history}
+
+Return ONLY a JSON object. No preamble.
+{
+  "decision": "BAT" or "FIELD",
+  "confidence": "High" or "Medium",
+  "reason": "One clear sentence citing a specific stat (e.g. 'Batting first yields a 75% win rate due to strong powerplay scoring.')"
+}`;
+
 export const groqService = {
   getTurningPoint: async (overData) => {
     let apiKey = import.meta.env.VITE_GROQ_API_KEY;
@@ -261,6 +273,46 @@ export const groqService = {
       const cleaned = rawResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       const parsed = JSON.parse(cleaned);
       return parsed.messages || [];
+    }
+  },
+
+  getTossDecision: async (teamHistory) => {
+    let apiKey = import.meta.env.VITE_GROQ_API_KEY;
+    if (!apiKey && typeof window !== 'undefined') {
+      apiKey = localStorage.getItem('GROQ_API_KEY');
+    }
+
+    if (!apiKey) throw new Error("No API key");
+
+    const prompt = TOSS_PROMPT.replace('{history}', JSON.stringify(teamHistory, null, 2));
+
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: prompt },
+          { role: "user", content: "Recommend a toss decision based on this history." }
+        ],
+        temperature: 0.3,
+        max_tokens: 200,
+        response_format: { type: "json_object" }
+      })
+    });
+
+    if (!response.ok) throw new Error(`API error: ${response.statusText}`);
+    const data = await response.json();
+    const rawResponse = data.choices[0].message.content;
+    
+    try {
+      return JSON.parse(rawResponse);
+    } catch (e) {
+      const cleaned = rawResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      return JSON.parse(cleaned);
     }
   }
 };

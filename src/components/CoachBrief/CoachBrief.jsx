@@ -2,6 +2,7 @@ import React from 'react';
 import { Download } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import TossAdvisor from './TossAdvisor';
 
 const decisions = [
   { num: '01', key: 'batting_order_change', label: 'Batting Order', icon: '🏏' },
@@ -10,7 +11,7 @@ const decisions = [
   { num: '04', key: 'tactical_focus_next_game', label: 'Tactical Focus', icon: '🎯', isHighlight: true },
 ];
 
-export default function CoachBrief({ brief }) {
+export default function CoachBrief({ match, brief }) {
   if (!brief) return null;
 
   const handleExportPDF = async () => {
@@ -41,6 +42,8 @@ export default function CoachBrief({ brief }) {
 
   return (
     <div className="max-w-3xl mx-auto py-2">
+      <TossAdvisor match={match} />
+      
       <div 
         id="coach-brief-content"
         className="glass-card rounded-xl border-l-[4px] border-l-accent relative overflow-hidden"
