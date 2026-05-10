@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Trophy, Users, Shield, ArrowRight, Plus, X, Trash2, AlertCircle, User, Bell, Key, Palette, TrendingUp, TrendingDown } from 'lucide-react';
+import { Trophy, Users, Shield, ArrowRight, Plus, X, Trash2, AlertCircle, User, Bell, Key, Palette, TrendingUp, TrendingDown, Edit2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getTeamFormGuide } from '../utils/seasonScoring';
 
@@ -44,6 +44,7 @@ export default function Teams({ addToast }) {
   const [showModal, setShowModal] = useState(false);
   const [newTeam, setNewTeam] = useState({ name: '', emoji: '🏏' });
   const [modalError, setModalError] = useState('');
+  const [editingTeam, setEditingTeam] = useState(null);
 
   const loadTeams = () => {
     if (!user) return;
@@ -128,6 +129,38 @@ export default function Teams({ addToast }) {
     addToast?.(`Team "${name}" deleted`, 'info');
   };
 
+  const handleEditSave = () => {
+    setModalError('');
+    if (!editingTeam.name.trim()) return setModalError('Team name is required.');
+    
+    if (teams.find(t => t.id !== editingTeam.id && t.name.toLowerCase() === editingTeam.name.trim().toLowerCase())) {
+      return setModalError('A team with this name already exists.');
+    }
+
+    const oldTeam = teams.find(t => t.id === editingTeam.id);
+    const oldName = oldTeam.name;
+    const newName = editingTeam.name.trim();
+
+    const updatedTeams = teams.map(t => 
+      t.id === editingTeam.id ? { ...t, name: newName, emoji: editingTeam.emoji } : t
+    );
+    saveTeams(user.id, updatedTeams);
+    setTeams(updatedTeams);
+
+    // If name changed, update all existing matches to keep history linked
+    if (oldName !== newName) {
+      const allMatches = getAllMatches();
+      const updatedMatches = allMatches.map(m => 
+        m.teamName === oldName ? { ...m, teamName: newName } : m
+      );
+      localStorage.setItem('coachlens_matches', JSON.stringify(updatedMatches));
+    }
+
+    setEditingTeam(null);
+    addToast?.('Team updated successfully', 'success');
+    loadTeams();
+  };
+
   const formatDate = (iso) => new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 
   return (
@@ -165,7 +198,10 @@ export default function Teams({ addToast }) {
                   </div>
                   {s.weeklyImprovement === 'up' && <div className="px-2 py-1 rounded-lg bg-aggressor-bg/30 border border-aggressor-border/50 text-aggressor-text text-[10px] font-mono font-bold flex items-center gap-1"><TrendingUp size={10} /> Improving</div>}
                   {s.weeklyImprovement === 'down' && <div className="px-2 py-1 rounded-lg bg-liability-bg/30 border border-liability-border/50 text-liability-text text-[10px] font-mono font-bold flex items-center gap-1"><TrendingDown size={10} /> Slump</div>}
-                  <button onClick={() => handleDelete(team.id, team.name)} className="p-2 rounded-lg text-textTertiary hover:text-liability-text hover:bg-liability-bg/50 opacity-0 group-hover:opacity-100 transition-all" title="Delete team"><Trash2 size={14} /></button>
+                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                    <button onClick={() => setEditingTeam({ id: team.id, name: team.name, emoji: team.emoji })} className="p-2 rounded-lg text-textTertiary hover:text-textPrimary hover:bg-surface3 transition-colors" title="Edit team"><Edit2 size={14} /></button>
+                    <button onClick={() => handleDelete(team.id, team.name)} className="p-2 rounded-lg text-textTertiary hover:text-liability-text hover:bg-liability-bg/50 transition-colors" title="Delete team"><Trash2 size={14} /></button>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-4 gap-2 mb-5">
@@ -254,7 +290,52 @@ export default function Teams({ addToast }) {
                   className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary placeholder:text-textTertiary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all"
                 />
               </div>
-              <button onClick={handleAdd} className="w-full bg-accent hover:bg-accentHover text-white py-3.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press">Create Team</button>
+              <button onClick={handleAdd} className="w-full bg-accent hover:bg-accentHover text-white py-3.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press mt-2">
+                Create Team
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {editingTeam && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-primary/60 backdrop-blur-sm" onClick={() => setEditingTeam(null)} />
+          <div className="relative glass-card rounded-2xl p-8 w-full max-w-md border border-border animate-scale-pop">
+            <button onClick={() => setEditingTeam(null)} className="absolute top-4 right-4 p-2 text-textTertiary hover:text-textPrimary transition-colors"><X size={16} /></button>
+            <h2 className="text-xl font-display text-textPrimary mb-6">Edit Team</h2>
+            {modalError && (
+              <div className="flex items-center gap-2 p-3 mb-4 rounded-xl bg-liability-bg/50 border border-liability-border text-liability-text text-sm"><AlertCircle size={14} />{modalError}</div>
+            )}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest">Team Emoji</label>
+                <div className="flex flex-wrap gap-2">
+                  {TEAM_EMOJIS.map(e => (
+                    <button key={e} onClick={() => setEditingTeam(p => ({...p, emoji: e}))}
+                      className={`w-10 h-10 rounded-xl text-xl transition-all ${editingTeam.emoji === e ? 'bg-accent/20 border-2 border-accent scale-110' : 'bg-surface2 border border-border hover:border-accent/40'}`}>
+                      {e}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest">Team Name</label>
+                <input
+                  value={editingTeam.name}
+                  onChange={e => { setEditingTeam(p => ({...p, name: e.target.value})); setModalError(''); }}
+                  onKeyDown={e => e.key === 'Enter' && handleEditSave()}
+                  autoFocus
+                  placeholder="e.g. Mumbai Indians"
+                  className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary placeholder:text-textTertiary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3 mt-2">
+                <button onClick={() => setEditingTeam(null)} className="py-3 rounded-xl bg-surface2 hover:bg-surface3 border border-border text-textPrimary text-sm font-mono font-bold uppercase tracking-wider transition-all">Cancel</button>
+                <button onClick={handleEditSave} className="py-3 rounded-xl bg-accent hover:bg-accentHover text-white text-sm font-mono font-bold uppercase tracking-wider transition-all shadow-glow-amber btn-press">
+                  Save
+                </button>
+              </div>
             </div>
           </div>
         </div>
