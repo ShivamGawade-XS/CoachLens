@@ -176,9 +176,9 @@ export const groqService = {
       }
     };
 
-    // Strict 12-second timeout
+    // Strict 45-second timeout to allow LLM sequence to complete
     const timeoutTask = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error("Timeout exceeded")), 12000);
+      setTimeout(() => reject(new Error("Timeout exceeded")), 45000);
     });
 
     try {
