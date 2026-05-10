@@ -14,9 +14,9 @@ export const storageService = {
     }
   },
   
-  saveMatch: (matchRecord) => {
+  saveMatch: async (matchRecord) => {
     try {
-      const matches = storageService.getMatches();
+      const matches = await storageService.getMatches();
       const newMatch = {
         ...matchRecord,
         id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
@@ -32,14 +32,14 @@ export const storageService = {
     }
   },
   
-  getMatchById: (id) => {
-    const matches = storageService.getMatches();
+  getMatchById: async (id) => {
+    const matches = await storageService.getMatches();
     return matches.find(m => m.id === id);
   },
 
-  deleteMatch: (id) => {
+  deleteMatch: async (id) => {
     try {
-      const matches = storageService.getMatches();
+      const matches = await storageService.getMatches();
       const filtered = matches.filter(m => m.id !== id);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
       return true;
