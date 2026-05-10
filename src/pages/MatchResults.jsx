@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Download, Loader2 } from 'lucide-react';
 import { storageService } from '../services/storageService';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import PlayerCard from '../components/PlayerCard/PlayerCard';
 import TeamReport from '../components/TeamReport/TeamReport';
 import CoachBrief from '../components/CoachBrief/CoachBrief';
@@ -11,6 +13,7 @@ export default function MatchResults() {
   const navigate = useNavigate();
   const [match, setMatch] = useState(null);
   const [activeTab, setActiveTab] = useState('players');
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     const matches = storageService.getMatches();
@@ -29,6 +32,37 @@ export default function MatchResults() {
     { key: 'team', label: 'Team Report', icon: '📊' },
     { key: 'brief', label: 'Coach Brief', icon: '📋' },
   ];
+
+  const handleExportPDF = async () => {
+    const element = document.getElementById('export-content-area');
+    if (!element) return;
+    
+    setIsExporting(true);
+    try {
+      const isDark = document.documentElement.classList.contains('dark');
+      const canvas = await html2canvas(element, {
+        backgroundColor: isDark ? '#0A0C10' : '#F8FAFC',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      const filename = `CoachLens-${match.teamName.replace(/\s+/g, '-')}-${activeTab}-Report.pdf`;
+      pdf.save(filename);
+    } catch (err) {
+      console.error('Failed to generate PDF', err);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <div className="min-h-full">
@@ -51,7 +85,7 @@ export default function MatchResults() {
               </h1>
             </div>
             {match.result && (
-              <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-md ml-3 border ${
+              <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-md mx-3 border ${
                 match.result === 'Won' 
                   ? 'bg-aggressor-bg text-aggressor-text border-aggressor-border' 
                   : 'bg-liability-bg text-liability-text border-liability-border'
@@ -59,6 +93,14 @@ export default function MatchResults() {
                 {match.result}
               </span>
             )}
+            <button
+              onClick={handleExportPDF}
+              disabled={isExporting}
+              className="hidden sm:flex items-center gap-1.5 text-xs font-mono tracking-wider uppercase bg-surface2 hover:bg-surface3 border border-border text-textPrimary px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+            >
+              {isExporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+              {isExporting ? 'Exporting...' : 'PDF'}
+            </button>
           </div>
           
           {/* Tab Navigation */}
@@ -82,7 +124,7 @@ export default function MatchResults() {
       </header>
 
       {/* Content */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-16">
+      <div id="export-content-area" className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-16 bg-primary">
         {activeTab === 'players' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {match.analysis.players && match.analysis.players.map((player, idx) => (
