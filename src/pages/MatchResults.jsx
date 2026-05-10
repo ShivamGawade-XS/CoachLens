@@ -16,13 +16,16 @@ export default function MatchResults() {
   const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
-    const matches = storageService.getMatches();
-    const found = matches.find(m => m.id === id);
-    if (found) {
-      setMatch(found);
-    } else {
-      navigate('/dashboard');
-    }
+    const fetchMatch = async () => {
+      const matches = await storageService.getMatches();
+      const found = matches.find(m => m.id === id);
+      if (found) {
+        setMatch(found);
+      } else {
+        navigate('/dashboard');
+      }
+    };
+    fetchMatch();
   }, [id, navigate]);
 
   if (!match) return null;
