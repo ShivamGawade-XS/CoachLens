@@ -24,6 +24,7 @@ import Teams, { Settings } from './pages/AppPages';
 import TeamProfile from './pages/TeamProfile';
 import PlayerProfile from './pages/PlayerProfile';
 import ChatAssistant from './components/ChatAssistant/ChatAssistant';
+import CoachTools from './pages/CoachTools';
 
 /* ─── Global Toast System ─── */
 function Toast({ message, type = 'info', onClose }) {
@@ -116,6 +117,7 @@ function App() {
             <Route path="/teams/:teamId" element={<TeamProfile />} />
             <Route path="/player/:playerName" element={<PlayerProfile />} />
             <Route path="/settings" element={<Settings addToast={addToast} />} />
+            <Route path="/tools" element={<CoachTools />} />
           </Route>
 
           {/* 404 Fallback */}

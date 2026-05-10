@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { Plus, Trophy, Home, Settings, LogOut, LayoutDashboard, Menu, X } from 'lucide-react';
+import { Plus, Trophy, Home, Settings, LogOut, LayoutDashboard, Menu, X, Wrench } from 'lucide-react';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -24,6 +24,7 @@ export default function AppLayout({ addToast }) {
   const navItems = [
     { icon: <LayoutDashboard size={18} />, label: 'Dashboard', path: '/dashboard' },
     { icon: <Trophy size={18} />, label: 'My Teams', path: '/teams' },
+    { icon: <Wrench size={18} />, label: 'Coach Tools', path: '/tools' },
     { icon: <Settings size={18} />, label: 'Settings', path: '/settings' },
   ];
 
