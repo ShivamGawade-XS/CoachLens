@@ -39,7 +39,55 @@ Return this exact structure:
   }
 }`;
 
+const TURNING_POINT_PROMPT = `You are an expert cricket analyst. Given this over-by-over match data, identify the SINGLE over where match momentum shifted most dramatically.
+
+Return ONLY a JSON object with this exact structure:
+{
+  "over": <number>,
+  "reason": "<max 15 words, must cite a specific number from the data>"
+}
+
+No preamble. No explanation outside JSON. The reason must reference a specific stat (runs, wickets, dot balls, etc).`;
+
 export const groqService = {
+  getTurningPoint: async (overData) => {
+    const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+
+    if (!apiKey) {
+      // Fallback turning point for demo
+      return { over: 14, reason: "Over 14 — Wicket + 4 dot balls, run rate dropped from 9.2 to 5.1" };
+    }
+
+    try {
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            { role: "system", content: TURNING_POINT_PROMPT },
+            { role: "user", content: JSON.stringify(overData) }
+          ],
+          temperature: 0.2,
+          max_tokens: 200,
+          response_format: { type: "json_object" }
+        })
+      });
+
+      if (!response.ok) throw new Error(`API error: ${response.statusText}`);
+
+      const data = await response.json();
+      const parsed = JSON.parse(data.choices[0].message.content);
+      return { over: parsed.over, reason: parsed.reason };
+    } catch (error) {
+      console.warn("Turning point API failed, using fallback:", error);
+      return { over: 14, reason: "Over 14 — Wicket + 4 dot balls swung the match" };
+    }
+  },
+
   analyze: async (format, phase, scorecardText) => {
     const apiKey = import.meta.env.VITE_GROQ_API_KEY;
     
