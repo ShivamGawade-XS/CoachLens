@@ -140,7 +140,7 @@ export const groqService = {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
+          model: "llama-3.1-8b-instant",
           messages: [
             { role: "system", content: TURNING_POINT_PROMPT },
             { role: "user", content: JSON.stringify(overData) }
@@ -185,7 +185,7 @@ export const groqService = {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
+          model: "llama-3.1-8b-instant",
           messages: [
             { role: "system", content: prompt },
             { role: "user", content: scorecardText }
@@ -275,7 +275,7 @@ export const groqService = {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "llama-3.1-8b-instant",
         messages: [
           { role: "system", content: prompt },
           { role: "user", content: "Generate WhatsApp messages for each player listed above." }
@@ -317,7 +317,7 @@ export const groqService = {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "llama-3.1-8b-instant",
         messages: [
           { role: "system", content: prompt },
           { role: "user", content: "Recommend a toss decision based on this history." }
@@ -363,7 +363,7 @@ export const groqService = {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "llama-3.1-8b-instant",
         messages: apiMessages,
         temperature: 0.5,
         max_tokens: 800
@@ -395,7 +395,7 @@ export const groqService = {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "llama-3.1-8b-instant",
         messages: [{ role: "user", content: prompt }],
         temperature: 0.3,
         max_tokens: 1000
