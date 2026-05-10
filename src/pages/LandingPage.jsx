@@ -85,6 +85,62 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <section className="py-24 bg-primary border-t border-border">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-display text-textPrimary mb-4">Frequently Asked Questions</h2>
+            <p className="text-textSecondary font-mono max-w-2xl mx-auto">Everything you need to know about CoachLens.</p>
+          </div>
+
+          <div className="space-y-4">
+            {/* FAQ 1 */}
+            <div className="glass-card p-6 rounded-2xl">
+              <h3 className="text-lg font-display text-textPrimary mb-2 flex items-start gap-3">
+                <span className="text-accent mt-1">Q.</span>
+                Does this work with CricHeroes?
+              </h3>
+              <p className="text-sm text-textSecondary leading-relaxed pl-8">
+                Yes! Just open your match scorecard on the CricHeroes app or website, copy the text, and paste it directly into CoachLens. Our AI automatically parses the raw text into structured data.
+              </p>
+            </div>
+
+            {/* FAQ 2 */}
+            <div className="glass-card p-6 rounded-2xl">
+              <h3 className="text-lg font-display text-textPrimary mb-2 flex items-start gap-3">
+                <span className="text-accent mt-1">Q.</span>
+                How is this different from CricHeroes?
+              </h3>
+              <p className="text-sm text-textSecondary leading-relaxed pl-8">
+                CricHeroes is a scoreboard — it tells you *what* happened. CoachLens is an intelligence layer — it tells you *why* you lost and *what to do next*. We don't replace CricHeroes, we sit on top of it.
+              </p>
+            </div>
+
+            {/* FAQ 3 */}
+            <div className="glass-card p-6 rounded-2xl">
+              <h3 className="text-lg font-display text-textPrimary mb-2 flex items-start gap-3">
+                <span className="text-accent mt-1">Q.</span>
+                Can I share the feedback with my players?
+              </h3>
+              <p className="text-sm text-textSecondary leading-relaxed pl-8">
+                Yes. Every player card has a "Share" button that instantly generates a 2-sentence personalised feedback message and opens it in WhatsApp, ready to send to that individual player.
+              </p>
+            </div>
+
+            {/* FAQ 4 */}
+            <div className="glass-card p-6 rounded-2xl">
+              <h3 className="text-lg font-display text-textPrimary mb-2 flex items-start gap-3">
+                <span className="text-accent mt-1">Q.</span>
+                Is CoachLens free?
+              </h3>
+              <p className="text-sm text-textSecondary leading-relaxed pl-8">
+                Our base tier is 100% free forever and includes 5 full match analyses per month. For unlimited matches and advanced features, you can upgrade to the Pro Coach tier.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-24 relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
