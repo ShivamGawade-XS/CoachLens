@@ -1,5 +1,6 @@
 import React from 'react';
 import MomentumChart from '../MomentumChart/MomentumChart';
+import RunRateChart from '../RunRateChart/RunRateChart';
 
 const sectionConfig = [
   { key: 'what_won_lost_match', label: 'Match Turning Point', icon: '⚡', accentColor: 'text-accent' },
@@ -29,6 +30,14 @@ export default function TeamReport({ report, rawScorecard, teamName, opponent })
           rawScorecard={rawScorecard}
           teamName={teamName}
           opponent={opponent}
+        />
+      </div>
+
+      <div className="animate-fade-in-up" style={{ animationDelay: '100ms', opacity: 0 }}>
+        <RunRateChart 
+          report={report} 
+          teamName={teamName} 
+          opponent={opponent} 
         />
       </div>
 
