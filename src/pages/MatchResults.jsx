@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ChevronLeft, Download, Loader2 } from 'lucide-react';
+import { ChevronLeft, Download, Loader2, MessageCircle } from 'lucide-react';
 import { storageService } from '../services/storageService';
+import { groqService } from '../services/groqService';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import PlayerCard from '../components/PlayerCard/PlayerCard';
 import TeamReport from '../components/TeamReport/TeamReport';
 import CoachBrief from '../components/CoachBrief/CoachBrief';
+import WhatsAppModal from '../components/WhatsAppModal/WhatsAppModal';
 
 export default function MatchResults() {
   const { id } = useParams();
@@ -14,6 +16,9 @@ export default function MatchResults() {
   const [match, setMatch] = useState(null);
   const [activeTab, setActiveTab] = useState('players');
   const [isExporting, setIsExporting] = useState(false);
+  const [showWhatsApp, setShowWhatsApp] = useState(false);
+  const [whatsAppMessages, setWhatsAppMessages] = useState([]);
+  const [isGeneratingWA, setIsGeneratingWA] = useState(false);
 
   useEffect(() => {
     const fetchMatch = async () => {
@@ -64,6 +69,28 @@ export default function MatchResults() {
       console.error('Failed to generate PDF', err);
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  const handleGenerateWhatsApp = async () => {
+    if (!match.analysis.players?.length) return;
+    setShowWhatsApp(true);
+    setIsGeneratingWA(true);
+    setWhatsAppMessages([]);
+    try {
+      const messages = await groqService.generateWhatsAppMessages(match.analysis.players);
+      setWhatsAppMessages(messages);
+    } catch (err) {
+      console.error('Failed to generate WhatsApp messages:', err);
+      // Fallback: generate simple messages locally
+      const fallbackMsgs = match.analysis.players.map(p => ({
+        name: p.name,
+        role: p.role,
+        message: `Great effort with your ${p.key_stat || 'performance'} today — keep building on what worked. This week, focus on: ${p.practice_drill || p.next_match_instruction || 'net sessions'}.`
+      }));
+      setWhatsAppMessages(fallbackMsgs);
+    } finally {
+      setIsGeneratingWA(false);
     }
   };
 
@@ -136,13 +163,28 @@ export default function MatchResults() {
       {/* Content */}
       <div id="export-content-area" className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-16 bg-primary">
         {activeTab === 'players' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {match.analysis.players && match.analysis.players.map((player, idx) => (
-              <div key={idx} className="animate-fade-in-up" style={{ animationDelay: `${idx * 80}ms`, opacity: 0 }}>
-                <PlayerCard player={player} />
+          <>
+            {/* Generate WhatsApp Button */}
+            {match.analysis.players?.length > 0 && (
+              <div className="flex justify-end mb-6">
+                <button
+                  onClick={handleGenerateWhatsApp}
+                  className="flex items-center gap-2 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] border border-[#25D366]/30 px-4 py-2.5 rounded-xl text-xs font-mono font-medium uppercase tracking-wider transition-all btn-press"
+                >
+                  <MessageCircle size={14} />
+                  Generate WhatsApp Messages
+                </button>
               </div>
-            ))}
-          </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {match.analysis.players && match.analysis.players.map((player, idx) => (
+                <div key={idx} className="animate-fade-in-up" style={{ animationDelay: `${idx * 80}ms`, opacity: 0 }}>
+                  <PlayerCard player={player} />
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         {activeTab === 'team' && (
@@ -169,6 +211,16 @@ export default function MatchResults() {
           </div>
         )}
       </div>
+
+      {/* WhatsApp Modal */}
+      {showWhatsApp && (
+        <WhatsAppModal
+          players={match.analysis.players}
+          messages={whatsAppMessages}
+          isGenerating={isGeneratingWA}
+          onClose={() => setShowWhatsApp(false)}
+        />
+      )}
     </div>
   );
 }
