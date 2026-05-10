@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Trophy, Users, Shield, ArrowRight, Plus, X, Trash2, ChevronDown, ChevronUp, AlertCircle, User, Bell, Monitor, Key, Palette } from 'lucide-react';
+import { Trophy, Users, Shield, ArrowRight, Plus, X, Trash2, AlertCircle, User, Bell, Key, Palette } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const TEAMS_KEY = (userId) => `coachlens_teams_${userId}`;
@@ -24,6 +24,14 @@ function getSettings(userId) {
 function saveSettings(userId, settings) {
   localStorage.setItem(SETTINGS_KEY(userId), JSON.stringify(settings));
 }
+function getAllMatches() {
+  try {
+    const d = localStorage.getItem('coachlens_matches');
+    return d ? JSON.parse(d) : [];
+  } catch { return []; }
+}
+
+const TEAM_EMOJIS = ['🏏', '⚡', '🔥', '🦁', '🐯', '🦅', '🌊', '🌪️', '💪', '🏆'];
 
 /* ═══════════════════════════════════════════
    TEAMS PAGE
@@ -31,35 +39,59 @@ function saveSettings(userId, settings) {
 export default function Teams({ addToast }) {
   const { user } = useAuth();
   const [teams, setTeams] = useState([]);
+  const [teamStats, setTeamStats] = useState({});
   const [showModal, setShowModal] = useState(false);
-  const [newTeam, setNewTeam] = useState({ name: '', players: '' });
-  const [expanded, setExpanded] = useState(null);
+  const [newTeam, setNewTeam] = useState({ name: '', emoji: '🏏' });
   const [modalError, setModalError] = useState('');
 
-  useEffect(() => {
-    if (user) setTeams(getTeams(user.id));
-  }, [user]);
+  const loadTeams = () => {
+    if (!user) return;
+    const saved = getTeams(user.id);
+    setTeams(saved);
+
+    const allMatches = getAllMatches();
+    const stats = {};
+    saved.forEach(team => {
+      const tm = allMatches.filter(m => m.teamName === team.name);
+      const won = tm.filter(m => m.result === 'Won').length;
+      const playerNames = new Set((team.roster || []).map(p => p.name));
+      tm.forEach(match => {
+        (match.analysis?.players || []).forEach(p => playerNames.add(p.name));
+      });
+      stats[team.id] = {
+        matchCount: tm.length,
+        won,
+        lost: tm.filter(m => m.result === 'Lost').length,
+        winRate: tm.length > 0 ? Math.round((won / tm.length) * 100) : null,
+        rosterCount: playerNames.size,
+      };
+    });
+    setTeamStats(stats);
+  };
+
+  useEffect(() => { loadTeams(); }, [user]);
 
   const handleAdd = () => {
     setModalError('');
     if (!newTeam.name.trim()) return setModalError('Team name is required.');
-    const playerCount = parseInt(newTeam.players) || 11;
-    if (playerCount < 2 || playerCount > 30) return setModalError('Players must be between 2 and 30.');
+    if (teams.find(t => t.name.toLowerCase() === newTeam.name.trim().toLowerCase()))
+      return setModalError('A team with this name already exists.');
 
     const team = {
       id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
       name: newTeam.name.trim(),
-      players: playerCount,
-      roster: [], // manual roster entries
+      emoji: newTeam.emoji,
+      roster: [],
       matches: 0,
       createdAt: new Date().toISOString(),
     };
     const updated = [team, ...teams];
     saveTeams(user.id, updated);
     setTeams(updated);
-    setNewTeam({ name: '', players: '' });
+    setNewTeam({ name: '', emoji: '🏏' });
     setShowModal(false);
     addToast?.(`Team "${team.name}" created`, 'success');
+    loadTeams();
   };
 
   const handleDelete = (id, name) => {
@@ -76,51 +108,78 @@ export default function Teams({ addToast }) {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-display-xl font-display text-textPrimary mb-2">My Teams</h1>
-          <p className="text-textSecondary text-sm">Manage your rosters and view team-wide performance trends.</p>
+          <p className="text-textSecondary text-sm">Manage rosters, track match records, and drill into player analytics.</p>
         </div>
         <button onClick={() => setShowModal(true)} className="flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white px-5 py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press">
-          <Plus size={16} /> Add Team
+          <Plus size={16} /> New Team
         </button>
       </div>
 
       {teams.length === 0 ? (
-        <div className="glass-card rounded-2xl p-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-surface2 border border-border flex items-center justify-center mx-auto mb-4 text-textTertiary"><Trophy size={24} /></div>
+        <div className="glass-card rounded-2xl p-16 text-center">
+          <div className="text-5xl mb-4">🏏</div>
           <h3 className="text-lg font-display text-textPrimary mb-2">No teams yet</h3>
-          <p className="text-textSecondary text-sm mb-6 max-w-sm mx-auto">Create your first team to start tracking rosters and match performance.</p>
-          <button onClick={() => setShowModal(true)} className="bg-surface2 hover:bg-surface3 border border-border text-textPrimary px-6 py-2.5 rounded-xl text-xs font-mono font-bold tracking-wider uppercase transition-all">Create Team</button>
+          <p className="text-textSecondary text-sm mb-6 max-w-sm mx-auto font-mono">Create your first team to start tracking rosters and performance trends.</p>
+          <button onClick={() => setShowModal(true)} className="bg-accent hover:bg-accentHover text-white px-6 py-2.5 rounded-xl text-xs font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber">Create Team</button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {teams.map((team) => (
-            <div key={team.id} className="glass-card rounded-2xl p-6 group transition-all hover:border-accent/30">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent"><Users size={24} /></div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-display text-textPrimary truncate">{team.name}</h3>
-                  <p className="text-xs text-textTertiary font-mono">Created {formatDate(team.createdAt)}</p>
+          {teams.map((team) => {
+            const s = teamStats[team.id] || {};
+            return (
+              <div key={team.id} className="glass-card rounded-2xl p-6 group transition-all hover:border-accent/30 flex flex-col">
+                <div className="flex items-center gap-4 mb-5">
+                  <div className="w-14 h-14 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center text-2xl shrink-0">
+                    {team.emoji || '🏏'}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-xl font-display text-textPrimary truncate">{team.name}</h3>
+                    <p className="text-xs text-textTertiary font-mono">Est. {formatDate(team.createdAt)}</p>
+                  </div>
+                  <button onClick={() => handleDelete(team.id, team.name)} className="p-2 rounded-lg text-textTertiary hover:text-liability-text hover:bg-liability-bg/50 opacity-0 group-hover:opacity-100 transition-all" title="Delete team"><Trash2 size={14} /></button>
                 </div>
-                <button onClick={() => handleDelete(team.id, team.name)} className="p-2 rounded-lg text-textTertiary hover:text-liability-text hover:bg-liability-bg/50 opacity-0 group-hover:opacity-100 transition-all" title="Delete team"><Trash2 size={14} /></button>
+
+                <div className="grid grid-cols-4 gap-2 mb-5">
+                  <div className="bg-surface2 p-2.5 rounded-xl border border-border text-center">
+                    <div className="text-[9px] text-textTertiary uppercase font-mono mb-0.5">Players</div>
+                    <div className="text-lg font-display text-textPrimary">{s.rosterCount ?? (team.roster?.length || 0)}</div>
+                  </div>
+                  <div className="bg-surface2 p-2.5 rounded-xl border border-border text-center">
+                    <div className="text-[9px] text-textTertiary uppercase font-mono mb-0.5">Matches</div>
+                    <div className="text-lg font-display text-textPrimary">{s.matchCount ?? 0}</div>
+                  </div>
+                  <div className="bg-aggressor-bg/50 p-2.5 rounded-xl border border-aggressor-border/30 text-center">
+                    <div className="text-[9px] text-textTertiary uppercase font-mono mb-0.5">Won</div>
+                    <div className="text-lg font-display text-aggressor-text">{s.won ?? 0}</div>
+                  </div>
+                  <div className="bg-surface2 p-2.5 rounded-xl border border-border text-center">
+                    <div className="text-[9px] text-textTertiary uppercase font-mono mb-0.5">Win %</div>
+                    <div className="text-lg font-display text-accent">{s.winRate != null ? `${s.winRate}%` : '--'}</div>
+                  </div>
+                </div>
+
+                {team.roster && team.roster.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {team.roster.slice(0, 6).map(p => (
+                      <span key={p.name} className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-surface2 border border-border text-textSecondary">{p.name}</span>
+                    ))}
+                    {team.roster.length > 6 && (
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-accent/10 border border-accent/20 text-accent">+{team.roster.length - 6} more</span>
+                    )}
+                  </div>
+                )}
+
+                <div className="mt-auto">
+                  <Link to={`/teams/${encodeURIComponent(team.name)}`} className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-surface2 hover:bg-surface3 text-textPrimary text-xs font-mono font-bold uppercase tracking-wider transition-all border border-border group-hover:border-accent/30">
+                    Open Team Profile <ArrowRight size={14} />
+                  </Link>
+                </div>
               </div>
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-surface2 p-3 rounded-xl border border-border">
-                  <div className="text-[10px] text-textTertiary uppercase font-mono mb-1">Players</div>
-                  <div className="text-xl font-display text-textPrimary">{team.players}</div>
-                </div>
-                <div className="bg-surface2 p-3 rounded-xl border border-border">
-                  <div className="text-[10px] text-textTertiary uppercase font-mono mb-1">Analyses</div>
-                  <div className="text-xl font-display text-textPrimary">{team.matches}</div>
-                </div>
-              </div>
-              <Link to={`/teams/${encodeURIComponent(team.name)}`} className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-surface2 hover:bg-surface3 text-textPrimary text-xs font-mono font-bold uppercase tracking-wider transition-all border border-border">
-                View Team Profile <ArrowRight size={14} />
-              </Link>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
-      {/* Add Team Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-primary/60 backdrop-blur-sm" onClick={() => setShowModal(false)} />
@@ -132,12 +191,26 @@ export default function Teams({ addToast }) {
             )}
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest">Team Name</label>
-                <input value={newTeam.name} onChange={e => { setNewTeam(p => ({...p, name: e.target.value})); setModalError(''); }} placeholder="Panaji Panthers" className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary placeholder:text-textTertiary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all" />
+                <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest">Team Emoji</label>
+                <div className="flex flex-wrap gap-2">
+                  {TEAM_EMOJIS.map(e => (
+                    <button key={e} onClick={() => setNewTeam(p => ({...p, emoji: e}))}
+                      className={`w-10 h-10 rounded-xl text-xl transition-all ${newTeam.emoji === e ? 'bg-accent/20 border-2 border-accent scale-110' : 'bg-surface2 border border-border hover:border-accent/40'}`}>
+                      {e}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest">Number of Players</label>
-                <input type="number" min="2" max="30" value={newTeam.players} onChange={e => setNewTeam(p => ({...p, players: e.target.value}))} placeholder="11" className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary placeholder:text-textTertiary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all" />
+                <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest">Team Name</label>
+                <input
+                  value={newTeam.name}
+                  onChange={e => { setNewTeam(p => ({...p, name: e.target.value})); setModalError(''); }}
+                  onKeyDown={e => e.key === 'Enter' && handleAdd()}
+                  placeholder="e.g. Panaji Panthers"
+                  autoFocus
+                  className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary placeholder:text-textTertiary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all"
+                />
               </div>
               <button onClick={handleAdd} className="w-full bg-accent hover:bg-accentHover text-white py-3.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press">Create Team</button>
             </div>
@@ -190,7 +263,6 @@ export function Settings({ addToast }) {
     if (!passwords.newPwd) return setPwdError('New password is required.');
     if (passwords.newPwd.length < 6) return setPwdError('New password must be at least 6 characters.');
     if (passwords.newPwd !== passwords.confirm) return setPwdError('New passwords do not match.');
-
     const result = changePassword(passwords.current, passwords.newPwd);
     if (result.success) {
       addToast?.('Password changed successfully', 'success');
@@ -226,7 +298,6 @@ export function Settings({ addToast }) {
         <p className="text-textSecondary text-sm">Configure your coaching profile and application preferences.</p>
       </div>
 
-      {/* ── Profile Info ── */}
       <div className="glass-card rounded-2xl overflow-hidden">
         <div className="p-6 space-y-4">
           <SectionHeader icon={<User size={12} />} title="Profile Information" />
@@ -272,7 +343,6 @@ export function Settings({ addToast }) {
         </div>
       </div>
 
-      {/* ── Preferences ── */}
       <div className="glass-card rounded-2xl p-6 space-y-4">
         <SectionHeader icon={<Palette size={12} />} title="Preferences" />
         <div className="space-y-4">
@@ -298,7 +368,6 @@ export function Settings({ addToast }) {
         <button onClick={handleSavePrefs} className="w-full bg-surface2 hover:bg-surface3 border border-border text-textPrimary py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all">Save Preferences</button>
       </div>
 
-      {/* ── Change Password ── */}
       <div className="glass-card rounded-2xl p-6 space-y-4">
         <SectionHeader icon={<Key size={12} />} title="Change Password" />
         {pwdError && <div className="flex items-center gap-2 p-3 rounded-xl bg-liability-bg/50 border border-liability-border text-liability-text text-sm"><AlertCircle size={14} />{pwdError}</div>}
@@ -310,7 +379,6 @@ export function Settings({ addToast }) {
         <button onClick={handleChangePassword} className="w-full bg-surface2 hover:bg-surface3 border border-border text-textPrimary py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all">Update Password</button>
       </div>
 
-      {/* ── Danger Zone ── */}
       <div className="glass-card rounded-2xl p-6 space-y-4 border-liability-border/30">
         <SectionHeader icon={<Shield size={12} />} title="Danger Zone" />
         <div className="space-y-3">
