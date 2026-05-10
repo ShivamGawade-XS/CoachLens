@@ -1,36 +1,49 @@
 import { FALLBACK_ANALYSES } from '../utils/fallbackData';
 
-const SYSTEM_PROMPT = `You are an expert cricket coach analyst with 15 years of experience 
-coaching amateur T20 teams in India.
-
-Analyze this match scorecard and return ONLY a JSON object.
-No preamble. No explanation outside the JSON.
-
+const PLAYER_PROMPT = `You are an expert cricket coach analyst. Analyze this match scorecard and return ONLY a JSON object. No preamble.
 Match Format: {format}
 Match Phase Focus: {phase}
 Scorecard: {scorecard}
 
-Return this exact structure:
+Return exactly this structure:
 {
-  "team_summary": {
-    "what_won_lost_match": "specific over and event",
-    "strongest_partnership": "player names and runs",
-    "bowling_inefficiency": "specific bowler and overs",
-    "pattern": "one key team-level tactical observation"
-  },
   "players": [
     {
       "name": "player name",
       "role": "batsman/bowler/allrounder",
       "tag": "Anchor|Aggressor|Liability|Improving",
-      "key_stat": "e.g. 45 (30) or 2-24 (if applicable)",
+      "key_stat": "e.g. 45 (30)",
       "match_impact": "impact score out of 10",
       "what_worked": "specific and factual",
       "what_failed": "specific and factual",
       "next_match_instruction": "one concrete actionable change",
       "practice_drill": "one specific drill"
     }
-  ],
+  ]
+}`;
+
+const TEAM_PROMPT = `You are an expert cricket coach analyst. Analyze this match scorecard and return ONLY a JSON object. No preamble.
+Match Format: {format}
+Match Phase Focus: {phase}
+Scorecard: {scorecard}
+
+Return exactly this structure:
+{
+  "team_summary": {
+    "what_won_lost_match": "specific over and event",
+    "strongest_partnership": "player names and runs",
+    "bowling_inefficiency": "specific bowler and overs",
+    "pattern": "one key team-level tactical observation"
+  }
+}`;
+
+const BRIEF_PROMPT = `You are an expert cricket coach analyst. Analyze this match scorecard and return ONLY a JSON object. No preamble.
+Match Format: {format}
+Match Phase Focus: {phase}
+Scorecard: {scorecard}
+
+Return exactly this structure:
+{
   "coach_decisions": {
     "batting_order_change": "specific swap with reason",
     "bowling_rotation": "specific change with reason",
@@ -88,19 +101,16 @@ export const groqService = {
     }
   },
 
-  analyze: async (format, phase, scorecardText) => {
+  analyze: async (format, phase, scorecardText, onProgress) => {
     const apiKey = import.meta.env.VITE_GROQ_API_KEY;
     
-    // Fallback if no API key is provided or for demo safety
     if (!apiKey) {
-      console.warn("No Groq API key found. Using fallback demo data.");
-      return new Promise((resolve) => {
-        setTimeout(() => resolve(FALLBACK_ANALYSES.demo_live), 2500); // simulate network delay
-      });
+      console.warn("No Groq API key found. Triggering fallback.");
+      throw new Error("No API key");
     }
 
-    try {
-      const prompt = SYSTEM_PROMPT
+    const runCall = async (promptTemplate) => {
+      const prompt = promptTemplate
         .replace('{format}', format)
         .replace('{phase}', phase)
         .replace('{scorecard}', scorecardText);
@@ -118,31 +128,58 @@ export const groqService = {
             { role: "user", content: scorecardText }
           ],
           temperature: 0.3,
-          max_tokens: 2000,
+          max_tokens: 1500,
           response_format: { type: "json_object" }
         })
       });
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.statusText}`);
-      }
-
+      if (!response.ok) throw new Error(`API error: ${response.statusText}`);
       const data = await response.json();
       const rawResponse = data.choices[0].message.content;
-      
       try {
         return JSON.parse(rawResponse);
       } catch (e) {
-        const cleaned = rawResponse
-          .replace(/```json\n?/g, '')
-          .replace(/```\n?/g, '')
-          .trim();
-        return JSON.parse(cleaned);
+        return JSON.parse(rawResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim());
       }
-      
+    };
+
+    const analysisTask = async () => {
+      try {
+        // Stage 1: Reading is fast, notify immediately
+        if (onProgress) onProgress('stage1');
+        
+        // Stage 2: Players
+        const playersData = await runCall(PLAYER_PROMPT);
+        if (onProgress) onProgress('stage2');
+
+        // Stage 3: Team Report
+        const teamData = await runCall(TEAM_PROMPT);
+        if (onProgress) onProgress('stage3');
+
+        // Stage 4: Coach Brief
+        const briefData = await runCall(BRIEF_PROMPT);
+        if (onProgress) onProgress('stage4');
+
+        return {
+          players: playersData.players || [],
+          team_summary: teamData.team_summary || {},
+          coach_decisions: briefData.coach_decisions || {}
+        };
+      } catch (err) {
+        throw err;
+      }
+    };
+
+    // Strict 12-second timeout
+    const timeoutTask = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error("Timeout exceeded")), 12000);
+    });
+
+    try {
+      return await Promise.race([analysisTask(), timeoutTask]);
     } catch (error) {
-      console.warn("API failed, using fallback:", error);
-      return FALLBACK_ANALYSES.demo_live;
+      console.warn("API failed or timed out, triggering smart fallback:", error);
+      throw error;
     }
   }
 };

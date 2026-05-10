@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ScoreboardInput from '../components/ScoreboardInput/ScoreboardInput';
 import { groqService } from '../services/groqService';
 import { storageService } from '../services/storageService';
+import { FALLBACK_ANALYSES } from '../utils/fallbackData';
 
 function LoadingScreen({ elapsed, progress, activeStep, steps }) {
   return (
@@ -18,18 +19,21 @@ function LoadingScreen({ elapsed, progress, activeStep, steps }) {
         <h2 className="text-display-lg font-display mb-6 text-textPrimary text-center">Analyzing match...</h2>
         <div className="space-y-3 w-full mb-8">
           {steps.map((step, i) => (
-            <div key={i} className={`flex items-center gap-3 text-sm font-mono transition-all duration-500 ${i < activeStep ? 'text-textPrimary' : 'text-textTertiary'}`} style={{ opacity: i < activeStep ? 1 : 0.3, transform: i < activeStep ? 'translateX(0)' : 'translateX(8px)' }}>
-              <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${i < activeStep ? 'bg-accent/20 border border-accent/40' : 'border border-border'}`}>
-                {i < activeStep && <div className="w-2 h-2 rounded-full bg-accent animate-scale-pop" />}
+            <div key={i} className={`flex items-center gap-3 text-sm font-mono transition-all duration-500 ${i <= activeStep ? 'text-textPrimary' : 'text-textTertiary'}`} style={{ opacity: i <= activeStep ? 1 : 0.3, transform: i <= activeStep ? 'translateX(0)' : 'translateX(8px)' }}>
+              <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${i <= activeStep ? 'bg-accent/20 border border-accent/40' : 'border border-border'}`}>
+                {i <= activeStep && <div className="w-2 h-2 rounded-full bg-accent animate-scale-pop" />}
               </div>
               {step}
             </div>
           ))}
         </div>
-        <div className="w-full bg-surface2 rounded-full h-2 overflow-hidden mb-3">
-          <div className="h-full bg-gradient-to-r from-accent to-accentHover rounded-full transition-all duration-200 ease-linear" style={{ width: `${progress}%` }} />
+        <div className="w-full bg-surface2 rounded-full h-2 overflow-hidden mb-1">
+          <div className="h-full bg-gradient-to-r from-aggressor-text to-aggressor-text rounded-full transition-all duration-300 ease-out" style={{ width: `${progress}%` }} />
         </div>
-        <span className="text-xs text-textTertiary font-mono">{elapsed}s elapsed</span>
+        <div className="w-full flex justify-between mt-2">
+          <span className="text-[10px] text-textTertiary font-mono uppercase tracking-wider">{steps[activeStep]}</span>
+          <span className="text-xs text-textTertiary font-mono">{elapsed.toFixed(1)}s</span>
+        </div>
       </div>
     </div>
   );
@@ -43,44 +47,66 @@ export default function AnalysisFlow({ addToast }) {
   const navigate = useNavigate();
 
   const steps = [
-    'Running player pattern analysis',
-    'Identifying team scoring trends',
-    'Building coach decision brief',
+    'Reading scorecard...',
+    'Analyzing players...',
+    'Building team report...',
+    'Preparing coach brief...',
   ];
 
   const handleBack = () => navigate('/dashboard');
 
   const runAnalysis = async (format, phase, scorecardText) => {
     setIsAnalyzing(true);
-    
     const startTime = Date.now();
-    const duration = 3000;
+    let isFallback = false;
+    let analysisData;
     
-    const progressInterval = setInterval(() => {
-      const el = Date.now() - startTime;
-      setProgress(Math.min((el / duration) * 100, 98));
-      setElapsed(Math.floor(el / 1000));
-    }, 50);
+    // Timer to update elapsed seconds UI smoothly
+    const timerInterval = setInterval(() => {
+      setElapsed((Date.now() - startTime) / 1000);
+    }, 100);
 
-    const stepTimers = steps.map((_, i) => setTimeout(() => setActiveStep(i + 1), (i + 1) * 800));
+    const handleProgress = (stage) => {
+      if (stage === 'stage1') { setActiveStep(0); setProgress(25); }
+      if (stage === 'stage2') { setActiveStep(1); setProgress(60); }
+      if (stage === 'stage3') { setActiveStep(2); setProgress(85); }
+      if (stage === 'stage4') { setActiveStep(3); setProgress(100); }
+    };
 
     try {
-      const analysisData = await groqService.analyze(format, phase, scorecardText);
-      const newMatchRecord = { format, phase, rawScorecard: scorecardText, analysis: analysisData };
+      analysisData = await groqService.analyze(format, phase, scorecardText, handleProgress);
+    } catch (error) {
+      console.warn("Analysis failed, using fallback:", error);
+      isFallback = true;
+      analysisData = FALLBACK_ANALYSES.demo_live;
+      // Force UI to complete
+      setActiveStep(3);
+      setProgress(100);
+    }
+
+    clearInterval(timerInterval);
+    const totalTimeMs = Date.now() - startTime;
+    setElapsed(totalTimeMs / 1000);
+
+    // Minor delay to let the user see 100% complete
+    setTimeout(() => {
+      const newMatchRecord = { 
+        format, 
+        phase, 
+        rawScorecard: scorecardText, 
+        analysis: analysisData,
+        isFallback,
+        processingTime: totalTimeMs
+      };
       const savedMatch = storageService.saveMatch(newMatchRecord);
       
-      clearInterval(progressInterval);
-      stepTimers.forEach(clearTimeout);
-      
-      addToast('Analysis complete — coaching brief ready', 'success');
+      if (isFallback) {
+        addToast('Using cached analysis — API unavailable', 'warning');
+      } else {
+        addToast('Analysis complete', 'success');
+      }
       navigate(`/match/${savedMatch.id}`);
-    } catch (error) {
-      clearInterval(progressInterval);
-      stepTimers.forEach(clearTimeout);
-      console.error("Analysis failed:", error);
-      addToast('Analysis failed. Using cached demo data.', 'warning');
-      setIsAnalyzing(false);
-    }
+    }, 500);
   };
 
   if (isAnalyzing) {

@@ -66,6 +66,13 @@ export default function MatchResults() {
 
   return (
     <div className="min-h-full">
+      {/* Fallback Banner */}
+      {match.isFallback && (
+        <div className="bg-liability-bg border-b border-liability-border text-liability-text px-4 py-2 text-xs font-mono text-center">
+          ⚠️ Using cached analysis — API unavailable
+        </div>
+      )}
+
       {/* Sticky Header */}
       <header className="glass border-b border-border sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
@@ -149,6 +156,13 @@ export default function MatchResults() {
         {activeTab === 'brief' && (
           <div className="animate-fade-in">
             <CoachBrief brief={match.analysis.coach_decisions} />
+          </div>
+        )}
+
+        {/* Timing Display */}
+        {match.processingTime && (
+          <div className="mt-12 text-center text-[10px] text-textTertiary font-mono uppercase tracking-wider">
+            Analysis completed in {(match.processingTime / 1000).toFixed(1)}s
           </div>
         )}
       </div>
