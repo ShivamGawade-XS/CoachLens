@@ -206,7 +206,7 @@ export default function Dashboard() {
                         </td>
                         <td className="px-5 py-3.5 text-center hidden md:table-cell">
                           {clutch && (
-                            <span className={`text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-${clutch.badgeColor}-bg text-${clutch.badgeColor}-text border border-${clutch.badgeColor}-border`}>
+                            <span className={`whitespace-nowrap text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-${clutch.badgeColor}-bg text-${clutch.badgeColor}-text border border-${clutch.badgeColor}-border`}>
                               {clutch.badge}
                             </span>
                           )}
