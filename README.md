@@ -2,7 +2,7 @@
 
 > **Paste your scorecard. Get a full coaching brief in 30 seconds.**
 
-CoachLens is an AI-powered post-match analysis tool for amateur cricket coaches. It transforms raw scorecard data into actionable player feedback, team pattern reports, and pre-match decision briefs — the intelligence layer that currently does not exist at the grassroots level.
+CoachLens is an AI-powered **dugout intelligence platform** for amateur cricket coaches. It transforms raw scorecard data into actionable player feedback, team pattern reports, pre-match decision briefs, and real-time in-match tactical advice — the intelligence layer that does not exist at the grassroots level.
 
 Built for **GBOA Code Premier League 2026 — Round 2** by Crimson Syndicate (AITD, Goa).
 
@@ -12,70 +12,78 @@ Built for **GBOA Code Premier League 2026 — Round 2** by Crimson Syndicate (AI
 
 After every local cricket match, the coach gathers the team and says — *"we need to bat better, bowl tighter, field harder."* Every single time. No specifics. No plan. Players go home, nothing changes, and they lose again next week.
 
-Amateur cricket coaches have no analytical tools. CricHeroes gives them a scoreboard — raw numbers with zero context. There is no tool that tells a coach:
-
-- Here is **exactly why you lost** (over-by-over)
-- Here is **who needs to change what** (player-level, number-backed)
-- Here is **what to tell each player** at tomorrow's practice
-- Here is your **tactical decision** for next week
-
-This gap exists for 3 lakh+ amateur cricket teams across India. IPL franchises pay lakhs for this intelligence. Amateur coaches get nothing. **CoachLens fixes that.**
+Amateur cricket coaches have no analytical tools. CricHeroes gives them a scoreboard — raw numbers with zero context. CoachLens fixes that — and now goes further: it sits in the dugout **during** the match, not just after.
 
 ---
 
 ## Features
 
+### 📊 Post-Match Analysis
 | Feature | Description |
 |---|---|
-| 🎯 **Smart Scorecard Input** | Paste raw text scorecard or enter stats manually. Supports T20 and ODI formats. |
-| 👤 **Player Intelligence Cards** | Colour-coded per-player cards: Performance Tag, Intent Score, Pressure Index, one drill. |
-| 📊 **Team Pattern Report** | Match turning point, strongest partnership, bowling inefficiency, scoring pattern vs par. |
-| 📋 **Coach Decision Brief** | Selection calls, batting order changes, bowling rotation, Toss Advisor, Tactical Mismatch Detection. |
-| 📱 **WhatsApp Integration** | Generate 2-sentence personalized feedback messages for every player and send directly to WhatsApp. |
-| 📈 **Season Form Engine** | Client-side engine calculating player consistency, Clutch Factor, and team W/L form across all matches. |
-| 🗂️ **Match History Dashboard** | Past analyses stored locally, accessible anytime. |
+| 🎯 **Smart Scorecard Input** | Paste raw text or use OCR photo scanning via Tesseract.js |
+| 👤 **Player Intelligence Cards** | Colour-coded cards: Tag, Intent Score, Pressure Index, one drill |
+| 📊 **Team Pattern Report** | Match turning point, partnership, bowling inefficiency, run rate chart |
+| 📋 **Coach Decision Brief** | Selection calls, batting order, bowling rotation, Toss Advisor |
+| 📱 **WhatsApp Integration** | Generate personalised 2-sentence feedback per player |
+| 📈 **Season Form Engine** | Consistency, Clutch Factor, and W/L trend across all matches |
+| 📄 **Formal Report Generator** | Full AI-generated coaching report in a polished printable format |
+| 📸 **Instagram Match Card** | Canvas-based 1080×1080 shareable graphic with branding, top performer, and match summary |
+
+### 🔴 Live Match Tools (`/tools`)
+| Tool | Description |
+|---|---|
+| 📻 **Live Match Assistant** | Ball-by-ball input → AI tactical recommendations after each over |
+| 🎯 **Target Score Advisor** | Real-time par score calculator based on ground size, wickets, current RR |
+| 🛡️ **Best XI Selector** | Paste a squad of 13–15, get an AI-ranked playing XI with full justifications |
+| ⚔️ **Player Comparison** | Head-to-head metrics to settle selection debates with numbers |
+| 🎯 **Shot Weakness Mapper** | Dismissal pattern analysis per batter — feeds an opponent brief |
+| 🗓️ **Squad Rotation Planner** | Tournament workload management: who plays when across 5+ matches |
+| 📉 **Choke Detector** | Flags players whose stats drop in knockouts vs league matches |
+| 📸 **Scorecard Scanner** | OCR via Tesseract.js — take a photo of a handwritten scorebook |
+
+### 🧠 AI Intelligence Layer
+| Feature | Description |
+|---|---|
+| 🎭 **Coach Tone Selector** | Flip between Direct, Encouraging, and Brutal Honest — AI rewrites all cards live |
+| 📈 **Run Rate Chart** | Over-by-over line chart with red turning point marker |
+| 🌊 **Momentum Chart** | Visual team momentum heatmap from raw over data |
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
-
 - Node.js v18+
-- npm or yarn
+- npm
 - A [Groq API key](https://console.groq.com) (free tier is sufficient)
 
 ### Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-team/coachlens.git
-cd coachlens
-
-# Install dependencies
+git clone https://github.com/ShivamGawade-XS/CoachLens.git
+cd CoachLens
 npm install
-
-# Set up environment variables
-cp .env.example .env
 ```
 
-### Environment Variables
+### Environment Variables (Local Dev)
 
 Create a `.env` file in the project root:
 
 ```env
-REACT_APP_GROQ_API_KEY=your_groq_api_key_here
+VITE_GROQ_API_KEY=your_groq_api_key_here
 ```
 
-> ⚠️ Never commit your `.env` file. It is already in `.gitignore`.
+> ⚠️ Never commit your `.env` file. It is already in `.gitignore`.  
+> In production, set the key in **Settings → API Configuration** inside the app (stored in `localStorage`).
 
 ### Run Locally
 
 ```bash
-npm start
+npm run dev
 ```
 
-Opens at `http://localhost:3000`
+Opens at `http://localhost:5173`
 
 ### Build for Production
 
@@ -90,10 +98,14 @@ npm run build
 | Layer | Tool |
 |---|---|
 | Frontend | React 18 + Tailwind CSS |
-| AI Engine | Groq API (Llama 3.3 70B) |
-| Data Storage | localStorage (Phase 1) / Supabase (Phase 2) |
+| AI Engine | Groq API (`llama-3.1-8b-instant`) |
+| Visualisation | Recharts (line charts, momentum maps) |
+| OCR | Tesseract.js v5 (client-side, no API) |
+| PDF Export | html2canvas + jsPDF |
+| Social Cards | HTML Canvas API (1080×1080 PNG) |
+| Auth | Supabase Auth |
+| Data Storage | localStorage (MVP) / Supabase (Phase 2) |
 | Hosting | Vercel |
-| Card Export | html2canvas + jsPDF |
 
 **Total infrastructure cost: Rs. 0**
 
@@ -102,31 +114,56 @@ npm run build
 ## Project Structure
 
 ```
-coachlens/
+CoachLens/
 ├── public/
 ├── src/
 │   ├── components/
-│   │   ├── ScoreboardInput/      # Paste + manual entry forms
-│   │   ├── PlayerCard/           # Individual player analysis cards
-│   │   ├── TeamReport/           # Team-level pattern summary
-│   │   ├── CoachBrief/           # Pre-match decision document
-│   │   └── Dashboard/            # Match history view
+│   │   ├── BestXISelector/         # AI squad selection
+│   │   ├── ChatAssistant/          # Floating AI coach chat
+│   │   ├── ChokeDetector/          # Big-match pressure dropoff analysis
+│   │   ├── CoachBrief/             # Pre-match decision document
+│   │   ├── Dashboard/              # Match history + season form
+│   │   ├── FormalReportModal/      # Full AI coaching report
+│   │   ├── InstagramCard/          # Canvas 1080×1080 shareable graphic
+│   │   ├── LiveMatchAssistant/     # Ball-by-ball dugout tool
+│   │   ├── MomentumChart/          # Over-by-over momentum visualisation
+│   │   ├── PlayerCard/             # Individual player analysis cards
+│   │   ├── PlayerComparison/       # Head-to-head selection tool
+│   │   ├── RunRateChart/           # Run rate line chart with turning point
+│   │   ├── ScoreboardInput/        # Paste + load sample + import URL
+│   │   ├── ScorecardScanner/       # Tesseract.js OCR photo scanner
+│   │   ├── ShotWeaknessMapper/     # Dismissal pattern + opponent brief
+│   │   ├── SquadRotationPlanner/   # Tournament workload AI planner
+│   │   ├── TargetScoreAdvisor/     # Live par score calculator
+│   │   ├── TeamReport/             # Team-level pattern summary
+│   │   └── WhatsAppModal/          # Player message generator
+│   │
+│   ├── pages/
+│   │   ├── AnalysisFlow.jsx        # Step-by-step match analysis flow
+│   │   ├── AppPages.jsx            # Teams + Settings components
+│   │   ├── CoachTools.jsx          # All 8 live tools hub
+│   │   ├── LandingPage.jsx         # Marketing home page
+│   │   ├── MatchResults.jsx        # Per-match analysis view
+│   │   ├── PlayerProfile.jsx       # Cross-match player profile
+│   │   └── TeamProfile.jsx         # Team management page
 │   │
 │   ├── services/
-│   │   ├── groqService.js        # Groq API call + error handling
-│   │   ├── promptBuilder.js      # System prompt assembly
-│   │   └── storageService.js     # localStorage helpers
+│   │   ├── groqService.js          # Groq API calls + tone + progress callbacks
+│   │   └── storageService.js       # localStorage + demo seeding
 │   │
-│   ├── utils/
-│   │   ├── parseScorecard.js     # Input preprocessing
-│   │   └── fallbackData.js       # Pre-cached demo responses
-│   │
-│   └── App.jsx
+│   └── utils/
+│       ├── coachingMetrics.js      # Clutch factor, pressure index
+│       ├── fallbackData.js         # Pre-cached demo responses
+│       ├── mismatchLogic.js        # Role/position mismatch detection
+│       ├── parseScorecard.js       # Input preprocessing
+│       └── seasonScoring.js        # Cross-match season form engine
 │
 ├── .env.example
-├── .env                          # ← not committed
 ├── .gitignore
 ├── package.json
+├── PRD.md
+├── DESIGN_DOC.md
+├── TECH_STACK.md
 └── README.md
 ```
 
@@ -134,26 +171,23 @@ coachlens/
 
 ## How It Works
 
-### 1. Scorecard Input
-Paste a CricHeroes scorecard (or any plain text format) into the input field. Select match format (T20/ODI) and phase focus (Powerplay / Middle / Death).
+### Post-Match Flow
+1. **Paste** a CricHeroes scorecard (or click "Load Sample")
+2. **Select** format (T20/ODI) and phase focus
+3. **Analyze** — three parallel Groq API calls complete in ~8–15 seconds
+4. View **Player Cards**, **Team Report** (with charts), and **Coach Brief**
+5. **Reanalyze** with a different Tone (Direct / Encouraging / Brutal Honest) in one click
 
-### 2. AI Analysis
-CoachLens sends the scorecard to the **Groq API (Llama 3.3 70B)** with a carefully engineered system prompt that forces structured JSON output. Analysis completes in under 10 seconds.
-
-### 3. Structured Output
-The AI returns a JSON object parsed into:
-- Per-player performance tags and feedback
-- Team-level turning point and pattern analysis
-- Three concrete pre-match coaching decisions
-
-### 4. Shareable Cards
-Each player card can be exported as an image (via `html2canvas`) and shared via WhatsApp link — individually, not as a public broadcast.
+### Live Match Flow
+1. Open **Coach Tools → Live Assistant**
+2. Log balls (0/1/2/3/4/6/W) during each over
+3. At over completion, AI returns tactical advice (field placement, bowler changes, pressure index)
 
 ---
 
 ## AI Prompt Design
 
-The core AI prompt enforces strict rules to ensure output quality:
+All prompts enforce strict rules:
 
 ```
 Rules:
@@ -161,55 +195,53 @@ Rules:
 ✓ No vague language ("bat better", "improve consistency")
 ✓ Direct coaching language — not motivational
 ✓ Flag insufficient data explicitly rather than guessing
-✓ No assumptions about pitch, weather, or opposition
+✓ Tone parameter controls language style across all output fields
 ```
 
-Temperature is set to `0.3` to maximise factual consistency and minimise hallucination.
+Temperature: `0.3` — maximises factual consistency, minimises hallucination.  
+Model: `llama-3.1-8b-instant` — fastest inference, within free tier TPD limits.
 
 ---
 
 ## Demo
 
-### Pre-seeded Teams
-The app ships with 3 pre-seeded matches for demo purposes:
-- **Panaji Panthers vs Margao Strikers** (Won · T20)
-- **Margao Strikers vs Vasco Warriors** (Lost · T20)
-- **Vasco Warriors vs Ponda Eagles** (Won · T20)
+### Pre-seeded Matches
+The app ships with 6 pre-seeded matches across 3 teams:
+- **Panaji Panthers**, **Margao Strikers**, **Vasco Warriors**, **Ponda Eagles**
 
-### API Fallback
-If the Groq API is unavailable during a demo, CoachLens automatically uses a pre-cached analysis response. Output is identical to a live API response.
+### API Key
+Set via **Settings → API Configuration** in the app. No `.env` needed in production.
 
 ---
 
 ## Deployment (Vercel)
 
-1. Push to GitHub
-2. Connect repository to [Vercel](https://vercel.com)
-3. Add `REACT_APP_GROQ_API_KEY` in Vercel environment variables
-4. Deploy
-
-Vercel auto-deploys on every push to `main`.
-
----
-
-## Why Not CricHeroes?
-
-> *"CricHeroes is a scoreboard. It records what happened. CoachLens tells you what it means and what to do next."*
-
-CricHeroes and CoachLens are complementary. Phase 2 of CoachLens pulls directly from CricHeroes via API — so coaches do not have to enter data twice. CoachLens is not a competitor; it is the intelligence layer on top.
+1. Push to GitHub (`git push origin main`)
+2. Connect repo to [Vercel](https://vercel.com)
+3. Optionally add `VITE_GROQ_API_KEY` in Vercel environment variables
+4. Deploy — auto-deploys on every `main` push
 
 ---
 
 ## Roadmap
 
-### Phase 1 — MVP (Current)
-- [x] Smart scorecard input (paste + manual)
-- [x] Player Intelligence Cards (with Intent & Pressure metrics)
-- [x] Team Pattern Report
-- [x] Coach Decision Brief (with Toss Advisor & Mismatch Logic)
+### Phase 1 — MVP ✅ (Completed)
+- [x] Smart scorecard input (paste + OCR photo scanner)
+- [x] Player Intelligence Cards with Intent & Pressure metrics
+- [x] Team Pattern Report with Run Rate Chart + Turning Point Marker
+- [x] Coach Decision Brief with Toss Advisor & Mismatch Detection
 - [x] WhatsApp Coach Integration
 - [x] Season Form & Clutch Factor Engine
-- [x] Pre-seeded demo data + API fallback
+- [x] Formal Report Generator
+- [x] Instagram Match Card Generator
+- [x] Coach Tone Selector (Direct / Encouraging / Brutal Honest)
+- [x] Live Match Assistant (ball-by-ball dugout tool)
+- [x] Target Score Advisor
+- [x] Best XI Selector (AI-powered)
+- [x] Player Comparison Card
+- [x] Shot Weakness Mapper & Opponent Brief
+- [x] Squad Rotation Planner (tournament workload)
+- [x] Choke Detector (knockout vs league stats)
 
 ### Phase 2 — Month 1–3
 - [ ] CricHeroes API integration (auto scorecard import)
@@ -225,18 +257,6 @@ CricHeroes and CoachLens are complementary. Phase 2 of CoachLens pulls directly 
 
 ---
 
-## Monetisation
-
-| Tier | Price | Features |
-|---|---|---|
-| **Free** | Rs. 0 | Single match analysis, basic player cards, team report |
-| **Team** | Rs. 99/month | Multi-match trends, shareable cards, full brief history, PDF export |
-
-**Market:** 3 lakh+ registered amateur cricket teams in India.  
-**At 1% conversion → Rs. 2.97L MRR.**
-
----
-
 ## Team: Crimson Syndicate
 
 | Member | Role |
@@ -247,12 +267,6 @@ CricHeroes and CoachLens are complementary. Phase 2 of CoachLens pulls directly 
 
 **Institution:** Agnel Institute of Technology and Design (AITD), North Goa  
 **Affiliated:** Goa University
-
----
-
-## Contributing
-
-This is a hackathon project. For the purposes of GCPL 2026 Round 2, contributions are limited to team members.
 
 ---
 

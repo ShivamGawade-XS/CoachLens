@@ -1,7 +1,7 @@
 # Product Requirements Document (PRD)
-# CoachLens — AI Coaching Intelligence for Amateur Cricket
+# CoachLens — AI Dugout Intelligence for Amateur Cricket
 
-**Version:** 1.0  
+**Version:** 2.0  
 **Authors:** Crimson Syndicate (Shivam Mahesh Gawade, Ashwith Ashok Shetty, Rahul Ravi Rathod)  
 **Hackathon:** GBOA Code Premier League 2026 — Round 2  
 **Institution:** Agnel Institute of Technology and Design (AITD), Goa University  
@@ -18,32 +18,35 @@
 *Paste your scorecard. Get a full coaching brief in 30 seconds.*
 
 ### 1.3 Product Summary
-CoachLens is an AI-powered post-match analysis assistant built for amateur cricket coaches and team captains. It transforms raw scorecard data into structured, actionable coaching intelligence — player-by-player performance tags, team pattern reports, and pre-match decision briefs — in under 30 seconds.
+CoachLens is an AI-powered **dugout intelligence platform** for amateur cricket coaches. It started as a post-match analysis tool and has evolved into a comprehensive real-time coaching ecosystem — covering everything from ball-by-ball live advice during a match, to tournament squad rotation planning, to shareable Instagram graphics that drive viral growth.
 
-CoachLens is not a scoreboard, stats tracker, or fantasy platform. It is the **intelligence layer** between raw match data and actual coaching decisions.
+CoachLens is not a scoreboard, stats tracker, or fantasy platform. It is the **intelligence layer** between raw match data and actual coaching decisions — before, during, and after every match.
 
 ### 1.4 Problem Statement
 Amateur cricket coaches in India have no analytical tools. Platforms like CricHeroes provide scoreboard data but zero interpretive context. After every local match, coaches deliver generic, vague feedback — *"bat better, bowl tighter"* — because they lack the tools to do otherwise.
 
 This gap affects **3 lakh+ registered amateur cricket teams** across India. IPL franchises spend lakhs on coaching analytics; grassroots coaches get nothing.
 
-**The specific unmet need:**
-- Why exactly did we lose? (Over-level breakdown)
+**The specific unmet needs (v2.0 expanded):**
+- Why exactly did we lose? (Over-level breakdown with charts)
 - Who needs to change what? (Player-level, number-backed)
 - What do I tell each player at tomorrow's practice?
 - What are my selection and batting order decisions for next match?
+- **[NEW]** What should I do RIGHT NOW, mid-match after over 8?
+- **[NEW]** Which 11 players should I pick for this specific opponent?
+- **[NEW]** Who chokes in knockouts vs who performs?
+- **[NEW]** How do I rotate my squad across a 5-match tournament without burning out my pace attack?
 
 ### 1.5 Product Vision
-Give every amateur cricket coach in a tier-2/tier-3 Indian city the same analytical edge that IPL franchises pay lakhs for — free, instant, and actionable.
+Give every amateur cricket coach in a tier-2/tier-3 Indian city the same analytical edge that IPL franchises pay lakhs for — free, instant, actionable, and available at every stage of the match lifecycle.
 
 ---
 
 ## 2. Target Users
 
 ### 2.1 Primary User
-**Amateur cricket coach or team captain** running a local T20 league side in tier-2/tier-3 cities across India.
+**Amateur cricket coach or team captain** running a local T20 league side.
 
-**User Profile:**
 | Attribute | Detail |
 |---|---|
 | Team size | 10–15 players per side |
@@ -53,171 +56,163 @@ Give every amateur cricket coach in a tier-2/tier-3 Indian city the same analyti
 | Decision-making process | Gut feeling and experience |
 | Biggest frustration | "I look at the scorecard and I still don't know what to tell them." |
 
-### 2.2 Secondary User
-**Amateur cricket players** who receive individual shareable feedback cards via link — private, personalised, and not publicly posted.
+### 2.2 Secondary Users
+- **Amateur players** who receive individual feedback cards
+- **Tournament organisers** who want team analytics across rounds
 
 ---
 
-## 3. Core Features
+## 3. Feature Inventory (v2.0 — All Implemented)
 
-### 3.1 Feature 1 — Smart Scorecard Input
-**Priority:** P0 (MVP)
+### P0 — Core Analysis (Post-Match)
 
-- Paste raw text scorecard directly into input field
-- Manual per-player stat entry as fallback
-- Format selection: T20 / ODI
-- Match phase focus: Powerplay / Middle Overs / Death Overs
-- Basic input validation with user-friendly error messages
+#### F1 — Smart Scorecard Input ✅
+- Paste raw text (CricHeroes-style or plain text)
+- Click "Load Sample" for instant demo data
+- OCR photo scanning via Tesseract.js (no API cost, runs in-browser)
+- Format: T20 / ODI; Phase focus: Full / Powerplay / Middle / Death
 
-**Acceptance Criteria:**
-- Coach can paste a standard CricHeroes-style scorecard and proceed to analysis within 60 seconds
-- System handles incomplete data gracefully with "insufficient data" flags rather than errors
-- Minimum viable input: 5 players with at least one batting or bowling stat each
+#### F2 — Player Intelligence Cards ✅
+Per-player card containing:
+- **Tag:** Anchor / Aggressor / Liability / Improving
+- **Intent Score:** 1–10 metric
+- **Key Stat:** Primary batting/bowling number
+- **What Worked / What Failed:** Specific, number-backed
+- **Next Match Instruction + Practice Drill**
 
----
+#### F3 — Team Pattern Report ✅
+- Match Turning Point (exact over cited)
+- Strongest Partnership
+- Bowling Inefficiency
+- Over-by-Over Run Rate Chart (Recharts) with red turning point marker
+- Momentum Heatmap visualisation
 
-### 3.2 Feature 2 — Player Intelligence Cards
-**Priority:** P0 (MVP)
+#### F4 — Coach Decision Brief ✅
+- Selection Call (who earned it / who is on notice)
+- Batting Order Adjustment
+- Bowling Rotation
+- Toss Advisor (based on historical win/loss data)
+- Tactical Mismatch Warnings (role vs position conflicts)
+- Tactical Focus for next match
 
-For every player in the scorecard, the AI generates a colour-coded intelligence card containing:
+#### F5 — WhatsApp Integration ✅
+- AI generates personalised 2-sentence feedback per player
+- Opens WhatsApp Web pre-filled; player cannot see others' messages
 
-| Field | Description |
-|---|---|
-| **Performance Tag** | Anchor / Aggressor / Liability / Improving |
-| **Intent Score** | 1-10 pure-client gauge scoring player effort/intent |
-| **Pressure Index** | Badge identifying 'Clutch' vs 'Pressure Risk' behavior |
-| **What Worked** | Specific, number-backed observation |
-| **What Failed** | Specific, number-backed observation |
-| **Next Match Instruction** | One concrete, actionable change |
-| **Practice Drill** | One specific drill or exercise |
-
-**Tag Colour Coding:**
-- 🟢 Green — Aggressor
-- 🔵 Blue — Anchor
-- 🟡 Yellow — Improving
-- 🔴 Red — Liability
-
-**Example Output:**
-> "Rahul (Batting) — Liability in Powerplay. Faced 28 balls for 19 runs in first 6 overs. Dot ball % of 61% is highest in the team. Recommendation: Drop to #4, use as stabilizer in overs 7–15. Drill: Powerplay aggression nets with 8-ball sequences."
-
-**Acceptance Criteria:**
-- Every insight references a specific number from the scorecard
-- No vague language ("improve consistency", "bat better") in any card
-- Cards render within 10 seconds of analysis trigger
-- Insufficient data flagged explicitly rather than guessed
+#### F6 — Season Form Engine ✅
+- Consistency scores aggregated across all stored matches
+- Clutch Factor: flags Big Match Players vs Frontrunners
+- Trend Indicators: up / flat / down across last 2 matches
 
 ---
 
-### 3.3 Feature 3 — Team Pattern Report
-**Priority:** P0 (MVP)
+### P0 — Real-Time / Live Match Tools
 
-A single-page team-level analysis identifying:
+#### F7 — Live Match Assistant ✅
+The core dugout tool. Coach logs every ball (0/1/2/3/4/6/W) in real time. At the end of each over, AI returns:
+- Tactical recommendation (2–3 specific actions)
+- Pressure rating (Low / Medium / High / Critical)
+- Projected final score
+- Stat-backed reasoning (e.g., "their #4 averages 12 vs spin — bring spinner now")
 
-- **Match Turning Point:** Exact over and event where momentum shifted
-- **Strongest Partnership:** Player names and run contribution
-- **Bowling Inefficiency:** Which bowler, which overs, what went wrong
-- **Scoring Pattern vs Par:** Team run rate against expected par score
+#### F8 — Target Score Advisor ✅
+Input: current score, overs completed, wickets in hand, ground size.  
+Output: par score range, aggressive target threshold, concrete tactical advice.
 
-**Acceptance Criteria:**
-- Report generated from same AI call as player cards (no additional user action)
-- All observations reference specific data points from scorecard
-- Presented as a scannable, one-screen summary
+#### F9 — Best XI Selector ✅
+Input: squad of 13–15 players with roles + opponent context.  
+Output: ranked playing XI with batting order, justification per selection, and specific reason why dropped players were excluded.
 
----
-
-### 3.4 Feature 4 — Coach Decision Brief
-**Priority:** P0 (MVP)
-
-Pre-match intelligence document covering decisions and tactical flaws:
-
-1. **AI Toss Advisor** — Analyzes past win/loss records when batting vs fielding first to recommend a Toss decision.
-2. **Tactical Mismatch Warnings** — Flags logical errors like using Anchors at #8 or Liability bowlers in death overs.
-3. **Selection Call** — Who earned their spot; who is on notice and why
-4. **Batting Order Adjustment** — Specific positional swap with number-backed reason
-5. **Bowling Rotation Suggestion** — Specific change with reason
-6. **One Tactical Focus** — Single sentence priority for next match
-
-**Acceptance Criteria:**
-- Decisions are concrete and specific (e.g., "Move Rahul from #3 to #5; his powerplay dot ball % of 61% makes him unsuitable for top order")
-- No generic motivational language
-- Brief fits on one screen without scrolling
+#### F10 — Player Comparison Card ✅
+Head-to-head metrics for two players competing for one spot. Numbers only. No opinion. AI verdict at the bottom.
 
 ---
 
-### 3.5 Feature 5 — WhatsApp Coach Integration
-**Priority:** P0 (MVP)
+### P0 — Growth & Analytics
 
-- "Send to Player" button on every card opens a WhatsApp modal.
-- LLM generates a personalized, 2-sentence feedback message based on the player's tag and stats.
-- Opens native WhatsApp Web/App pre-filled with the message.
+#### F11 — Instagram Match Card Generator ✅
+- Canvas-based 1080×1080 PNG (no external API)
+- Dark premium design with amber branding
+- Includes: team names, result badge, turning point quote, top performer, tactical focus, `@coachlens` growth loop
+- One-click download
 
----
+#### F12 — Formal Report Generator ✅
+- Full AI-generated coaching report in a modal
+- Printable / PDF-compatible format
+- Used for sharing with team management / tournament organisers
 
-### 3.6 Feature 6 — Season Form Engine
-**Priority:** P0 (MVP)
-
-- Dashboard table aggregating consistency across all stored matches.
-- **Clutch Factor:** Flags "Big Match Players" (better in losses) vs "Frontrunners" (only perform in wins).
-- **Trend Indicators:** Shows if a player's last 2 matches are trending up, down, or flat.
-
-**Acceptance Criteria:**
-- Link generates from individual player card in one click
-- Shareable card renders correctly on mobile (WhatsApp preview compatible)
-- Player cannot see other players' cards via their link
+#### F13 — Coach Tone Selector ✅
+- Toggle between **Direct** / **Encouraging** / **Brutal Honest**
+- AI rewrites all player cards, team report, and coach brief live on screen
+- Demonstrates dynamic prompt engineering to judges
 
 ---
 
-### 3.6 Feature 6 — Match History Dashboard
-**Priority:** P1 (Post-MVP)
+### P1 — Deep Analytics
 
-- List of previously analysed matches with results
-- Quick-access to past Player Cards and Coach Briefs
-- No account required for MVP (localStorage); Supabase for persistence in Phase 2
+#### F14 — Shot Weakness Mapper ✅
+- Scans match history for dismissal patterns per batter
+- Uses regex matching against 15 dismissal types (aerial, yorker, spin, etc.)
+- Produces opponent brief: "Gets out: caught boundary (3×), bowled through gate (2×)"
+- Severity flags: High / Medium / Low
+
+#### F15 — Choke Detector ✅
+- Classifies matches as League or Knockout (auto-detected + manual toggle)
+- Compares player impact scores across both categories
+- Flags players with significant big-match dropoffs
+- Coach note: "Do not bat X at #3 in finals — averages 38 in league, 9 in knockouts"
+
+#### F16 — Squad Rotation Planner ✅
+- Input: squad (13+) with fitness status + match schedule (5+ games)
+- AI generates per-match playing XI with rotation rationale
+- Workload summary: how many games each player plays vs rests
+- Prevents pace bowler burnout across tournament
+
+#### F17 — Scorecard Photo Scanner ✅
+- Upload or take a photo of a handwritten scorebook
+- Tesseract.js OCR runs entirely in-browser (zero API cost, zero data upload)
+- Extracts text with progress bar
+- Removes typing friction for non-tech coaches using paper scorebooks
 
 ---
 
-## 4. User Journey (6 Steps)
+## 4. User Journeys
 
+### Journey 1 — Post-Match (Coach at Home)
 ```
-STEP 1 — Open CoachLens after match
-         Coach opens web app on phone or laptop.
-         Sees match history dashboard.
-         
-STEP 2 — Enter Scorecard
-         Paste scorecard or enter per-player stats.
-         Select format (T20) and phase focus (Powerplay).
-         
-STEP 3 — Hit Analyze
-         Single button. AI processes in under 10 seconds.
-         
-STEP 4 — View Player Intelligence Cards
-         Colour-coded cards per player.
-         Each card has specific feedback + one action item.
-         
-STEP 5 — View Team Pattern Report
-         One-page summary: where exactly did we lose?
-         
-STEP 6 — Read Coach Decision Brief
-         Three decisions: batting order, bowling rotation,
-         tactical focus. Ready to implement next match.
-         
-STEP 7 — Share with Players  [Optional]
-         Generate shareable card per player.
-         Coach sends link individually.
+MATCH ENDS → Open CoachLens → Paste scorecard → Analyze (8–15 sec)
+→ Review Player Cards → Switch to "Brutal Honest" tone → Reanalyze
+→ View Team Report + Run Rate Chart (see exactly where we lost)
+→ Read Coach Brief → Download Instagram Card → Post to team WhatsApp
+```
+
+### Journey 2 — Live (Coach in Dugout)
+```
+MATCH STARTS → Open Coach Tools → Live Match Assistant
+→ Log balls over-by-over → Get AI tactic after Over 6
+→ "Bring spinner. Their #4 is 0/3 vs spin. 2 overs quota left."
+→ Execute → Log next over → Get updated recommendation
+```
+
+### Journey 3 — Pre-Match (Tournament Week)
+```
+MONDAY → Open Squad Rotation Planner → Input 5 matches + 15 players
+→ AI generates rotation plan → Rest pace bowlers for Match 3 (spin-weak opponent)
+→ Check Shot Weakness Mapper for key opposition players
+→ Open Best XI Selector → Enter opponent context → Get ranked XI
 ```
 
 ---
 
-## 5. Out of Scope (v1.0)
+## 5. Out of Scope (v2.0)
 
 | Excluded Feature | Reason |
 |---|---|
-| Live scoring / ball-by-ball tracking | Separate product category; not post-match coaching |
-| Opposition team analysis | Requires opposition data not available in paste-flow |
-| Video analysis | Infrastructure cost; out of scope for hackathon |
+| Live scoring / ball-by-ball official tracking | Separate product; requires hardware integration |
+| Video analysis | Infrastructure cost |
 | Fantasy cricket integration | Different user intent |
-| Public player profiles | Privacy risk; not requested by target user |
-| Pitch/weather condition analysis | Data not available in scorecard input |
+| Public player profiles | Privacy risk |
+| Pitch/weather condition analysis | Data not in scorecard input |
 
 ---
 
@@ -228,7 +223,8 @@ STEP 7 — Share with Players  [Optional]
 | Analyses completed | 500+ |
 | Coach retention (2nd analysis) | 40%+ |
 | Time-to-insight after paste | < 30 seconds |
-| Shareable cards generated | 200+ |
+| Instagram cards downloaded | 100+ |
+| Live Match sessions | 50+ |
 | Coach satisfaction score (survey) | 8/10+ |
 
 ---
@@ -241,12 +237,15 @@ STEP 7 — Share with Players  [Optional]
 - Single match analysis
 - Basic player cards
 - Team pattern report
+- All Coach Tools (read-only)
 
 **Paid Tier — Rs. 99/team/month:**
 - Multi-match trend tracking
 - Player shareable cards
 - Full Coach Decision Brief history
-- Export to PDF
+- PDF + Instagram card export
+- Live Match Assistant (unlimited sessions)
+- Priority API access
 
 ### 7.2 Market Sizing
 
@@ -260,36 +259,14 @@ STEP 7 — Share with Players  [Optional]
 
 ---
 
-## 8. Phased Roadmap
-
-### Phase 1 — MVP (Hackathon / Week 1)
-- Smart scorecard input (paste + manual)
-- Player Intelligence Cards
-- Team Pattern Report
-- Coach Decision Brief
-- Pre-seeded demo data
-
-### Phase 2 — Month 1–3
-- CricHeroes API integration (auto scorecard import)
-- Mobile-responsive PWA
-- Player shareable cards
-- Supabase persistence (match history)
-- Multi-sport support (football, kabaddi)
-
-### Phase 3 — Month 4–6
-- Player performance profiles across full season
-- Opposition analysis (if both teams use CoachLens)
-- Coach-to-player messaging within app
-- Export to PDF
-
----
-
-## 9. Constraints & Risks
+## 8. Technical Constraints & Risks
 
 | Risk | Mitigation |
 |---|---|
-| Groq API rate limit hit during demo | Pre-cached fallback AI response ready |
-| Scorecard format inconsistency | Liberal input parsing; manual entry fallback |
+| Groq API rate limit hit during demo | Pre-cached fallback AI response; model set to `llama-3.1-8b-instant` for max TPD |
+| Scorecard format inconsistency | Liberal input parsing + Tesseract OCR fallback + Load Sample |
 | Low data quality (5-player entries) | "Insufficient data" flags rather than bad guesses |
-| CricHeroes API not public yet | Phase 2 feature; paste flow covers Phase 1 entirely |
-| Coach not tech-savvy | WhatsApp-friendly share; one-button flow; zero onboarding required |
+| CricHeroes API not public | Phase 2 feature; paste flow covers Phase 1 entirely |
+| Coach not tech-savvy | WhatsApp-friendly share; one-button flow; OCR removes typing entirely |
+| localStorage limits | Sufficient for MVP; Supabase migration planned for Phase 2 |
+| Large JS bundle | Tesseract.js dynamically imported; Recharts in separate chunk |
