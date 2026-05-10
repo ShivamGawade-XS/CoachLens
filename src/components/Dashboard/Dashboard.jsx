@@ -10,8 +10,12 @@ export default function Dashboard() {
   const { user } = useAuth();
 
   useEffect(() => {
-    storageService.seedDemoMatches();
-    setMatches(storageService.getMatches());
+    const fetchMatches = async () => {
+      await storageService.seedDemoMatches();
+      const fetchedMatches = await storageService.getMatches();
+      setMatches(fetchedMatches);
+    };
+    fetchMatches();
   }, []);
 
   const formatDate = (isoString) => {
@@ -19,10 +23,12 @@ export default function Dashboard() {
     return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   };
 
-  const handleDelete = (e, id) => {
+  const handleDelete = async (e, id) => {
     e.stopPropagation();
-    if (storageService.deleteMatch(id)) {
-      setMatches(storageService.getMatches());
+    const success = await storageService.deleteMatch(id);
+    if (success) {
+      const updatedMatches = await storageService.getMatches();
+      setMatches(updatedMatches);
     }
   };
 
