@@ -23,33 +23,33 @@ export default function TeamReport({ report, rawScorecard, teamName, opponent })
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto py-2">
-      <div className="glass-card rounded-xl overflow-hidden">
-        {sectionConfig.map((section, index) => (
-          <div 
-            key={section.key} 
-            className={`p-6 ${index < sectionConfig.length - 1 ? 'border-b border-border' : ''} animate-fade-in-up`}
-            style={{ animationDelay: `${index * 100}ms`, opacity: 0 }}
-          >
-            <div className="flex items-center gap-2.5 mb-3">
-              <span className="text-base">{section.icon}</span>
-              <h3 className={`text-[11px] uppercase tracking-[0.2em] font-medium ${section.accentColor}`}>
-                {section.label}
-              </h3>
-            </div>
-            <p className="text-base text-textPrimary leading-relaxed pl-7">
-              {highlightNumbers(report[section.key])}
-            </p>
-          </div>
-        ))}
-      </div>
-
       {/* Momentum Visualization */}
-      <div className="animate-fade-in-up" style={{ animationDelay: '400ms', opacity: 0 }}>
+      <div className="animate-fade-in-up" style={{ animationDelay: '0ms', opacity: 0 }}>
         <MomentumChart
           rawScorecard={rawScorecard}
           teamName={teamName}
           opponent={opponent}
         />
+      </div>
+
+      <div className="glass-card rounded-xl overflow-hidden">
+        {sectionConfig.map((section, index) => (
+          <div 
+            key={section.key} 
+            className={`p-6 ${index < sectionConfig.length - 1 ? 'border-b border-border' : ''} animate-fade-in-up`}
+            style={{ animationDelay: `${(index + 1) * 100}ms`, opacity: 0 }}
+          >
+            <div className="flex items-center gap-2.5 mb-3">
+               <span className="text-base">{section.icon}</span>
+               <h3 className={`text-[11px] uppercase tracking-[0.2em] font-medium ${section.accentColor}`}>
+                 {section.label}
+               </h3>
+             </div>
+             <p className="text-base text-textPrimary leading-relaxed pl-7">
+               {highlightNumbers(report[section.key])}
+             </p>
+          </div>
+        ))}
       </div>
     </div>
   );
