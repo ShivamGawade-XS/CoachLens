@@ -25,6 +25,7 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
   const [format, setFormat] = useState('T20');
   const [phase, setPhase] = useState('Full Match');
   const [scorecardText, setScorecardText] = useState('');
+  const [inputMode, setInputMode] = useState('paste');
   const [error, setError] = useState(null);
   
   const handleAnalyze = () => {
@@ -110,14 +111,29 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
 
           {/* Scorecard Input Card */}
           <div className="glass-card rounded-xl p-6">
-            <div className="flex items-center justify-between mb-3">
-              <label className="text-[10px] text-textSecondary uppercase tracking-[0.2em] font-medium">Scorecard Data</label>
-              <button
-                onClick={handleLoadSample}
-                className="flex items-center gap-1.5 text-[10px] text-accent hover:text-accentHover transition-colors uppercase tracking-wider font-medium"
-              >
-                <Clipboard size={11} /> Load Sample
-              </button>
+            <div className="flex items-center justify-between mb-4 border-b border-border pb-3">
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => setInputMode('paste')}
+                  className={`text-[10px] uppercase tracking-[0.2em] font-medium pb-3 -mb-3 transition-colors ${inputMode === 'paste' ? 'text-accent border-b-2 border-accent' : 'text-textSecondary hover:text-textPrimary'}`}
+                >
+                  Paste Data
+                </button>
+                <button 
+                  onClick={() => setInputMode('url')}
+                  className={`text-[10px] uppercase tracking-[0.2em] font-medium pb-3 -mb-3 transition-colors ${inputMode === 'url' ? 'text-accent border-b-2 border-accent' : 'text-textSecondary hover:text-textPrimary'}`}
+                >
+                  Import URL
+                </button>
+              </div>
+              {inputMode === 'paste' && (
+                <button
+                  onClick={handleLoadSample}
+                  className="flex items-center gap-1.5 text-[10px] text-accent hover:text-accentHover transition-colors uppercase tracking-wider font-medium"
+                >
+                  <Clipboard size={11} /> Load Sample
+                </button>
+              )}
             </div>
             
             <textarea 
