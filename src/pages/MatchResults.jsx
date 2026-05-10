@@ -107,8 +107,8 @@ export default function MatchResults() {
     <div className="min-h-full">
       {/* Fallback Banner */}
       {match.isFallback && (
-        <div className="bg-liability-bg border-b border-liability-border text-liability-text px-4 py-2 text-xs font-mono text-center">
-          ⚠️ Using cached analysis — API unavailable
+        <div className="bg-accent/20 border-b border-accent/30 text-accent px-4 py-2 text-xs font-mono text-center">
+          ✨ Demo Mode: Showing sample AI analysis
         </div>
       )}
 
