@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Trophy, Users, Shield, ArrowRight, Plus, X, Trash2, AlertCircle, User, Bell, Key, Palette, TrendingUp, TrendingDown, Edit2 } from 'lucide-react';
+import { Trophy, Users, Shield, ArrowRight, Plus, X, Trash2, AlertCircle, User, Bell, Key, Palette, TrendingUp, TrendingDown, Edit2, Search, Filter } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getTeamFormGuide } from '../utils/seasonScoring';
 
@@ -45,6 +45,8 @@ export default function Teams({ addToast }) {
   const [newTeam, setNewTeam] = useState({ name: '', emoji: '🏏' });
   const [modalError, setModalError] = useState('');
   const [editingTeam, setEditingTeam] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('recent');
 
   const loadTeams = () => {
     if (!user) return;
@@ -175,6 +177,34 @@ export default function Teams({ addToast }) {
         </button>
       </div>
 
+      {teams.length > 0 && (
+        <div className="flex flex-col sm:flex-row gap-4 bg-surface2/50 p-2 rounded-xl border border-border">
+          <div className="relative flex-1">
+            <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-textTertiary" />
+            <input 
+              type="text" 
+              placeholder="Search teams by name..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-surface2 border border-border text-sm text-textPrimary placeholder:text-textTertiary rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all"
+            />
+          </div>
+          <div className="relative min-w-[160px]">
+            <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-textTertiary pointer-events-none" />
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="w-full bg-surface2 border border-border text-sm text-textPrimary rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all appearance-none cursor-pointer"
+            >
+              <option value="recent">Recently Created</option>
+              <option value="name">Name (A-Z)</option>
+              <option value="winrate">Highest Win %</option>
+              <option value="matches">Most Matches</option>
+            </select>
+          </div>
+        </div>
+      )}
+
       {teams.length === 0 ? (
         <div className="glass-card rounded-2xl p-16 text-center">
           <div className="text-5xl mb-4">🏏</div>
@@ -184,7 +214,18 @@ export default function Teams({ addToast }) {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {teams.map((team) => {
+          {teams
+            .filter(t => t.name.toLowerCase().includes(searchTerm.toLowerCase()))
+            .sort((a, b) => {
+              const statsA = teamStats[a.id] || {};
+              const statsB = teamStats[b.id] || {};
+              if (sortBy === 'recent') return new Date(b.createdAt) - new Date(a.createdAt);
+              if (sortBy === 'name') return a.name.localeCompare(b.name);
+              if (sortBy === 'winrate') return (statsB.winRate || 0) - (statsA.winRate || 0);
+              if (sortBy === 'matches') return (statsB.matchCount || 0) - (statsA.matchCount || 0);
+              return 0;
+            })
+            .map((team) => {
             const s = teamStats[team.id] || {};
             return (
               <div key={team.id} className="glass-card rounded-2xl p-6 group transition-all hover:border-accent/30 flex flex-col">
