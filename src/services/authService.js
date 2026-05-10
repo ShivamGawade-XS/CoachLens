@@ -1,7 +1,8 @@
+import { supabase, isSupabaseConfigured } from './supabaseClient';
+
 const USERS_KEY = 'coachlens_users';
 const SESSION_KEY = 'coachlens_session';
 
-// Simple encode/decode for demo purposes (NOT real security)
 const encode = (str) => btoa(unescape(encodeURIComponent(str)));
 const decode = (str) => {
   try { return decodeURIComponent(escape(atob(str))); }
@@ -20,12 +21,23 @@ function saveUsers(users) {
 }
 
 export const authService = {
-  /**
-   * Register a new user
-   * @param {{ fullName, email, password, organization, role, experience }} userData
-   * @returns {{ success: boolean, user?: object, error?: string }}
-   */
-  register(userData) {
+  async register(userData) {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await supabase.auth.signUp({
+        email: userData.email.trim(),
+        password: userData.password,
+        options: {
+          data: {
+            full_name: userData.fullName.trim(),
+            role: userData.role || 'Head Coach',
+          }
+        }
+      });
+      if (error) return { success: false, error: error.message };
+      return { success: true, user: data.user };
+    }
+
+    // Local Fallback
     const users = getUsers();
     const existing = users.find(u => u.email.toLowerCase() === userData.email.toLowerCase());
     if (existing) {
@@ -47,7 +59,6 @@ export const authService = {
     users.push(newUser);
     saveUsers(users);
 
-    // Auto-login after registration
     const sessionUser = { ...newUser };
     delete sessionUser.password;
     localStorage.setItem(SESSION_KEY, JSON.stringify(sessionUser));
@@ -55,13 +66,17 @@ export const authService = {
     return { success: true, user: sessionUser };
   },
 
-  /**
-   * Log in an existing user
-   * @param {string} email
-   * @param {string} password
-   * @returns {{ success: boolean, user?: object, error?: string }}
-   */
-  login(email, password) {
+  async login(email, password) {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: password,
+      });
+      if (error) return { success: false, error: error.message };
+      return { success: true, user: data.user };
+    }
+
+    // Local Fallback
     const users = getUsers();
     const user = users.find(u => u.email === email.trim().toLowerCase());
 
