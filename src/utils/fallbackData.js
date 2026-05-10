@@ -5,7 +5,7 @@ export const FALLBACK_ANALYSES = {
     result: "Won",
     format: "T20",
     phase: "Full Match",
-    rawScorecard: "Panaji Panthers vs Margao Strikers - T20\nBatting: Rahul 19(28), Vikas 34(21), Suresh 45(40), Karan 8(12), Rohit 28(18)\nTotal: 146/4 (20 overs)\nBowling: Dev Kumar 4-0-54-0, Priya 4-0-22-2",
+    rawScorecard: "Panaji Panthers vs Margao Strikers - T20\nBatting: Rahul 19(28), Vikas 34(21), Suresh 45(40), Karan 8(12), Rohit 28(18)\nTotal: 146/4 (20 overs)\nOver 1: 5 runs, 0 wickets\nOver 2: 8 runs, 0 wickets\nOver 3: 4 runs, 1 wickets\nOver 4: 12 runs, 0 wickets\nOver 5: 6 runs, 0 wickets\nOver 6: 15 runs, 0 wickets\nOver 7: 3 runs, 0 wickets\nOver 8: 9 runs, 0 wickets\nOver 9: 11 runs, 0 wickets\nOver 10: 7 runs, 1 wickets\nOver 11: 5 runs, 0 wickets\nOver 12: 8 runs, 0 wickets\nOver 13: 4 runs, 0 wickets\nOver 14: 14 runs, 1 wickets\nOver 15: 3 runs, 0 wickets\nOver 16: 12 runs, 0 wickets\nOver 17: 6 runs, 0 wickets\nOver 18: 9 runs, 1 wickets\nOver 19: 5 runs, 0 wickets\nOver 20: 10 runs, 0 wickets\nBowling: Dev Kumar 4-0-54-0, Priya 4-0-22-2",
     analysis: {
       team_summary: {
         what_won_lost_match: "Over 14.3 — Vikas dismissed for 34. Required rate jumped from 8.2 to 11.4. Panthers held nerve with Suresh anchoring.",
