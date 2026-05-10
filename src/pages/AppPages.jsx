@@ -199,17 +199,79 @@ export default function Teams({ addToast }) {
     const results = ['Won', 'Lost', 'Won', 'Lost', 'Won', 'Won']; // Slight bias to winning
     const tags = ['Aggressor', 'Anchor', 'Liability', 'Improving'];
     
+    const opponents = ['Margao XI', 'Panaji Lions', 'Bicholim Blasters', 'Sanguem Kings', 'Quepem Cavaliers'];
+    const turningPoints = [
+      'Over 14 — 3 consecutive dot balls turned pressure into a collapse.',
+      'Over 8 — Partnership of 52 runs in 4 overs set a strong platform.',
+      'Over 17 — 2 wickets in the over swung the match decisively.',
+      'Over 6 — Powerplay strike rate of 145 put the opposition on the back foot.',
+      'Over 19 — Yorker hat-trick sealed the death overs.'
+    ];
+    const partnerships = [
+      'Opener partnership — 68 runs in 8 overs. Strong start.',
+      'Middle-order rescue — 54 runs between #4 and #5, overs 10–15.',
+      '3rd wicket stand — 72 runs. Dominated the spin in the middle overs.',
+      'Opening pair — 45 runs in powerplay. Aggressive intent from ball one.',
+      'Finisher duo — 38 off last 18 balls. Crucial death-over acceleration.'
+    ];
+    const bowlingNotes = [
+      'Medium pacer leaked 42 runs in 3 overs (ER 14.0). No variation at death.',
+      'Spinner conceded 3 boundaries in over 12. Overpitched repeatedly.',
+      'None — bowling unit was clinical across all phases.',
+      'Opening bowler went for 38 in 4 overs. Too short, no swing.',
+      'Death bowler had ER 11.5 in final 2 overs. Needs yorker practice.'
+    ];
+    const patterns = [
+      'Team scores 60% of runs in middle overs. Powerplay SR needs improvement to 130+.',
+      'Consistent death-over collapse: avg 22 runs in overs 16–20 across last 3 games.',
+      'Strong when chasing — 4/5 wins came batting second. Prefer to field first.',
+      'Top order contributes 70% of runs. Lower order needs better finishing.',
+      'Bowling is strongest in overs 7–12. Use best spinners in this phase.'
+    ];
+    const battingChanges = [
+      'Promote the aggressive opener to #1. Current #3 drops to #5 due to low SR.',
+      'No batting order changes needed — top 4 is settled and performing.',
+      'Swap #3 and #5 — the finisher needs to come in earlier when chasing.',
+      'Move the allrounder to #4. Provides stability if early wickets fall.',
+      'Open with the pinch-hitter in powerplay-heavy matches.'
+    ];
+    const bowlingChanges = [
+      'Restrict medium pacer to 2 overs max in death. Use spinner at overs 16–17.',
+      'Give the left-arm spinner 4 full overs — most economical in the squad.',
+      'Rotate 3 seamers: 2 overs each in death instead of relying on one.',
+      'No changes — bowling rotation worked well this match.',
+      'Drop the part-timer from bowling. Use as pure batsman.'
+    ];
+    const notices = [
+      'Opener — 3 consecutive single-digit scores. One more failure = dropped.',
+      'Spinner — ER above 10 in last 2 matches. Must improve or loses spot.',
+      'No one on notice — squad is performing consistently.',
+      '#5 batsman — SR of 85 in last 3 innings. Needs to accelerate or sit out.',
+      'Allrounder — bowling has been expensive. Focus on batting role only.'
+    ];
+    const tacticals = [
+      'Target powerplay SR of 130+ for top 3. Execute or restructure.',
+      'Death over finishing: must score 35+ in overs 16–20.',
+      'Improve running between wickets — 8 dot balls from poor rotation last match.',
+      'Set field for yorkers in death overs. No short balls after over 17.',
+      'Maintain current template — execution was near-perfect.'
+    ];
+
     sampleTeams.forEach(team => {
-      // 5 matches per team
       for(let i=0; i<5; i++) {
         const matchDate = new Date(now);
-        matchDate.setDate(matchDate.getDate() - (i * 2 + 1)); // Matches spread over last 10 days
+        matchDate.setDate(matchDate.getDate() - (i * 2 + 1));
         
         const playersAnalysis = team.roster.map(p => ({
           name: p.name,
           role: p.role,
           tag: tags[Math.floor(Math.random() * tags.length)],
-          match_impact: (Math.random() * 5 + 5).toFixed(1) // Random score 5.0 to 10.0
+          key_stat: `${Math.floor(Math.random() * 50 + 10)} (${Math.floor(Math.random() * 30 + 10)})`,
+          match_impact: (Math.random() * 5 + 5).toFixed(1),
+          what_worked: 'Solid contribution with both intent and execution.',
+          what_failed: 'Needs to convert starts into bigger scores.',
+          next_match_instruction: 'Focus on strike rotation in middle overs.',
+          practice_drill: 'Net sessions targeting specific weak zones.'
         }));
 
         randomMatches.push({
@@ -218,9 +280,23 @@ export default function Teams({ addToast }) {
           format: 'T20',
           phase: 'Full Match',
           teamName: team.name,
-          opponent: 'Unknown Rivals',
+          opponent: opponents[i % opponents.length],
           result: results[Math.floor(Math.random() * results.length)],
-          analysis: { players: playersAnalysis },
+          analysis: {
+            players: playersAnalysis,
+            team_summary: {
+              what_won_lost_match: turningPoints[i % turningPoints.length],
+              strongest_partnership: partnerships[i % partnerships.length],
+              bowling_inefficiency: bowlingNotes[i % bowlingNotes.length],
+              pattern: patterns[i % patterns.length]
+            },
+            coach_decisions: {
+              batting_order_change: battingChanges[i % battingChanges.length],
+              bowling_rotation: bowlingChanges[i % bowlingChanges.length],
+              player_on_notice: notices[i % notices.length],
+              tactical_focus_next_game: tacticals[i % tacticals.length]
+            }
+          },
           isDemo: true
         });
       }

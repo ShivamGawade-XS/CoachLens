@@ -2,6 +2,111 @@ import { FALLBACK_ANALYSES } from '../utils/fallbackData';
 
 const STORAGE_KEY = 'coachlens_matches';
 const SEEDED_KEY = 'coachlens_seeded';
+const MIGRATION_KEY = 'coachlens_sample_patch_v2';
+
+// ── One-time migration: patch existing sample matches that are missing team_summary / coach_decisions ──
+(function migrateSampleMatches() {
+  if (localStorage.getItem(MIGRATION_KEY)) return;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const matches = JSON.parse(raw);
+    let patched = false;
+
+    const patchData = {
+      turningPoints: [
+        'Over 14 — 3 consecutive dot balls turned pressure into a collapse.',
+        'Over 8 — Partnership of 52 runs in 4 overs set a strong platform.',
+        'Over 17 — 2 wickets in the over swung the match decisively.',
+        'Over 6 — Powerplay strike rate of 145 put opposition on the back foot.',
+        'Over 19 — Yorker hat-trick sealed the death overs.'
+      ],
+      partnerships: [
+        'Opener partnership — 68 runs in 8 overs. Strong start.',
+        'Middle-order rescue — 54 runs between #4 and #5, overs 10–15.',
+        '3rd wicket stand — 72 runs. Dominated the spin in the middle overs.',
+        'Opening pair — 45 runs in powerplay. Aggressive intent from ball one.',
+        'Finisher duo — 38 off last 18 balls. Crucial death-over acceleration.'
+      ],
+      bowlingNotes: [
+        'Medium pacer leaked 42 runs in 3 overs (ER 14.0). No variation at death.',
+        'Spinner conceded 3 boundaries in over 12. Overpitched repeatedly.',
+        'None — bowling unit was clinical across all phases.',
+        'Opening bowler went for 38 in 4 overs. Too short, no swing.',
+        'Death bowler had ER 11.5 in final 2 overs. Needs yorker practice.'
+      ],
+      patterns: [
+        'Team scores 60% of runs in middle overs. Powerplay SR needs improvement to 130+.',
+        'Consistent death-over collapse: avg 22 runs in overs 16–20 across last 3 games.',
+        'Strong when chasing — 4/5 wins came batting second. Prefer to field first.',
+        'Top order contributes 70% of runs. Lower order needs better finishing.',
+        'Bowling is strongest in overs 7–12. Use best spinners in this phase.'
+      ],
+      battingChanges: [
+        'Promote the aggressive opener to #1. Current #3 drops to #5 due to low SR.',
+        'No batting order changes needed — top 4 is settled and performing.',
+        'Swap #3 and #5 — the finisher needs to come in earlier when chasing.',
+        'Move the allrounder to #4. Provides stability if early wickets fall.',
+        'Open with the pinch-hitter in powerplay-heavy matches.'
+      ],
+      bowlingChanges: [
+        'Restrict medium pacer to 2 overs max in death. Use spinner at overs 16–17.',
+        'Give the left-arm spinner 4 full overs — most economical in the squad.',
+        'Rotate 3 seamers: 2 overs each in death instead of relying on one.',
+        'No changes — bowling rotation worked well this match.',
+        'Drop the part-timer from bowling. Use as pure batsman.'
+      ],
+      notices: [
+        'Opener — 3 consecutive single-digit scores. One more failure = dropped.',
+        'Spinner — ER above 10 in last 2 matches. Must improve or loses spot.',
+        'No one on notice — squad is performing consistently.',
+        '#5 batsman — SR of 85 in last 3 innings. Needs to accelerate or sit out.',
+        'Allrounder — bowling has been expensive. Focus on batting role only.'
+      ],
+      tacticals: [
+        'Target powerplay SR of 130+ for top 3. Execute or restructure.',
+        'Death over finishing: must score 35+ in overs 16–20.',
+        'Improve running between wickets — 8 dot balls from poor rotation last match.',
+        'Set field for yorkers in death overs. No short balls after over 17.',
+        'Maintain current template — execution was near-perfect.'
+      ]
+    };
+
+    matches.forEach((m, idx) => {
+      if (!m.analysis) return;
+      const ts = m.analysis.team_summary;
+      const cd = m.analysis.coach_decisions;
+      const needsPatch = !ts || Object.keys(ts).length === 0 || !cd || Object.keys(cd).length === 0;
+      if (!needsPatch) return;
+
+      const i = idx % 5;
+      if (!ts || Object.keys(ts).length === 0) {
+        m.analysis.team_summary = {
+          what_won_lost_match: patchData.turningPoints[i],
+          strongest_partnership: patchData.partnerships[i],
+          bowling_inefficiency: patchData.bowlingNotes[i],
+          pattern: patchData.patterns[i]
+        };
+      }
+      if (!cd || Object.keys(cd).length === 0) {
+        m.analysis.coach_decisions = {
+          batting_order_change: patchData.battingChanges[i],
+          bowling_rotation: patchData.bowlingChanges[i],
+          player_on_notice: patchData.notices[i],
+          tactical_focus_next_game: patchData.tacticals[i]
+        };
+      }
+      patched = true;
+    });
+
+    if (patched) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(matches));
+    }
+    localStorage.setItem(MIGRATION_KEY, 'true');
+  } catch (e) {
+    console.warn('Migration failed:', e);
+  }
+})();
 
 export const storageService = {
   getMatches: () => {
