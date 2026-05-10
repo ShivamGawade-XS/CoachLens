@@ -163,6 +163,42 @@ export default function Teams({ addToast }) {
     loadTeams();
   };
 
+  const loadSampleTeams = () => {
+    const now = new Date();
+    const samples = [
+      {
+        id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString() + '1',
+        name: 'Vasco Vikings',
+        emoji: '🌊',
+        matches: 0,
+        createdAt: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+        roster: [{ name: 'Sunil Chhetri', role: 'Batsman' }, { name: 'Gaurav Desai', role: 'Bowler' }]
+      },
+      {
+        id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString() + '2',
+        name: 'Mapusa Mavericks',
+        emoji: '🦅',
+        matches: 0,
+        createdAt: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+        roster: [{ name: 'Prathamesh Shet', role: 'Allrounder' }]
+      },
+      {
+        id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString() + '3',
+        name: 'Ponda Warriors',
+        emoji: '🛡️',
+        matches: 0,
+        createdAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        roster: []
+      }
+    ];
+
+    const updated = [...samples, ...teams];
+    saveTeams(user.id, updated);
+    setTeams(updated);
+    addToast?.('Added 3 sample teams', 'success');
+    loadTeams();
+  };
+
   const formatDate = (iso) => new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 
   return (
@@ -172,9 +208,14 @@ export default function Teams({ addToast }) {
           <h1 className="text-display-xl font-display text-textPrimary mb-2">My Teams</h1>
           <p className="text-textSecondary text-sm">Manage rosters, track match records, and drill into player analytics.</p>
         </div>
-        <button onClick={() => setShowModal(true)} className="flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white px-5 py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press">
-          <Plus size={16} /> New Team
-        </button>
+        <div className="flex items-center gap-3">
+          <button onClick={loadSampleTeams} className="flex items-center justify-center gap-2 bg-surface2 hover:bg-surface3 text-textPrimary px-4 py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all border border-border">
+            <Users size={16} /> Samples
+          </button>
+          <button onClick={() => setShowModal(true)} className="flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white px-5 py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press">
+            <Plus size={16} /> New Team
+          </button>
+        </div>
       </div>
 
       {teams.length > 0 && (
