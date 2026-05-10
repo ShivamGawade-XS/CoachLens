@@ -64,7 +64,10 @@ No preamble. No explanation outside JSON. The reason must reference a specific s
 
 export const groqService = {
   getTurningPoint: async (overData) => {
-    const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+    let apiKey = import.meta.env.VITE_GROQ_API_KEY;
+    if (!apiKey && typeof window !== 'undefined') {
+      apiKey = localStorage.getItem('GROQ_API_KEY');
+    }
 
     if (!apiKey) {
       // Fallback turning point for demo
@@ -102,7 +105,10 @@ export const groqService = {
   },
 
   analyze: async (format, phase, scorecardText, onProgress) => {
-    const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+    let apiKey = import.meta.env.VITE_GROQ_API_KEY;
+    if (!apiKey && typeof window !== 'undefined') {
+      apiKey = localStorage.getItem('GROQ_API_KEY');
+    }
     
     if (!apiKey) {
       console.warn("No Groq API key found. Triggering fallback.");
