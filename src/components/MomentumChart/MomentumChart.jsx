@@ -8,7 +8,8 @@ import { TrendingUp } from 'lucide-react';
 
 // ─── Over-by-over parser ──────────────────────────────────────────
 // Supports formats:
-//   "Over 1: 8 runs, 0 wickets"
+//   "Over 1: 5 runs, 0 wickets"
+//   "Over 1: 5 runs, 2 wickets"
 //   "1. 8/0"
 //   "Over 1 - 8 runs (1W)"
 //   "1: 8"
@@ -17,37 +18,64 @@ function parseOverData(rawScorecard) {
 
   const lines = rawScorecard.split('\n').map(l => l.trim()).filter(Boolean);
 
-  // Try to detect over-by-over blocks for both teams
   let teamAOvers = [];
   let teamBOvers = [];
   let currentTeam = null;
 
-  // Common patterns: "Team A Overs:", "Over 1: 8", "1. 8", "1: 8/1"
-  const overPattern = /(?:over\s*)?(\d{1,2})[\s.:·\-–]+(\d{1,2})(?:\s*(?:runs?|\/(\d)))?/i;
+  // Primary format: "Over 1: 5 runs, 0 wickets"
+  const fullOverPattern = /over\s*(\d{1,2})\s*[:.\-–]\s*(\d{1,2})\s*runs?\s*,?\s*(\d{1,2})\s*wickets?/i;
+  // Compact format: "1. 8/0" or "1: 8/1"
+  const compactPattern = /^(\d{1,2})\s*[.:]\s*(\d{1,2})\s*\/\s*(\d{1,2})/;
+  // Minimal format: "Over 1: 8" (no wickets)
+  const minimalPattern = /over\s*(\d{1,2})\s*[:.\-–]\s*(\d{1,2})(?:\s*runs?)?$/i;
+  // Team header: "Team Name Innings" or "Team Name Batting"
   const teamHeaderPattern = /^(.*?)(?:\s*(?:innings|overs?|batting))/i;
 
   for (const line of lines) {
-    // Detect team headers
-    if (teamHeaderPattern.test(line) && !overPattern.test(line)) {
+    // Detect team headers (but skip lines that also contain over data)
+    if (teamHeaderPattern.test(line) && !fullOverPattern.test(line) && !compactPattern.test(line)) {
       if (currentTeam === null) currentTeam = 'A';
       else currentTeam = 'B';
       continue;
     }
 
-    const match = line.match(overPattern);
-    if (match) {
-      const overNum = parseInt(match[1]);
-      const runs = parseInt(match[2]);
-      const wickets = match[3] ? parseInt(match[3]) : 0;
+    let overNum = null, runs = null, wickets = 0;
 
-      if (overNum >= 1 && overNum <= 20 && runs >= 0 && runs <= 36) {
-        const entry = { over: overNum, runs, wickets };
-        if (currentTeam === 'B') {
-          teamBOvers.push(entry);
-        } else {
-          teamAOvers.push(entry);
-          currentTeam = 'A'; // default to A if no header
-        }
+    // Try full format first: "Over 1: 5 runs, 0 wickets"
+    let m = line.match(fullOverPattern);
+    if (m) {
+      overNum = parseInt(m[1]);
+      runs = parseInt(m[2]);
+      wickets = parseInt(m[3]);
+    }
+
+    // Try compact format: "1. 8/0"
+    if (overNum === null) {
+      m = line.match(compactPattern);
+      if (m) {
+        overNum = parseInt(m[1]);
+        runs = parseInt(m[2]);
+        wickets = parseInt(m[3]);
+      }
+    }
+
+    // Try minimal format: "Over 1: 8"
+    if (overNum === null) {
+      m = line.match(minimalPattern);
+      if (m) {
+        overNum = parseInt(m[1]);
+        runs = parseInt(m[2]);
+        wickets = 0;
+      }
+    }
+
+    if (overNum !== null && overNum >= 1 && overNum <= 50 && runs >= 0 && runs <= 36) {
+      const entry = { over: overNum, runs, wickets };
+      if (currentTeam === 'B') {
+        teamBOvers.push(entry);
+      } else {
+        teamAOvers.push(entry);
+        if (currentTeam === null) currentTeam = 'A';
       }
     }
   }
