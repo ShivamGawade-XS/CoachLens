@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Users, Trophy, ChevronRight, Activity, Plus, X, AlertCircle, Trash2, Phone, Hash, Edit2, Check, Copy, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Users, Trophy, ChevronRight, Activity, Plus, X, AlertCircle, Trash2, Phone, Hash, Edit2, Check, Copy, MessageSquare, Calendar, Clock, MapPin } from 'lucide-react';
 import { storageService } from '../services/storageService';
 import { useAuth } from '../contexts/AuthContext';
 import { getTeams, saveTeams } from './AppPages';
@@ -25,9 +25,18 @@ export default function TeamProfile() {
   // Edit Player Modal
   const [editPlayer, setEditPlayer] = useState(null);
 
+  // Schedule
+  const [scheduledMatches, setScheduledMatches] = useState([]);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [newSchedule, setNewSchedule] = useState({ opponent: '', date: '', time: '', venue: '', format: 'T20' });
+  const [scheduleError, setScheduleError] = useState('');
+  const [rightTab, setRightTab] = useState('upcoming');
+
   const loadData = async () => {
     if (!user) return;
     const allTeams = getTeams(user.id);
+    const currentTeamForSchedule = allTeams.find(t => t.name === teamName);
+    setScheduledMatches((currentTeamForSchedule?.schedule || []).sort((a, b) => new Date(a.date + 'T' + (a.time || '00:00')) - new Date(b.date + 'T' + (b.time || '00:00'))));
     const currentTeam = allTeams.find(t => t.name === teamName);
     setTeamObj(currentTeam);
 
@@ -103,6 +112,40 @@ export default function TeamProfile() {
     saveTeams(user.id, allTeams);
     setEditPlayer(null);
     loadData();
+  };
+
+  const handleAddSchedule = () => {
+    setScheduleError('');
+    if (!newSchedule.opponent.trim()) return setScheduleError('Opponent name is required.');
+    if (!newSchedule.date) return setScheduleError('Match date is required.');
+    const allTeams = getTeams(user.id);
+    const idx = allTeams.findIndex(t => t.name === teamName);
+    if (idx === -1) return;
+    const entry = { id: Date.now().toString(), ...newSchedule, opponent: newSchedule.opponent.trim() };
+    allTeams[idx].schedule = [...(allTeams[idx].schedule || []), entry];
+    saveTeams(user.id, allTeams);
+    setNewSchedule({ opponent: '', date: '', time: '', venue: '', format: 'T20' });
+    setShowScheduleModal(false);
+    loadData();
+  };
+
+  const handleDeleteSchedule = (id) => {
+    const allTeams = getTeams(user.id);
+    const idx = allTeams.findIndex(t => t.name === teamName);
+    if (idx === -1) return;
+    allTeams[idx].schedule = (allTeams[idx].schedule || []).filter(s => s.id !== id);
+    saveTeams(user.id, allTeams);
+    loadData();
+  };
+
+  const getDaysUntil = (dateStr, timeStr) => {
+    const match = new Date(dateStr + 'T' + (timeStr || '00:00'));
+    const now = new Date();
+    const diff = Math.ceil((match - now) / (1000 * 60 * 60 * 24));
+    if (diff === 0) return { label: 'Today!', color: 'text-accent' };
+    if (diff === 1) return { label: 'Tomorrow', color: 'text-improving-text' };
+    if (diff < 0) return { label: 'Past', color: 'text-textTertiary' };
+    return { label: `In ${diff} days`, color: 'text-textSecondary' };
   };
 
   const handleWhatsAppAll = () => {
@@ -249,28 +292,128 @@ export default function TeamProfile() {
           </div>
         </div>
 
-        {/* Match History (1/3) */}
+        {/* Right Column — Upcoming / History tabs */}
         <div className="space-y-4">
-          <h2 className="text-lg font-display text-textPrimary">Match History</h2>
-          <div className="space-y-3">
-            {matches.slice(0, 6).map(match => (
-              <Link key={match.id} to={`/match/${match.id}`} className="block glass-card p-4 rounded-xl hover:border-accent/30 transition-colors">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className={`text-[9px] uppercase tracking-wider font-mono px-2 py-0.5 rounded border ${match.result === 'Won' ? 'bg-aggressor-bg text-aggressor-text border-aggressor-border' : 'bg-liability-bg text-liability-text border-liability-border'}`}>
-                    {match.result}
-                  </span>
-                  <span className="text-xs font-mono text-textTertiary">{new Date(match.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</span>
-                </div>
-                <h4 className="font-display text-sm text-textPrimary truncate">vs {match.opponent}</h4>
-                <p className="text-[10px] font-mono text-textSecondary mt-0.5">{match.format}</p>
-              </Link>
-            ))}
-            {matches.length === 0 && (
-              <div className="text-sm font-mono text-textSecondary text-center p-5 border border-dashed border-border rounded-xl">No match history yet</div>
+          <div className="flex items-center justify-between">
+            <div className="flex gap-1 bg-surface2 p-1 rounded-xl border border-border">
+              <button onClick={() => setRightTab('upcoming')} className={`px-3 py-1.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider transition-all ${ rightTab === 'upcoming' ? 'bg-accent text-white shadow-glow-amber' : 'text-textSecondary hover:text-textPrimary' }`}>Upcoming</button>
+              <button onClick={() => setRightTab('history')} className={`px-3 py-1.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider transition-all ${ rightTab === 'history' ? 'bg-accent text-white shadow-glow-amber' : 'text-textSecondary hover:text-textPrimary' }`}>History</button>
+            </div>
+            {rightTab === 'upcoming' && (
+              <button onClick={() => setShowScheduleModal(true)} className="flex items-center gap-1 text-accent hover:text-accentHover text-xs font-mono font-bold uppercase tracking-wider transition-colors">
+                <Plus size={12} /> Schedule
+              </button>
             )}
           </div>
+
+          {rightTab === 'upcoming' ? (
+            <div className="space-y-3">
+              {scheduledMatches.filter(s => new Date(s.date + 'T' + (s.time || '00:00')) >= new Date(Date.now() - 86400000)).length === 0 ? (
+                <div className="text-center p-6 border border-dashed border-border rounded-xl">
+                  <Calendar size={24} className="text-textTertiary mx-auto mb-2" />
+                  <p className="text-sm font-mono text-textSecondary">No upcoming matches</p>
+                  <button onClick={() => setShowScheduleModal(true)} className="mt-3 text-xs font-mono text-accent hover:text-accentHover underline">Schedule one now</button>
+                </div>
+              ) : (
+                scheduledMatches.filter(s => new Date(s.date + 'T' + (s.time || '00:00')) >= new Date(Date.now() - 86400000)).map(s => {
+                  const countdown = getDaysUntil(s.date, s.time);
+                  return (
+                    <div key={s.id} className="glass-card p-4 rounded-xl border-accent/20 group relative">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div>
+                          <h4 className="font-display text-sm text-textPrimary">vs {s.opponent}</h4>
+                          <span className={`text-[10px] font-mono font-bold ${countdown.color}`}>{countdown.label}</span>
+                        </div>
+                        <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded border bg-anchor-bg text-anchor-text border-anchor-border whitespace-nowrap">{s.format}</span>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1.5 text-[10px] font-mono text-textSecondary">
+                          <Calendar size={10} className="text-accent" />
+                          {new Date(s.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                          {s.time && <><Clock size={10} className="text-accent ml-1" /> {s.time}</>}
+                        </div>
+                        {s.venue && (
+                          <div className="flex items-center gap-1.5 text-[10px] font-mono text-textSecondary">
+                            <MapPin size={10} className="text-accent" /> {s.venue}
+                          </div>
+                        )}
+                      </div>
+                      <button onClick={() => handleDeleteSchedule(s.id)} className="absolute top-3 right-3 p-1 rounded-lg text-textTertiary hover:text-liability-text hover:bg-liability-bg/40 opacity-0 group-hover:opacity-100 transition-all">
+                        <X size={12} />
+                      </button>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {matches.slice(0, 6).map(match => (
+                <Link key={match.id} to={`/match/${match.id}`} className="block glass-card p-4 rounded-xl hover:border-accent/30 transition-colors">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className={`text-[9px] uppercase tracking-wider font-mono px-2 py-0.5 rounded border ${match.result === 'Won' ? 'bg-aggressor-bg text-aggressor-text border-aggressor-border' : 'bg-liability-bg text-liability-text border-liability-border'}`}>{match.result}</span>
+                    <span className="text-xs font-mono text-textTertiary">{new Date(match.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</span>
+                  </div>
+                  <h4 className="font-display text-sm text-textPrimary truncate">vs {match.opponent}</h4>
+                  <p className="text-[10px] font-mono text-textSecondary mt-0.5">{match.format}</p>
+                </Link>
+              ))}
+              {matches.length === 0 && (
+                <div className="text-sm font-mono text-textSecondary text-center p-5 border border-dashed border-border rounded-xl">No match history yet</div>
+              )}
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Schedule Match Modal */}
+      {showScheduleModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-primary/60 backdrop-blur-sm" onClick={() => setShowScheduleModal(false)} />
+          <div className="relative glass-card rounded-2xl p-8 w-full max-w-md border border-border animate-scale-pop">
+            <button onClick={() => setShowScheduleModal(false)} className="absolute top-4 right-4 p-2 text-textTertiary hover:text-textPrimary"><X size={16} /></button>
+            <h2 className="text-xl font-display text-textPrimary mb-1">Schedule Match</h2>
+            <p className="text-xs font-mono text-textSecondary mb-6">Add an upcoming fixture for {teamName}</p>
+            {scheduleError && <div className="flex items-center gap-2 p-3 mb-4 rounded-xl bg-liability-bg/50 border border-liability-border text-liability-text text-sm"><AlertCircle size={14} />{scheduleError}</div>}
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest">Opponent *</label>
+                <input autoFocus value={newSchedule.opponent} onChange={e => { setNewSchedule(p => ({...p, opponent: e.target.value})); setScheduleError(''); }}
+                  placeholder="e.g. City Strikers" className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary placeholder:text-textTertiary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest flex items-center gap-1"><Calendar size={9} /> Date *</label>
+                  <input type="date" value={newSchedule.date} onChange={e => setNewSchedule(p => ({...p, date: e.target.value}))}
+                    className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest flex items-center gap-1"><Clock size={9} /> Time</label>
+                  <input type="time" value={newSchedule.time} onChange={e => setNewSchedule(p => ({...p, time: e.target.value}))}
+                    className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all" />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest flex items-center gap-1"><MapPin size={9} /> Venue (optional)</label>
+                <input value={newSchedule.venue} onChange={e => setNewSchedule(p => ({...p, venue: e.target.value}))}
+                  placeholder="e.g. Campal Ground, Panaji" className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary placeholder:text-textTertiary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest">Format</label>
+                <select value={newSchedule.format} onChange={e => setNewSchedule(p => ({...p, format: e.target.value}))}
+                  className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary focus:outline-none focus:border-accent appearance-none">
+                  <option value="T20">T20</option>
+                  <option value="ODI">ODI</option>
+                  <option value="T10">T10</option>
+                  <option value="Test">Test</option>
+                  <option value="Box Cricket">Box Cricket</option>
+                </select>
+              </div>
+              <button onClick={handleAddSchedule} className="w-full bg-accent hover:bg-accentHover text-white py-3.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press">Add to Schedule</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add Player Modal */}
       {showModal && (
