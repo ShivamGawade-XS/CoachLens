@@ -208,5 +208,59 @@ export const groqService = {
       console.warn("API failed or timed out, triggering smart fallback:", error);
       throw error;
     }
+  },
+
+  generateWhatsAppMessages: async (players) => {
+    let apiKey = import.meta.env.VITE_GROQ_API_KEY;
+    if (!apiKey && typeof window !== 'undefined') {
+      apiKey = localStorage.getItem('GROQ_API_KEY');
+    }
+
+    if (!apiKey) {
+      throw new Error("No API key");
+    }
+
+    const playerSummaries = players.map(p => ({
+      name: p.name,
+      role: p.role,
+      tag: p.tag,
+      key_stat: p.key_stat,
+      match_impact: p.match_impact,
+      what_worked: p.what_worked,
+      what_failed: p.what_failed,
+    }));
+
+    const prompt = WHATSAPP_PROMPT.replace('{players}', JSON.stringify(playerSummaries, null, 2));
+
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: prompt },
+          { role: "user", content: "Generate WhatsApp messages for each player listed above." }
+        ],
+        temperature: 0.4,
+        max_tokens: 1000,
+        response_format: { type: "json_object" }
+      })
+    });
+
+    if (!response.ok) throw new Error(`API error: ${response.statusText}`);
+    const data = await response.json();
+    const rawResponse = data.choices[0].message.content;
+    
+    try {
+      const parsed = JSON.parse(rawResponse);
+      return parsed.messages || [];
+    } catch (e) {
+      const cleaned = rawResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const parsed = JSON.parse(cleaned);
+      return parsed.messages || [];
+    }
   }
 };
