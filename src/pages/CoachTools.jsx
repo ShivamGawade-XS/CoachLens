@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
-import { Target, GitCompare } from 'lucide-react';
+import { Target, GitCompare, Radio, Shield } from 'lucide-react';
 import TargetScoreAdvisor from '../components/TargetScoreAdvisor/TargetScoreAdvisor';
 import PlayerComparison from '../components/PlayerComparison/PlayerComparison';
+import LiveMatchAssistant from '../components/LiveMatchAssistant/LiveMatchAssistant';
+import BestXISelector from '../components/BestXISelector/BestXISelector';
 
 const tools = [
+  { key: 'live', label: 'Live Assistant', icon: <Radio size={18} />, description: 'Ball-by-ball dugout mode' },
   { key: 'target', label: 'Target Score', icon: <Target size={18} />, description: 'Live par score calculator' },
+  { key: 'bestxi', label: 'Best XI', icon: <Shield size={18} />, description: 'AI squad selection' },
   { key: 'compare', label: 'Player Compare', icon: <GitCompare size={18} />, description: 'Head-to-head metrics' },
 ];
 
 export default function CoachTools() {
-  const [activeTool, setActiveTool] = useState('target');
+  const [activeTool, setActiveTool] = useState('live');
 
   return (
     <div className="p-6 md:p-10 max-w-5xl mx-auto space-y-8 animate-fade-in">
@@ -20,7 +24,7 @@ export default function CoachTools() {
       </div>
 
       {/* Tool Selector */}
-      <div className="flex gap-3">
+      <div className="flex gap-3 flex-wrap">
         {tools.map(tool => (
           <button
             key={tool.key}
@@ -42,7 +46,9 @@ export default function CoachTools() {
 
       {/* Tool Content */}
       <div className="max-w-3xl">
+        {activeTool === 'live' && <LiveMatchAssistant />}
         {activeTool === 'target' && <TargetScoreAdvisor />}
+        {activeTool === 'bestxi' && <BestXISelector />}
         {activeTool === 'compare' && <PlayerComparison />}
       </div>
     </div>

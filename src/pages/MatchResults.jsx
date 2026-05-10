@@ -10,6 +10,7 @@ import TeamReport from '../components/TeamReport/TeamReport';
 import CoachBrief from '../components/CoachBrief/CoachBrief';
 import WhatsAppModal from '../components/WhatsAppModal/WhatsAppModal';
 import FormalReportModal from '../components/FormalReportModal/FormalReportModal';
+import InstagramCard from '../components/InstagramCard/InstagramCard';
 import { detectRoleMismatches } from '../utils/mismatchLogic';
 
 export default function MatchResults() {
@@ -22,6 +23,7 @@ export default function MatchResults() {
   const [showReport, setShowReport] = useState(false);
   const [whatsAppMessages, setWhatsAppMessages] = useState([]);
   const [isGeneratingWA, setIsGeneratingWA] = useState(false);
+  const [showInstaCard, setShowInstaCard] = useState(false);
 
   useEffect(() => {
     const fetchMatch = async () => {
@@ -140,6 +142,13 @@ export default function MatchResults() {
               Report
             </button>
             <button
+              onClick={() => setShowInstaCard(true)}
+              className="hidden sm:flex items-center gap-1.5 text-xs font-mono tracking-wider uppercase bg-gradient-to-r from-purple-600/20 to-pink-500/20 hover:from-purple-600/30 hover:to-pink-500/30 border border-purple-500/30 text-purple-300 px-3 py-1.5 rounded-lg transition-colors mr-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+              Insta
+            </button>
+            <button
               onClick={handleExportPDF}
               disabled={isExporting}
               className="hidden sm:flex items-center gap-1.5 text-xs font-mono tracking-wider uppercase bg-surface2 hover:bg-surface3 border border-border text-textPrimary px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
@@ -247,6 +256,14 @@ export default function MatchResults() {
         <FormalReportModal 
           match={match} 
           onClose={() => setShowReport(false)} 
+        />
+      )}
+
+      {/* Instagram Card Modal */}
+      {showInstaCard && (
+        <InstagramCard
+          match={match}
+          onClose={() => setShowInstaCard(false)}
         />
       )}
     </div>

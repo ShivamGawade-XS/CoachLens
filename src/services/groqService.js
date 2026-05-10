@@ -424,5 +424,124 @@ export const groqService = {
     }
     const data = await response.json();
     return data.choices[0].message.content;
+  },
+
+  getOverRecommendation: async (matchState) => {
+    let apiKey = import.meta.env.VITE_GROQ_API_KEY;
+    if (!apiKey && typeof window !== 'undefined') {
+      apiKey = localStorage.getItem('GROQ_API_KEY');
+    }
+    if (!apiKey || apiKey.trim() === '') {
+      throw new Error("No Groq API key configured.");
+    }
+
+    const prompt = `You are a tactical cricket coach sitting in the dugout during a live match. Based on the current match state below, give exactly 2-3 sharp tactical recommendations for the next over.
+
+Rules:
+- Be extremely specific. Name player roles, cite numbers from the data.
+- Each recommendation must be 1 sentence max.
+- If a bowler has remaining quota, mention it.
+- Reference the opponent batsman's weakness if known.
+- No filler. No pleasantries. Pure dugout talk.
+
+Match State:
+${JSON.stringify(matchState, null, 2)}
+
+Return ONLY a JSON object:
+{
+  "recommendations": [
+    { "action": "short tactical instruction", "reason": "one stat-backed reason" }
+  ],
+  "pressure_rating": "Low|Medium|High|Critical",
+  "projected_total": <number or null>
+}`;
+
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama-3.1-8b-instant",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.3,
+        max_tokens: 500,
+        response_format: { type: "json_object" }
+      })
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => null);
+      throw new Error(`API error: ${errData?.error?.message || response.statusText}`);
+    }
+    const data = await response.json();
+    try {
+      return JSON.parse(data.choices[0].message.content);
+    } catch {
+      return { recommendations: [{ action: "Continue current plan", reason: "Unable to parse AI response" }], pressure_rating: "Medium" };
+    }
+  },
+
+  selectBestXI: async (squad, opponentInfo) => {
+    let apiKey = import.meta.env.VITE_GROQ_API_KEY;
+    if (!apiKey && typeof window !== 'undefined') {
+      apiKey = localStorage.getItem('GROQ_API_KEY');
+    }
+    if (!apiKey || apiKey.trim() === '') {
+      throw new Error("No Groq API key configured.");
+    }
+
+    const prompt = `You are a cricket team selector. From the squad below, pick the best playing XI for the given match context.
+
+Squad (${squad.length} players):
+${squad.map((p, i) => `${i + 1}. ${p.name} — ${p.role}${p.stats ? ' (' + p.stats + ')' : ''}`).join('\n')}
+
+Opponent/Match Context:
+${opponentInfo}
+
+Rules:
+- Pick exactly 11 players.
+- Ensure balance: min 5 batsmen, min 4 bowlers (allrounders count for both).
+- For each DROPPED player, give a 1-sentence reason citing a specific stat or tactical reason.
+- For each SELECTED player, give a 1-sentence reason.
+- Order the XI by batting position.
+
+Return ONLY a JSON object:
+{
+  "playing_xi": [
+    { "name": "player name", "role": "role", "batting_position": <number>, "reason": "why selected" }
+  ],
+  "dropped": [
+    { "name": "player name", "reason": "why dropped" }
+  ],
+  "team_balance": "brief 1-sentence assessment of team composition"
+}`;
+
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama-3.1-8b-instant",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.3,
+        max_tokens: 1000,
+        response_format: { type: "json_object" }
+      })
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => null);
+      throw new Error(`API error: ${errData?.error?.message || response.statusText}`);
+    }
+    const data = await response.json();
+    try {
+      return JSON.parse(data.choices[0].message.content);
+    } catch {
+      return { playing_xi: [], dropped: [], team_balance: "Unable to parse AI response" };
+    }
   }
 };
