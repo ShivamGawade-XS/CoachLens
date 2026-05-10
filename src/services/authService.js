@@ -98,7 +98,10 @@ export const authService = {
   /**
    * Log out the current user
    */
-  logout() {
+  async logout() {
+    if (isSupabaseConfigured()) {
+      await supabase.auth.signOut();
+    }
     localStorage.removeItem(SESSION_KEY);
   },
 
