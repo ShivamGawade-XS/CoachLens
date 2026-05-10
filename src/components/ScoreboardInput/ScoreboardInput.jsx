@@ -19,7 +19,52 @@ Margao Strikers Bowling:
 2. Dev Kumar - 4-0-54-0 ER: 13.5
 3. Priya Desai - 4-0-22-2 ER: 5.5
 4. Jay Patel - 4-0-18-1 ER: 4.5
-5. Rohan Verma - 4-0-24-0 ER: 6.0`;
+5. Rohan Verma - 4-0-24-0 ER: 6.0
+
+Over-by-over data:
+Panaji Panthers Innings
+Over 1: 5 runs, 0 wickets
+Over 2: 8 runs, 0 wickets
+Over 3: 4 runs, 1 wickets
+Over 4: 12 runs, 0 wickets
+Over 5: 6 runs, 0 wickets
+Over 6: 15 runs, 0 wickets
+Over 7: 3 runs, 0 wickets
+Over 8: 9 runs, 0 wickets
+Over 9: 11 runs, 0 wickets
+Over 10: 7 runs, 1 wickets
+Over 11: 5 runs, 0 wickets
+Over 12: 8 runs, 0 wickets
+Over 13: 4 runs, 0 wickets
+Over 14: 14 runs, 1 wickets
+Over 15: 3 runs, 0 wickets
+Over 16: 12 runs, 0 wickets
+Over 17: 6 runs, 0 wickets
+Over 18: 9 runs, 1 wickets
+Over 19: 5 runs, 0 wickets
+Over 20: 16 runs, 0 wickets
+
+Margao Strikers Innings
+Over 1: 6 runs, 0 wickets
+Over 2: 7 runs, 0 wickets
+Over 3: 11 runs, 0 wickets
+Over 4: 5 runs, 1 wickets
+Over 5: 14 runs, 0 wickets
+Over 6: 10 runs, 0 wickets
+Over 7: 8 runs, 0 wickets
+Over 8: 6 runs, 1 wickets
+Over 9: 9 runs, 0 wickets
+Over 10: 5 runs, 0 wickets
+Over 11: 12 runs, 0 wickets
+Over 12: 15 runs, 0 wickets
+Over 13: 14 runs, 0 wickets
+Over 14: 3 runs, 2 wickets
+Over 15: 4 runs, 1 wickets
+Over 16: 5 runs, 0 wickets
+Over 17: 3 runs, 1 wickets
+Over 18: 4 runs, 1 wickets
+Over 19: 3 runs, 1 wickets
+Over 20: 4 runs, 0 wickets`;
 
 export default function ScoreboardInput({ onAnalyze, onBack }) {
   const [format, setFormat] = useState('T20');
