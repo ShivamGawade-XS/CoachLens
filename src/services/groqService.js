@@ -3,7 +3,13 @@ import { FALLBACK_ANALYSES } from '../utils/fallbackData';
 const PLAYER_PROMPT = `You are an expert cricket coach analyst. Analyze this match scorecard and return ONLY a JSON object. No preamble.
 Match Format: {format}
 Match Phase Focus: {phase}
+Tone: {tone}
 Scorecard: {scorecard}
+
+CRITICAL: Generate all text fields (what_worked, what_failed, instructions) strictly adhering to the requested Tone.
+- If Direct: Be purely objective and analytical.
+- If Encouraging: Focus on positives, potential, and constructive learning.
+- If Brutal Honest: Do not hold back. Criticize poor numbers fiercely, use harsh truths.
 
 Return exactly this structure:
 {
@@ -25,7 +31,13 @@ Return exactly this structure:
 const TEAM_PROMPT = `You are an expert cricket coach analyst. Analyze this match scorecard and return ONLY a JSON object. No preamble.
 Match Format: {format}
 Match Phase Focus: {phase}
+Tone: {tone}
 Scorecard: {scorecard}
+
+CRITICAL: Generate all text fields strictly adhering to the requested Tone.
+- If Direct: Be purely objective and analytical.
+- If Encouraging: Focus on positives, potential, and constructive learning.
+- If Brutal Honest: Do not hold back. Criticize poor numbers fiercely, use harsh truths.
 
 Return exactly this structure:
 {
@@ -40,7 +52,13 @@ Return exactly this structure:
 const BRIEF_PROMPT = `You are an expert cricket coach analyst. Analyze this match scorecard and return ONLY a JSON object. No preamble.
 Match Format: {format}
 Match Phase Focus: {phase}
+Tone: {tone}
 Scorecard: {scorecard}
+
+CRITICAL: Generate all text fields strictly adhering to the requested Tone.
+- If Direct: Be purely objective and analytical.
+- If Encouraging: Focus on positives, potential, and constructive learning.
+- If Brutal Honest: Do not hold back. Criticize poor numbers fiercely, use harsh truths.
 
 Return exactly this structure:
 {
@@ -162,7 +180,7 @@ export const groqService = {
     }
   },
 
-  analyze: async (format, phase, scorecardText, onProgress) => {
+  analyze: async (scorecardText, format = 'T20', phase = 'Overall', tone = 'Direct', progressCallback = null) => {
     let apiKey = import.meta.env.VITE_GROQ_API_KEY;
     if (!apiKey && typeof window !== 'undefined') {
       apiKey = localStorage.getItem('GROQ_API_KEY');
@@ -172,11 +190,16 @@ export const groqService = {
       throw new Error("No Groq API key configured. Please add it in Settings.");
     }
 
-    const runCall = async (promptTemplate) => {
-      const prompt = promptTemplate
+    const processPrompt = (promptTemplate) => {
+      return promptTemplate
         .replace('{format}', format)
         .replace('{phase}', phase)
+        .replace('{tone}', tone)
         .replace('{scorecard}', scorecardText);
+    };
+
+    const runCall = async (promptTemplate) => {
+      const prompt = processPrompt(promptTemplate);
 
       const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",

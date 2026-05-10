@@ -73,7 +73,7 @@ export default function AnalysisFlow({ addToast }) {
     };
 
     try {
-      analysisData = await groqService.analyze(format, phase, scorecardText, handleProgress);
+      analysisData = await groqService.analyze(scorecardText, format, phase, 'Direct', handleProgress);
     } catch (error) {
       console.error("Analysis failed:", error);
       clearInterval(timerInterval);

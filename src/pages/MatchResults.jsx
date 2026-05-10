@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ChevronLeft, Download, Loader2, MessageCircle } from 'lucide-react';
+import { ChevronLeft, Download, Loader2, MessageCircle, RefreshCcw } from 'lucide-react';
 import { storageService } from '../services/storageService';
 import { groqService } from '../services/groqService';
 import html2canvas from 'html2canvas';
@@ -24,6 +24,8 @@ export default function MatchResults() {
   const [whatsAppMessages, setWhatsAppMessages] = useState([]);
   const [isGeneratingWA, setIsGeneratingWA] = useState(false);
   const [showInstaCard, setShowInstaCard] = useState(false);
+  const [tone, setTone] = useState('Direct');
+  const [isReanalyzing, setIsReanalyzing] = useState(false);
 
   useEffect(() => {
     const fetchMatch = async () => {
@@ -141,6 +143,25 @@ export default function MatchResults() {
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
               Report
             </button>
+            <div className="hidden sm:flex items-center gap-2 mr-2 bg-surface2 border border-border rounded-lg p-1">
+              <select
+                value={tone}
+                onChange={(e) => setTone(e.target.value)}
+                className="bg-transparent text-xs font-mono text-textPrimary focus:outline-none px-2 cursor-pointer"
+              >
+                <option value="Direct">Tone: Direct</option>
+                <option value="Encouraging">Tone: Encouraging</option>
+                <option value="Brutal Honest">Tone: Brutal Honest</option>
+              </select>
+              <button
+                onClick={handleReanalyze}
+                disabled={isReanalyzing}
+                className="flex items-center gap-1.5 text-[10px] font-mono tracking-wider uppercase bg-accent/10 hover:bg-accent/20 border border-accent/20 text-accent px-2.5 py-1 rounded-md transition-colors disabled:opacity-50"
+              >
+                {isReanalyzing ? <Loader2 size={12} className="animate-spin" /> : <RefreshCcw size={12} />}
+                Reanalyze
+              </button>
+            </div>
             <button
               onClick={() => setShowInstaCard(true)}
               className="hidden sm:flex items-center gap-1.5 text-xs font-mono tracking-wider uppercase bg-gradient-to-r from-purple-600/20 to-pink-500/20 hover:from-purple-600/30 hover:to-pink-500/30 border border-purple-500/30 text-purple-300 px-3 py-1.5 rounded-lg transition-colors mr-2"
