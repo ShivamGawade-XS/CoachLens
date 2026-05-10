@@ -70,19 +70,24 @@ export default function SignupPage() {
     setIsSubmitting(true);
     await new Promise(r => setTimeout(r, 600));
 
-    const result = signup({
-      fullName: form.fullName,
-      email: form.email,
-      password: form.password,
-      organization: form.organization,
-      role: form.role,
-      experience: form.experience,
-    });
+    try {
+      const result = await signup({
+        fullName: form.fullName,
+        email: form.email,
+        password: form.password,
+        organization: form.organization,
+        role: form.role,
+        experience: form.experience,
+      });
 
-    if (result.success) {
-      navigate('/dashboard', { replace: true });
-    } else {
-      setError(result.error);
+      if (result.success) {
+        navigate('/dashboard', { replace: true });
+      } else {
+        setError(result.error || 'Failed to create account. Please try again.');
+        setIsSubmitting(false);
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
       setIsSubmitting(false);
     }
   };
