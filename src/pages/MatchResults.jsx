@@ -5,10 +5,10 @@ import { storageService } from '../services/storageService';
 import { groqService } from '../services/groqService';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import PlayerCard from '../components/PlayerCard/PlayerCard';
 import TeamReport from '../components/TeamReport/TeamReport';
 import CoachBrief from '../components/CoachBrief/CoachBrief';
 import WhatsAppModal from '../components/WhatsAppModal/WhatsAppModal';
+import { detectRoleMismatches } from '../utils/mismatchLogic';
 
 export default function MatchResults() {
   const { id } = useParams();
@@ -40,6 +40,12 @@ export default function MatchResults() {
     { key: 'team', label: 'Team Report', icon: '📊' },
     { key: 'brief', label: 'Coach Brief', icon: '📋' },
   ];
+
+  // Calculate purely client-side role mismatches
+  const roleMismatches = React.useMemo(() => {
+    if (!match?.analysis?.players || !match?.rawScorecard) return [];
+    return detectRoleMismatches(match.analysis.players, match.rawScorecard);
+  }, [match]);
 
   const handleExportPDF = async () => {
     const element = document.getElementById('export-content-area');
@@ -178,11 +184,18 @@ export default function MatchResults() {
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {match.analysis.players && match.analysis.players.map((player, idx) => (
-                <div key={idx} className="animate-fade-in-up" style={{ animationDelay: `${idx * 80}ms`, opacity: 0 }}>
-                  <PlayerCard player={player} />
-                </div>
-              ))}
+              {match.analysis.players && match.analysis.players.map((player, idx) => {
+                const mismatch = roleMismatches.find(m => m.playerName === player.name);
+                return (
+                  <div key={idx} className="animate-fade-in-up" style={{ animationDelay: `${idx * 80}ms`, opacity: 0 }}>
+                    <PlayerCard 
+                      player={player} 
+                      mismatch={mismatch}
+                      onViewMismatch={() => setActiveTab('brief')}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </>
         )}
@@ -200,7 +213,11 @@ export default function MatchResults() {
 
         {activeTab === 'brief' && (
           <div className="animate-fade-in">
-            <CoachBrief match={match} brief={match.analysis.coach_decisions} />
+            <CoachBrief 
+              match={match} 
+              brief={match.analysis.coach_decisions} 
+              flaggedMismatches={roleMismatches}
+            />
           </div>
         )}
 

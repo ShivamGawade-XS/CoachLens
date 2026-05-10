@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download } from 'lucide-react';
+import { Download, AlertTriangle } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import TossAdvisor from './TossAdvisor';
@@ -11,7 +11,7 @@ const decisions = [
   { num: '04', key: 'tactical_focus_next_game', label: 'Tactical Focus', icon: '🎯', isHighlight: true },
 ];
 
-export default function CoachBrief({ match, brief }) {
+export default function CoachBrief({ match, brief, flaggedMismatches = [] }) {
   if (!brief) return null;
 
   const handleExportPDF = async () => {
@@ -70,7 +70,26 @@ export default function CoachBrief({ match, brief }) {
           </button>
         </div>
 
-        {/* Decisions */}
+        {/* Client-Side Flagged Issues */}
+        {flaggedMismatches.length > 0 && (
+          <div className="px-8 py-6 border-b border-border bg-liability-bg/5">
+            <h3 className="text-[11px] uppercase tracking-[0.2em] font-medium text-liability-text mb-4 flex items-center gap-2">
+              <AlertTriangle size={14} /> Tactical Mismatches Flagged
+            </h3>
+            <div className="space-y-3">
+              {flaggedMismatches.map((mismatch, idx) => (
+                <div key={idx} className="flex gap-3 items-start bg-surface2/50 border border-liability-border/30 p-3 rounded-lg">
+                  <div className="shrink-0 pt-0.5">
+                    <span className="text-[10px] uppercase font-bold text-liability-text tracking-wider">{mismatch.playerName}</span>
+                  </div>
+                  <p className="text-sm text-textPrimary/90 leading-relaxed m-0 flex-1">{mismatch.reason}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* AI Decisions */}
         <div className="px-8 py-6 space-y-8">
           {decisions.map((decision, index) => (
             <div 

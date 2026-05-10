@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Download, MessageCircle, Link as LinkIcon, CheckCircle } from 'lucide-react';
+import { Download, MessageCircle, Link as LinkIcon, CheckCircle, AlertTriangle, ArrowRight } from 'lucide-react';
 import html2canvas from 'html2canvas';
 
 const tagConfig = {
@@ -9,7 +9,7 @@ const tagConfig = {
   Liability: { bg: "bg-liability-bg", text: "text-liability-text", border: "border-liability-border", glow: "tag-glow-red", icon: "⚠" }
 };
 
-export default function PlayerCard({ player, hideActions = false }) {
+export default function PlayerCard({ player, hideActions = false, mismatch, onViewMismatch }) {
   const [copied, setCopied] = useState(false);
   const config = tagConfig[player.tag] || tagConfig.Anchor;
   const cardId = `player-card-${player.name.replace(/\s+/g, '-')}`;
@@ -105,6 +105,25 @@ export default function PlayerCard({ player, hideActions = false }) {
           </div>
         ))}
       </div>
+
+      {/* Mismatch Warning Strip */}
+      {mismatch && (
+        <div className={`mt-4 rounded-xl p-3 border flex items-start gap-3 ${mismatch.severity === 'high' ? 'bg-liability-bg/50 border-liability-border text-liability-text' : 'bg-aggressor-bg/20 border-aggressor-border text-aggressor-text'}`}>
+          <AlertTriangle size={16} className="shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <h5 className="text-[10px] uppercase font-bold tracking-wider mb-1">Tactical Mismatch Detected</h5>
+            <p className="text-xs leading-relaxed opacity-90">{mismatch.reason}</p>
+            {onViewMismatch && (
+              <button 
+                onClick={onViewMismatch}
+                className="mt-2 text-[10px] font-mono uppercase tracking-wider flex items-center gap-1 opacity-80 hover:opacity-100 transition-opacity underline underline-offset-2"
+              >
+                View in Coach Brief <ArrowRight size={10} />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Share Actions */}
       {!hideActions && (
