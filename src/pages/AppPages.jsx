@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Trophy, Users, Shield, ArrowRight, Plus, X, Trash2, AlertCircle, User, Bell, Key, Palette } from 'lucide-react';
+import { Trophy, Users, Shield, ArrowRight, Plus, X, Trash2, AlertCircle, User, Bell, Key, Palette, TrendingUp, TrendingDown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { getTeamFormGuide } from '../utils/seasonScoring';
 
 const TEAMS_KEY = (userId) => `coachlens_teams_${userId}`;
 const SETTINGS_KEY = (userId) => `coachlens_settings_${userId}`;
@@ -58,12 +59,38 @@ export default function Teams({ addToast }) {
       tm.forEach(match => {
         (match.analysis?.players || []).forEach(p => playerNames.add(p.name));
       });
+      // Calculate Weekly Improvement (Last 7 days vs previous 7 days)
+      const now = new Date();
+      const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+
+      const thisWeekMatches = tm.filter(m => new Date(m.date) >= oneWeekAgo);
+      const lastWeekMatches = tm.filter(m => new Date(m.date) >= twoWeeksAgo && new Date(m.date) < oneWeekAgo);
+
+      const thisWeekWinRate = thisWeekMatches.length > 0 ? (thisWeekMatches.filter(m => m.result === 'Won').length / thisWeekMatches.length) * 100 : 0;
+      const lastWeekWinRate = lastWeekMatches.length > 0 ? (lastWeekMatches.filter(m => m.result === 'Won').length / lastWeekMatches.length) * 100 : 0;
+      
+      let weeklyImprovement = 'flat';
+      if (thisWeekMatches.length > 0 && lastWeekMatches.length > 0) {
+        if (thisWeekWinRate > lastWeekWinRate) weeklyImprovement = 'up';
+        if (thisWeekWinRate < lastWeekWinRate) weeklyImprovement = 'down';
+      } else if (thisWeekMatches.length > 0 && thisWeekWinRate >= 50) {
+        weeklyImprovement = 'up';
+      } else if (thisWeekMatches.length > 0 && thisWeekWinRate < 50) {
+        weeklyImprovement = 'down';
+      }
+
+      // Calculate form guide (last 3-5 matches)
+      const formGuide = getTeamFormGuide(tm, tm[tm.length - 1]?.id).slice(-5);
+
       stats[team.id] = {
         matchCount: tm.length,
         won,
         lost: tm.filter(m => m.result === 'Lost').length,
         winRate: tm.length > 0 ? Math.round((won / tm.length) * 100) : null,
         rosterCount: playerNames.size,
+        formGuide,
+        weeklyImprovement,
       };
     });
     setTeamStats(stats);
@@ -136,6 +163,8 @@ export default function Teams({ addToast }) {
                     <h3 className="text-xl font-display text-textPrimary truncate">{team.name}</h3>
                     <p className="text-xs text-textTertiary font-mono">Est. {formatDate(team.createdAt)}</p>
                   </div>
+                  {s.weeklyImprovement === 'up' && <div className="px-2 py-1 rounded-lg bg-aggressor-bg/30 border border-aggressor-border/50 text-aggressor-text text-[10px] font-mono font-bold flex items-center gap-1"><TrendingUp size={10} /> Improving</div>}
+                  {s.weeklyImprovement === 'down' && <div className="px-2 py-1 rounded-lg bg-liability-bg/30 border border-liability-border/50 text-liability-text text-[10px] font-mono font-bold flex items-center gap-1"><TrendingDown size={10} /> Slump</div>}
                   <button onClick={() => handleDelete(team.id, team.name)} className="p-2 rounded-lg text-textTertiary hover:text-liability-text hover:bg-liability-bg/50 opacity-0 group-hover:opacity-100 transition-all" title="Delete team"><Trash2 size={14} /></button>
                 </div>
 
@@ -157,6 +186,19 @@ export default function Teams({ addToast }) {
                     <div className="text-lg font-display text-accent">{s.winRate != null ? `${s.winRate}%` : '--'}</div>
                   </div>
                 </div>
+
+                {s.formGuide && s.formGuide.length > 0 && (
+                  <div className="flex items-center gap-2 mb-4 bg-surface2/50 p-2 rounded-xl border border-border">
+                    <span className="text-[10px] font-mono text-textSecondary uppercase tracking-wider">Weekly Form:</span>
+                    <div className="flex gap-1">
+                      {s.formGuide.map((res, i) => (
+                        <span key={i} className={`w-5 h-5 flex items-center justify-center rounded text-[10px] font-mono font-bold ${res === 'W' ? 'bg-aggressor-bg text-aggressor-text border border-aggressor-border' : 'bg-liability-bg text-liability-text border border-liability-border'}`}>
+                          {res}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {team.roster && team.roster.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mb-4">
