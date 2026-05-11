@@ -198,37 +198,53 @@ export const groqService = {
         .replace('{scorecard}', scorecardText);
     };
 
-    const runCall = async (promptTemplate) => {
+    const runCall = async (promptTemplate, maxTokens = 1500, retries = 3) => {
       const prompt = processPrompt(promptTemplate);
+      const models = [
+        "llama-3.1-8b-instant",
+        "llama-3.3-70b-versatile",
+        "mixtral-8x7b-32768"
+      ];
 
-      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${apiKey}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "llama-3.1-8b-instant",
-          messages: [
-            { role: "system", content: prompt },
-            { role: "user", content: scorecardText }
-          ],
-          temperature: 0.3,
-          max_tokens: 1500,
-          response_format: { type: "json_object" }
-        })
-      });
+      for (let attempt = 1; attempt <= retries; attempt++) {
+        const currentModel = models[(attempt - 1) % models.length];
+        
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: currentModel,
+            messages: [
+              { role: "system", content: prompt },
+              { role: "user", content: scorecardText }
+            ],
+            temperature: 0.3,
+            max_tokens: maxTokens,
+            response_format: { type: "json_object" }
+          })
+        });
 
-      if (!response.ok) {
-        const errData = await response.json().catch(() => null);
-        throw new Error(`API error: ${errData?.error?.message || response.statusText}`);
-      }
-      const data = await response.json();
-      const rawResponse = data.choices[0].message.content;
-      try {
-        return JSON.parse(rawResponse);
-      } catch (e) {
-        return JSON.parse(rawResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim());
+        if (!response.ok) {
+          const errData = await response.json().catch(() => null);
+          const errMsg = errData?.error?.message || response.statusText;
+          
+          if (response.status === 429 && attempt < retries) {
+            console.warn(`Rate limited on ${currentModel}. Falling back to next model...`);
+            continue; // Immediately try the next model without waiting
+          }
+          throw new Error(`API error: ${errMsg}`);
+        }
+        
+        const data = await response.json();
+        const rawResponse = data.choices[0].message.content;
+        try {
+          return JSON.parse(rawResponse);
+        } catch (e) {
+          return JSON.parse(rawResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim());
+        }
       }
     };
 
@@ -238,15 +254,15 @@ export const groqService = {
         if (progressCallback) progressCallback('stage1');
         
         // Stage 2: Players
-        const playersData = await runCall(PLAYER_PROMPT);
+        const playersData = await runCall(PLAYER_PROMPT, 800);
         if (progressCallback) progressCallback('stage2');
 
         // Stage 3: Team Report
-        const teamData = await runCall(TEAM_PROMPT);
+        const teamData = await runCall(TEAM_PROMPT, 400);
         if (progressCallback) progressCallback('stage3');
 
         // Stage 4: Coach Brief
-        const briefData = await runCall(BRIEF_PROMPT);
+        const briefData = await runCall(BRIEF_PROMPT, 400);
         if (progressCallback) progressCallback('stage4');
 
         const extractKey = (obj, expectedKey) => {
@@ -274,9 +290,9 @@ export const groqService = {
       }
     };
 
-    // Strict 45-second timeout to allow LLM sequence to complete
+    // Strict 90-second timeout to allow LLM sequence to complete
     const timeoutTask = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error("Timeout exceeded")), 45000);
+      setTimeout(() => reject(new Error("Timeout exceeded")), 90000);
     });
 
     try {
