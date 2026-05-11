@@ -107,6 +107,19 @@ export default function AnalysisFlow({ addToast }) {
 
     // Minor delay to let the user see 100% complete
     setTimeout(async () => {
+      // Detect match result from AI analysis text
+      const detectResult = (data) => {
+        // Check team_summary for explicit result
+        if (data?.team_summary?.result) return data.team_summary.result;
+        // Parse the what_won_lost_match text for win/loss signals
+        const summaryText = JSON.stringify(data?.team_summary || '').toLowerCase();
+        const briefText = JSON.stringify(data?.coach_decisions || '').toLowerCase();
+        const combined = summaryText + ' ' + briefText;
+        if (combined.includes('won the match') || combined.includes('won by') || combined.includes('successful chase') || combined.includes('defended')) return 'Won';
+        if (combined.includes('lost the match') || combined.includes('lost by') || combined.includes('failed to chase') || combined.includes('fell short')) return 'Lost';
+        return null;
+      };
+
       const newMatchRecord = { 
         format, 
         phase, 
@@ -114,7 +127,7 @@ export default function AnalysisFlow({ addToast }) {
         analysis: analysisData,
         teamName: teams.teamName,
         opponent: teams.opponent,
-        result: analysisData?.team_summary?.result || null,
+        result: detectResult(analysisData),
         processingTime: totalTimeMs
       };
       const savedMatch = await storageService.saveMatch(newMatchRecord);

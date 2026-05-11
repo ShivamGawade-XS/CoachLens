@@ -27,6 +27,20 @@
     --color-anchor: 14, 165, 233;      /* Sky Blue */
     --color-improving: 245, 158, 11;   /* Amber */
     --color-liability: 239, 68, 68;    /* Crimson Red */
+
+    /* Status Background / Text / Border variants */
+    --color-aggressor-bg: 240, 253, 244;
+    --color-aggressor-text: 5, 150, 105;
+    --color-aggressor-border: 167, 243, 208;
+    --color-anchor-bg: 240, 249, 255;
+    --color-anchor-text: 2, 132, 199;
+    --color-anchor-border: 125, 211, 252;
+    --color-improving-bg: 255, 251, 235;
+    --color-improving-text: 180, 83, 9;
+    --color-improving-border: 253, 224, 71;
+    --color-liability-bg: 254, 242, 242;
+    --color-liability-text: 220, 38, 38;
+    --color-liability-border: 252, 165, 165;
   }
 
   .dark {
@@ -45,6 +59,20 @@
     
     --color-border: 45, 48, 60;
     --shadow-color: 0, 0, 0;
+
+    /* Status Background / Text / Border variants (Dark) */
+    --color-aggressor-bg: 6, 78, 59;
+    --color-aggressor-text: 52, 211, 153;
+    --color-aggressor-border: 16, 120, 86;
+    --color-anchor-bg: 7, 89, 133;
+    --color-anchor-text: 56, 189, 248;
+    --color-anchor-border: 14, 116, 168;
+    --color-improving-bg: 120, 53, 15;
+    --color-improving-text: 251, 191, 36;
+    --color-improving-border: 161, 98, 7;
+    --color-liability-bg: 127, 29, 29;
+    --color-liability-text: 252, 129, 129;
+    --color-liability-border: 185, 28, 28;
   }
 
   body {

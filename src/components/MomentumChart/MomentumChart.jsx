@@ -219,12 +219,7 @@ export default function MomentumChart({ rawScorecard, teamName, opponent }) {
   const [loading, setLoading] = useState(true);
 
   // Parse over data from raw scorecard
-  const parsed = useMemo(() => {
-    console.log('[MomentumChart] rawScorecard received:', typeof rawScorecard, rawScorecard?.length, 'chars');
-    const result = parseOverData(rawScorecard);
-    console.log('[MomentumChart] parsed result:', result);
-    return result;
-  }, [rawScorecard]);
+  const parsed = useMemo(() => parseOverData(rawScorecard), [rawScorecard]);
   const chartData = useMemo(
     () => (parsed ? buildChartData(parsed.teamA, parsed.teamB) : []),
     [parsed]

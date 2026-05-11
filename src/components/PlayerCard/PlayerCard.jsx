@@ -3,6 +3,15 @@ import { Download, MessageCircle, Link as LinkIcon, CheckCircle, AlertTriangle, 
 import html2canvas from 'html2canvas';
 import { calculateIntentScore, getPressureIndex } from '../../utils/coachingMetrics';
 
+// Static mapping for dynamic badge colors - Tailwind can't resolve template-literal class names
+const badgeColorMap = {
+  aggressor: 'bg-aggressor-bg text-aggressor-text border-aggressor-border',
+  anchor: 'bg-anchor-bg text-anchor-text border-anchor-border',
+  improving: 'bg-improving-bg text-improving-text border-improving-border',
+  liability: 'bg-liability-bg text-liability-text border-liability-border',
+  textTertiary: 'bg-surface2 text-textTertiary border-border',
+};
+
 const tagConfig = {
   Aggressor: { bg: "bg-aggressor-bg", text: "text-aggressor-text", border: "border-aggressor-border", glow: "tag-glow-green", icon: "⚡" },
   Anchor:    { bg: "bg-anchor-bg", text: "text-anchor-text", border: "border-anchor-border", glow: "tag-glow-blue", icon: "🛡" },
@@ -93,13 +102,13 @@ export default function PlayerCard({ player, hideActions = false, mismatch, onVi
             {player.tag}
           </div>
           {/* Intent Score */}
-          <div className={`flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-${intent.color}-bg text-${intent.color}-text border border-${intent.color}-border`}>
+          <div className={`flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md border ${badgeColorMap[intent.color] || badgeColorMap.textTertiary}`}>
             <span className="font-bold">{intent.score}</span>
             <span>{intent.label}</span>
           </div>
           {/* Pressure Index */}
           {pressure && (
-            <div className={`flex items-center gap-1 text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-${pressure.color}-bg text-${pressure.color}-text border border-${pressure.color}-border`}>
+            <div className={`flex items-center gap-1 text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md border ${badgeColorMap[pressure.color] || badgeColorMap.textTertiary}`}>
               <span>{pressure.icon}</span>
               <span>{pressure.label}</span>
             </div>

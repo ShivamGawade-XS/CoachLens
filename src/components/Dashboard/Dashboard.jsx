@@ -6,6 +6,14 @@ import { useAuth } from '../../contexts/AuthContext';
 import { calculateSeasonForm, getTeamFormGuide } from '../../utils/seasonScoring';
 import { calculateClutchFactors } from '../../utils/coachingMetrics';
 
+// Static mapping - Tailwind can't resolve dynamic template-literal class names
+const badgeColorMap = {
+  aggressor: 'bg-aggressor-bg text-aggressor-text border-aggressor-border',
+  anchor: 'bg-anchor-bg text-anchor-text border-anchor-border',
+  improving: 'bg-improving-bg text-improving-text border-improving-border',
+  liability: 'bg-liability-bg text-liability-text border-liability-border',
+};
+
 export default function Dashboard() {
   const [matches, setMatches] = useState([]);
   const navigate = useNavigate();
@@ -210,7 +218,7 @@ export default function Dashboard() {
                         </td>
                         <td className="px-5 py-3.5 text-center hidden md:table-cell">
                           {clutch && (
-                            <span className={`whitespace-nowrap text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-${clutch.badgeColor}-bg text-${clutch.badgeColor}-text border border-${clutch.badgeColor}-border`}>
+                            <span className={`whitespace-nowrap text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md border ${badgeColorMap[clutch.badgeColor] || badgeColorMap.anchor}`}>
                               {clutch.badge}
                             </span>
                           )}

@@ -4,6 +4,13 @@ import { ArrowLeft, Target, Shield, Zap, History, Send, MessageSquare } from 'lu
 import { storageService } from '../services/storageService';
 import { calculateIntentScore, getPressureIndex, calculateClutchFactors } from '../utils/coachingMetrics';
 
+const badgeColorMap = {
+  aggressor: 'bg-aggressor-bg text-aggressor-text border-aggressor-border',
+  anchor: 'bg-anchor-bg text-anchor-text border-anchor-border',
+  improving: 'bg-improving-bg text-improving-text border-improving-border',
+  liability: 'bg-liability-bg text-liability-text border-liability-border',
+};
+
 export default function PlayerProfile() {
   const { playerName } = useParams();
   const name = decodeURIComponent(playerName);
@@ -113,7 +120,7 @@ export default function PlayerProfile() {
               <div className="text-2xl font-display text-textPrimary">
                 {intent?.score || '--'} <span className="text-sm text-textSecondary font-mono">/10</span>
               </div>
-              <div className={`text-[10px] font-mono mt-1 ${intent?.color ? `text-${intent.color}-text` : 'text-textTertiary'}`}>
+              <div className={`text-[10px] font-mono mt-1 ${intent?.color && badgeColorMap[intent.color] ? badgeColorMap[intent.color].split(' ')[1] : 'text-textTertiary'}`}>
                 {intent?.label || 'Calculating...'}
               </div>
             </div>
@@ -131,7 +138,7 @@ export default function PlayerProfile() {
             <div className="glass-card p-5 rounded-2xl">
               <div className="text-[10px] text-textTertiary uppercase font-mono mb-2 flex items-center gap-1"><Zap size={12}/> Pressure Index</div>
               {pressure ? (
-                <div className={`inline-flex items-center gap-2 px-3 py-1 mt-1 rounded-lg text-xs font-mono uppercase tracking-wider bg-${pressure.color}-bg text-${pressure.color}-text border border-${pressure.color}-border`}>
+                <div className={`inline-flex items-center gap-2 px-3 py-1 mt-1 rounded-lg text-xs font-mono uppercase tracking-wider border ${badgeColorMap[pressure.color] || badgeColorMap.anchor}`}>
                   {pressure.icon} {pressure.label}
                 </div>
               ) : (
