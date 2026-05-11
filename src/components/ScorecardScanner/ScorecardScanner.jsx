@@ -1,13 +1,22 @@
 import React, { useState, useRef } from 'react';
-import { Camera, Upload, Loader2, Check, AlertCircle, RotateCcw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Camera, Upload, Loader2, Check, AlertCircle, RotateCcw, Copy, CheckCircle, Zap, Pencil } from 'lucide-react';
+import { groqService } from '../../services/groqService';
+import { storageService } from '../../services/storageService';
 
 export default function ScorecardScanner({ onScanComplete }) {
+  const navigate = useNavigate();
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
   const [progress, setProgress] = useState(0);
   const [scannedText, setScannedText] = useState('');
   const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analyzeProgress, setAnalyzeProgress] = useState(0);
+  const [analyzeStep, setAnalyzeStep] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
   const fileRef = useRef(null);
 
   const handleFileChange = (e) => {
@@ -21,6 +30,7 @@ export default function ScorecardScanner({ onScanComplete }) {
     setPreview(URL.createObjectURL(file));
     setError('');
     setScannedText('');
+    setCopied(false);
   };
 
   const handleScan = async () => {
@@ -31,7 +41,6 @@ export default function ScorecardScanner({ onScanComplete }) {
     setScannedText('');
 
     try {
-      // Dynamic import to avoid loading Tesseract until needed
       const Tesseract = await import('tesseract.js');
       
       const result = await Tesseract.recognize(image, 'eng', {
@@ -56,6 +65,88 @@ export default function ScorecardScanner({ onScanComplete }) {
     }
   };
 
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(scannedText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch (err) {
+      // Fallback for older browsers
+      const textarea = document.createElement('textarea');
+      textarea.value = scannedText;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+  };
+
+  const handleDirectAnalyze = async () => {
+    if (!scannedText.trim()) return;
+    setIsAnalyzing(true);
+    setAnalyzeProgress(10);
+    setAnalyzeStep('Reading scorecard...');
+
+    const startTime = Date.now();
+
+    const handleProgress = (stage) => {
+      if (stage === 'stage1') { setAnalyzeStep('Analyzing players...'); setAnalyzeProgress(30); }
+      if (stage === 'stage2') { setAnalyzeStep('Building team report...'); setAnalyzeProgress(60); }
+      if (stage === 'stage3') { setAnalyzeStep('Preparing coach brief...'); setAnalyzeProgress(85); }
+      if (stage === 'stage4') { setAnalyzeStep('Finalizing...'); setAnalyzeProgress(100); }
+    };
+
+    try {
+      const analysisData = await groqService.analyze(scannedText, 'T20', 'Full Match', 'Direct', handleProgress);
+      const totalTimeMs = Date.now() - startTime;
+
+      // Detect result
+      const detectResult = (data) => {
+        if (data?.team_summary?.result) return data.team_summary.result;
+        const combined = JSON.stringify(data || '').toLowerCase();
+        if (combined.includes('won the match') || combined.includes('won by') || combined.includes('successful chase') || combined.includes('defended')) return 'Won';
+        if (combined.includes('lost the match') || combined.includes('lost by') || combined.includes('failed to chase') || combined.includes('fell short')) return 'Lost';
+        return null;
+      };
+
+      // Extract team names
+      const extractTeams = (text) => {
+        const vsMatch = text.match(/^(.+?)\s+(?:vs\.?|versus)\s+(.+?)(?:\s*[-–—]|\n)/im);
+        if (vsMatch) return { teamName: vsMatch[1].trim(), opponent: vsMatch[2].trim() };
+        const inningsMatches = text.match(/^(.+?)\s+(?:innings|batting)/gim);
+        if (inningsMatches && inningsMatches.length >= 2) {
+          return {
+            teamName: inningsMatches[0].replace(/\s*(innings|batting).*/i, '').trim(),
+            opponent: inningsMatches[1].replace(/\s*(innings|batting).*/i, '').trim(),
+          };
+        }
+        return { teamName: 'Team A', opponent: 'Team B' };
+      };
+
+      const teams = extractTeams(scannedText);
+
+      const newMatchRecord = {
+        format: 'T20',
+        phase: 'Full Match',
+        rawScorecard: scannedText,
+        analysis: analysisData,
+        teamName: teams.teamName,
+        opponent: teams.opponent,
+        result: detectResult(analysisData),
+        processingTime: totalTimeMs,
+      };
+
+      const savedMatch = await storageService.saveMatch(newMatchRecord);
+      navigate(`/match/${savedMatch.id}`);
+    } catch (err) {
+      console.error('Analysis failed:', err);
+      setError(`Analysis failed: ${err.message}`);
+      setIsAnalyzing(false);
+    }
+  };
+
   const handleUseText = () => {
     if (scannedText && onScanComplete) {
       onScanComplete(scannedText);
@@ -68,8 +159,33 @@ export default function ScorecardScanner({ onScanComplete }) {
     setScannedText('');
     setError('');
     setProgress(0);
+    setCopied(false);
+    setIsAnalyzing(false);
+    setIsEditing(false);
     if (fileRef.current) fileRef.current.value = '';
   };
+
+  // Analyzing overlay
+  if (isAnalyzing) {
+    return (
+      <div className="glass-card rounded-2xl p-8 text-center space-y-5 animate-fade-in">
+        <div className="w-16 h-16 relative mx-auto">
+          <div className="absolute inset-0 rounded-full border-2 border-border" />
+          <div className="absolute inset-0 rounded-full border-t-2 border-accent animate-spin" style={{ animationDuration: '1s' }} />
+          <div className="absolute inset-3 rounded-full border border-border" />
+          <div className="absolute inset-3 rounded-full border-t border-accent/50 animate-spin" style={{ animationDuration: '1.5s', animationDirection: 'reverse' }} />
+        </div>
+        <div>
+          <h3 className="text-lg font-display text-textPrimary mb-1">Analyzing Scorecard...</h3>
+          <p className="text-xs font-mono text-accent uppercase tracking-wider">{analyzeStep}</p>
+        </div>
+        <div className="w-full bg-surface2 rounded-full h-2.5 overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-accent to-accentHover rounded-full transition-all duration-500" style={{ width: `${analyzeProgress}%` }} />
+        </div>
+        <p className="text-[10px] font-mono text-textTertiary uppercase tracking-wider">AI is processing your OCR-captured scorecard</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -120,24 +236,83 @@ export default function ScorecardScanner({ onScanComplete }) {
             </div>
           )}
 
-          {/* Scanned Text */}
+          {/* Scanned Text Result */}
           {scannedText && (
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-aggressor-text">
-                <Check size={16} />
-                <span className="text-xs font-mono uppercase tracking-wider">Text Extracted Successfully</span>
-              </div>
-              <div className="bg-surface2 border border-border rounded-xl p-4 max-h-48 overflow-y-auto custom-scrollbar">
-                <pre className="text-xs font-mono text-textSecondary whitespace-pre-wrap leading-relaxed">{scannedText}</pre>
-              </div>
-              <div className="flex gap-3">
-                <button onClick={handleUseText} className="flex-1 flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white font-mono font-bold py-3 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-amber">
-                  <Check size={16} /> Use This Scorecard
+            <div className="space-y-4 animate-fade-in">
+              {/* Success Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-aggressor-text">
+                  <Check size={16} />
+                  <span className="text-xs font-mono uppercase tracking-wider">Text Extracted Successfully</span>
+                </div>
+                <button
+                  onClick={() => setIsEditing(!isEditing)}
+                  className="flex items-center gap-1.5 text-xs font-mono text-textSecondary hover:text-accent transition-colors px-2 py-1 rounded-lg hover:bg-surface2"
+                >
+                  <Pencil size={12} />
+                  {isEditing ? 'Done Editing' : 'Edit Text'}
                 </button>
-                <button onClick={reset} className="px-4 py-3 rounded-xl bg-surface2 hover:bg-surface3 border border-border text-textSecondary font-mono text-sm transition-all">
-                  Retry
+              </div>
+
+              {/* Text Display / Editor */}
+              {isEditing ? (
+                <textarea
+                  value={scannedText}
+                  onChange={(e) => setScannedText(e.target.value)}
+                  className="w-full h-56 bg-surface2 border border-accent/30 rounded-xl p-4 text-textPrimary font-mono text-xs resize-y focus:outline-none focus:border-accent focus:shadow-glow-amber transition-all"
+                />
+              ) : (
+                <div className="bg-surface2 border border-border rounded-xl p-4 max-h-48 overflow-y-auto custom-scrollbar">
+                  <pre className="text-xs font-mono text-textSecondary whitespace-pre-wrap leading-relaxed">{scannedText}</pre>
+                </div>
+              )}
+
+              {/* Character Count */}
+              <div className="text-right">
+                <span className="text-[10px] font-mono text-textTertiary">{scannedText.length} characters extracted</span>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Copy to Clipboard */}
+                <button
+                  onClick={handleCopy}
+                  className={`flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-mono font-bold uppercase tracking-wider transition-all btn-press border ${
+                    copied
+                      ? 'bg-aggressor-bg text-aggressor-text border-aggressor-border'
+                      : 'bg-surface2 hover:bg-surface3 text-textPrimary border-border'
+                  }`}
+                >
+                  {copied ? <CheckCircle size={16} /> : <Copy size={16} />}
+                  {copied ? 'Copied!' : 'Copy Scorecard'}
+                </button>
+
+                {/* Direct Analyze */}
+                <button
+                  onClick={handleDirectAnalyze}
+                  className="flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white py-3.5 rounded-xl text-sm font-mono font-bold uppercase tracking-wider transition-all btn-press shadow-glow-amber"
+                >
+                  <Zap size={16} />
+                  Analyze Now
                 </button>
               </div>
+
+              {/* Use in Analysis Flow (if callback provided) */}
+              {onScanComplete && (
+                <button
+                  onClick={handleUseText}
+                  className="w-full flex items-center justify-center gap-2 bg-surface2 hover:bg-surface3 border border-border text-textSecondary hover:text-textPrimary py-3 rounded-xl text-xs font-mono uppercase tracking-wider transition-all"
+                >
+                  <Check size={14} />
+                  Use in Analysis Flow Instead
+                </button>
+              )}
+
+              {/* Retry */}
+              <button onClick={reset} className="w-full flex items-center justify-center gap-2 text-textTertiary hover:text-textSecondary py-2 text-xs font-mono uppercase tracking-wider transition-colors">
+                <RotateCcw size={12} />
+                Scan Different Image
+              </button>
             </div>
           )}
         </div>
