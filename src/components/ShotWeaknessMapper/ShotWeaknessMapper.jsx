@@ -2,6 +2,19 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Crosshair, AlertTriangle } from 'lucide-react';
 import { storageService } from '../../services/storageService';
 
+const badgeColorMap = {
+  aggressor: 'bg-aggressor-bg text-aggressor-text border-aggressor-border',
+  anchor: 'bg-anchor-bg text-anchor-text border-anchor-border',
+  improving: 'bg-improving-bg text-improving-text border-improving-border',
+  liability: 'bg-liability-bg text-liability-text border-liability-border',
+};
+
+const barColorMap = {
+  liability: 'bg-liability-text/60',
+  improving: 'bg-improving-text/60',
+  anchor: 'bg-anchor-text/60',
+};
+
 const DISMISSAL_PATTERNS = [
   { pattern: /caught.*(long|boundary|deep|mid.?wicket|cow)/i, label: 'Caught Boundary', icon: '🏏', severity: 'high' },
   { pattern: /caught.*(slip|gully|point|short)/i, label: 'Caught Close', icon: '🧤', severity: 'medium' },
@@ -141,7 +154,7 @@ export default function ShotWeaknessMapper() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <span className="font-display text-textPrimary">{label}</span>
-                          <span className={`text-[9px] uppercase tracking-wider font-mono px-2 py-0.5 rounded border bg-${color}-bg text-${color}-text border-${color}-border`}>{data.severity}</span>
+                          <span className={`text-[9px] uppercase tracking-wider font-mono px-2 py-0.5 rounded border ${badgeColorMap[color] || badgeColorMap.anchor}`}>{data.severity}</span>
                         </div>
                         <p className="text-[11px] font-mono text-textTertiary mt-1">vs {data.matches.slice(0, 3).join(', ')}{data.matches.length > 3 ? ` +${data.matches.length - 3} more` : ''}</p>
                       </div>
@@ -150,7 +163,7 @@ export default function ShotWeaknessMapper() {
                       </div>
                       {/* Frequency bar */}
                       <div className="w-24 bg-surface2 rounded-full h-2 overflow-hidden">
-                        <div className={`h-full bg-${color}-text/60 rounded-full transition-all duration-500`} style={{ width: `${Math.min((data.count / analysis.totalMatches) * 100, 100)}%` }} />
+                        <div className={`h-full ${barColorMap[color] || 'bg-anchor-text/60'} rounded-full transition-all duration-500`} style={{ width: `${Math.min((data.count / analysis.totalMatches) * 100, 100)}%` }} />
                       </div>
                     </div>
                   );

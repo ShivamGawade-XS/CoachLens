@@ -2,6 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Radio, Zap, Plus, RotateCcw, Loader2, AlertTriangle, ChevronRight } from 'lucide-react';
 import { groqService } from '../../services/groqService';
 
+const badgeColorMap = {
+  aggressor: 'bg-aggressor-bg text-aggressor-text border-aggressor-border',
+  anchor: 'bg-anchor-bg text-anchor-text border-anchor-border',
+  improving: 'bg-improving-bg text-improving-text border-improving-border',
+  liability: 'bg-liability-bg text-liability-text border-liability-border',
+};
+
 export default function LiveMatchAssistant() {
   const [matchInfo, setMatchInfo] = useState({ teamName: '', opponent: '', format: 'T20', batting: 'us' });
   const [started, setStarted] = useState(false);
@@ -227,7 +234,7 @@ export default function LiveMatchAssistant() {
           <div key={idx} className="glass-card rounded-2xl p-5 border-l-4 border-l-accent animate-fade-in">
             <div className="flex items-center justify-between mb-3">
               <span className="text-[10px] uppercase tracking-wider font-mono text-textTertiary">After Over {rec.over}</span>
-              <span className={`px-2 py-0.5 rounded text-[9px] uppercase font-mono tracking-wider border bg-${getPressureColor(rec.pressure_rating)}-bg text-${getPressureColor(rec.pressure_rating)}-text border-${getPressureColor(rec.pressure_rating)}-border`}>
+              <span className={`px-2 py-0.5 rounded text-[9px] uppercase font-mono tracking-wider border ${badgeColorMap[getPressureColor(rec.pressure_rating)] || badgeColorMap.anchor}`}>
                 {rec.pressure_rating} Pressure
               </span>
             </div>

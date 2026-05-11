@@ -7,6 +7,20 @@ const GROUND_SIZES = [
   { label: 'Large (75m+)', value: 'large', factor: 0.90 },
 ];
 
+const badgeColorMap = {
+  aggressor: 'bg-aggressor-bg text-aggressor-text border-aggressor-border',
+  anchor: 'bg-anchor-bg text-anchor-text border-anchor-border',
+  improving: 'bg-improving-bg text-improving-text border-improving-border',
+  liability: 'bg-liability-bg text-liability-text border-liability-border',
+};
+
+const borderLeftMap = {
+  aggressor: 'border-l-aggressor-text',
+  anchor: 'border-l-anchor-text',
+  improving: 'border-l-improving-text',
+  liability: 'border-l-liability-text',
+};
+
 export default function TargetScoreAdvisor() {
   const [currentScore, setCurrentScore] = useState('');
   const [oversPlayed, setOversPlayed] = useState('10');
@@ -189,14 +203,14 @@ export default function TargetScoreAdvisor() {
                   <span className="text-xs font-mono text-textSecondary">@ RR {result.aggressiveRR}</span>
                 </div>
               </div>
-              <div className={`px-3 py-1.5 rounded-lg text-[10px] font-mono uppercase tracking-wider border bg-${result.riskColor}-bg text-${result.riskColor}-text border-${result.riskColor}-border`}>
+              <div className={`px-3 py-1.5 rounded-lg text-[10px] font-mono uppercase tracking-wider border ${badgeColorMap[result.riskColor] || badgeColorMap.anchor}`}>
                 {result.riskLevel}
               </div>
             </div>
           </div>
 
           {/* AI Coaching Note */}
-          <div className={`glass-card rounded-2xl p-5 border-l-4 border-l-${result.riskColor}-text`}>
+          <div className={`glass-card rounded-2xl p-5 border-l-4 ${borderLeftMap[result.riskColor] || 'border-l-accent'}`}>
             <div className="flex items-start gap-3">
               <div className="shrink-0 mt-0.5">
                 {result.riskColor === 'liability' ? <AlertTriangle size={16} className="text-liability-text" /> : <ChevronRight size={16} className="text-accent" />}
