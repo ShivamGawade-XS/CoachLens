@@ -31,15 +31,15 @@ function FAQItem({ question, answer }) {
 }
 
 const PARTNERS = [
-  { name: 'BCCI', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Board_of_Control_for_Cricket_in_India_Logo_%282024%29.svg' },
-  { name: 'CricHeroes', logoUrl: 'https://cricheroes.in/assets/images/logo.png' },
-  { name: 'Groq', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Groq_logo.svg' },
-  { name: 'Dream11', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/8c/Dream11_logo.svg' },
-  { name: 'CEAT', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/ea/CEAT_Logo.svg' },
-  { name: 'MRF', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Madras_Rubber_Factory_Logo.svg' },
-  { name: 'Emirates', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d0/Emirates_logo.svg' },
-  { name: 'Mastercard', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg' },
-  { name: 'TATA', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/8f/Tata_logo.svg' },
+  { name: 'BCCI', logoUrl: '/logos/bcci.svg' },
+  { name: 'CricHeroes', logoUrl: '/logos/cricheroes.svg' },
+  { name: 'Groq', logoUrl: '/logos/groq.svg' },
+  { name: 'Dream11', logoUrl: '/logos/dream11.svg' },
+  { name: 'CEAT', logoUrl: '/logos/ceat.svg' },
+  { name: 'MRF', logoUrl: '/logos/mrf.svg' },
+  { name: 'Emirates', logoUrl: '/logos/emirates.svg' },
+  { name: 'Mastercard', logoUrl: '/logos/mastercard.svg' },
+  { name: 'TATA', logoUrl: '/logos/tata.svg' },
 ];
 
 function PartnersMarquee() {

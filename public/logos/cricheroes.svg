@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50" width="160" height="50">
+  <g fill="#0B83D9">
+    <path d="M10 5 H30 V22 C30 30 10 35 10 35 C10 35 -10 30 -10 22 V5 H0 V22 C0 24 10 26 10 26 C10 26 20 24 20 22 V10 H10 Z" transform="translate(18, 4)" />
+  </g>
+  <text x="56" y="31" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="16" fill="#0B83D9">CricHeroes</text>
+</svg>
