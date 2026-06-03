@@ -79,7 +79,8 @@
     @apply bg-primary text-textPrimary antialiased selection:bg-accent/30 selection:text-textPrimary;
     font-family: 'DM Sans', sans-serif;
     font-size: 15px;
-    line-height: 1.6;
+    line-height: 1.75;
+    letter-spacing: 0.012em;
   }
 
   h1, h2, h3, h4, h5, h6, .font-display {
@@ -87,6 +88,7 @@
     font-optical-sizing: auto;
     font-variation-settings: 'opsz' 144 !important;
     font-weight: 500 !important;
+    letter-spacing: -0.02em !important;
   }
 
   .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6, .dark .font-display {
@@ -96,6 +98,7 @@
   .font-mono, code, pre, [class*="mono-"] {
     font-family: 'JetBrains Mono', monospace !important;
     font-variant-numeric: tabular-nums !important;
+    letter-spacing: 0.04em !important;
   }
 
   /* Cap all font weights at 600 */
