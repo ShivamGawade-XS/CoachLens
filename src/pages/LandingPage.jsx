@@ -122,6 +122,42 @@ export default function LandingPage() {
               Sign In to Dashboard
             </Link>
           </div>
+
+          {/* Slim Trust Bar */}
+          <div className="mt-14 w-full max-w-4xl mx-auto bg-[#1A1D24] border border-border/40 rounded-xl px-5 py-2.5 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-textSecondary animate-fade-in-up max-h-[160px] md:max-h-[60px] overflow-hidden" style={{ animationDelay: '400ms' }}>
+            {/* 1. Scorecards Analysed */}
+            <div className="flex items-center gap-2 shrink-0">
+              <svg className="w-4 h-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M3 3v18h18" />
+                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
+              </svg>
+              <span><strong className="text-textPrimary font-semibold font-mono">2,400+</strong> scorecards analysed</span>
+            </div>
+
+            <div className="hidden md:block h-5 w-[1px] bg-border/20" />
+
+            {/* 2. Testimonial Pull-quote */}
+            <div className="flex items-center gap-2 text-left max-w-[320px]">
+              <div className="w-5 h-5 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center text-[9px] font-mono font-bold text-accent shrink-0 select-none">
+                MD
+              </div>
+              <p className="line-clamp-2 leading-tight italic text-textSecondary">
+                "Saved me hours of post-match work." <span className="font-sans font-semibold not-italic text-textPrimary text-[10px]">— Davis (Wanderers CC)</span>
+              </p>
+            </div>
+
+            <div className="hidden md:block h-5 w-[1px] bg-border/20" />
+
+            {/* 3. Works With CricHQ/ESPNcricinfo/WhatsApp */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              <span>Works with:</span>
+              <div className="flex gap-1">
+                <span className="bg-surface2 px-1.5 py-0.5 rounded text-[9px] font-mono font-medium border border-border/30 text-textPrimary leading-none">CricHQ</span>
+                <span className="bg-surface2 px-1.5 py-0.5 rounded text-[9px] font-mono font-medium border border-border/30 text-textPrimary leading-none">ESPN</span>
+                <span className="bg-surface2 px-1.5 py-0.5 rounded text-[9px] font-mono font-medium border border-border/30 text-textPrimary leading-none">WhatsApp</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
