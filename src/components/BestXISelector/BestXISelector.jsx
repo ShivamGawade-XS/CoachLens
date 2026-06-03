@@ -1,15 +1,36 @@
 import React, { useState } from 'react';
 import { Users, Plus, X, Loader2, Check, Ban, ChevronRight, Shield, RotateCcw } from 'lucide-react';
 import { groqService } from '../../services/groqService';
+import { getTeams } from '../../pages/AppPages';
+import { useAuth } from '../../contexts/AuthContext';
 
 const ROLES = ['Batsman', 'Bowler', 'Allrounder', 'Wicketkeeper'];
 
 export default function BestXISelector() {
+  const { user } = useAuth();
+  const teams = user ? getTeams(user.id) : [];
+
   const [squad, setSquad] = useState([{ name: '', role: 'Batsman', stats: '' }]);
   const [opponentInfo, setOpponentInfo] = useState('');
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const handleLoadTeam = (teamId) => {
+    if (!teamId) return;
+    const team = teams.find(t => t.id === teamId);
+    if (team && team.roster) {
+      if (team.roster.length > 0) {
+        setSquad(team.roster.map(p => ({
+          name: p.name,
+          role: p.role || 'Batsman',
+          stats: p.jerseyNo ? `Jersey #${p.jerseyNo}` : ''
+        })));
+      } else {
+        setSquad([{ name: '', role: 'Batsman', stats: '' }]);
+      }
+    }
+  };
 
   const addPlayer = () => setSquad([...squad, { name: '', role: 'Batsman', stats: '' }]);
   const removePlayer = (i) => setSquad(squad.filter((_, idx) => idx !== i));
@@ -58,6 +79,23 @@ export default function BestXISelector() {
 
       {!result ? (
         <div className="glass-card rounded-2xl p-6 space-y-5">
+          {/* Load from Team */}
+          {teams.length > 0 && (
+            <div className="pb-4 border-b border-border/50">
+              <label className="text-[10px] uppercase tracking-wider font-mono text-textSecondary mb-1.5 block">Auto-Populate from Team</label>
+              <select
+                onChange={(e) => handleLoadTeam(e.target.value)}
+                defaultValue=""
+                className="w-full bg-surface2 border border-border text-textPrimary rounded-xl px-4 py-3 text-sm font-mono focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all appearance-none cursor-pointer"
+              >
+                <option value="">-- Select a Team --</option>
+                {teams.map(t => (
+                  <option key={t.id} value={t.id}>{t.emoji} {t.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {/* Squad Input */}
           <div>
             <label className="text-[10px] uppercase tracking-wider font-mono text-textSecondary mb-2 block">Squad ({validSquad.length} players)</label>

@@ -303,7 +303,9 @@ export default function TeamProfile() {
                       <td className="px-4 py-3.5">
                         <div className="font-display text-textPrimary text-sm leading-tight flex items-center gap-2">
                           <HealthDot status={player.healthStatus} />
-                          {player.name}
+                          <Link to={`/player/${encodeURIComponent(player.name)}`} className="hover:text-accent hover:underline transition-all font-semibold">
+                            {player.name}
+                          </Link>
                           {player.isInactive && <span className="text-[8px] bg-surface3 text-textTertiary px-1.5 py-0.5 rounded-sm uppercase tracking-widest font-mono">Inactive</span>}
                         </div>
                         {player.phone && (

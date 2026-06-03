@@ -1,13 +1,50 @@
 import React, { useState } from 'react';
 import { Calendar, Plus, X, Loader2, Users, ChevronRight } from 'lucide-react';
 import { groqService } from '../../services/groqService';
+import { getTeams } from '../../pages/AppPages';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function SquadRotationPlanner() {
+  const { user } = useAuth();
+  const teams = user ? getTeams(user.id) : [];
+
   const [squad, setSquad] = useState([{ name: '', role: 'Batsman', fitness: 'Fit' }]);
   const [matches, setMatches] = useState([{ opponent: '', date: '', type: 'League' }]);
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const handleLoadTeam = (teamId) => {
+    if (!teamId) return;
+    const team = teams.find(t => t.id === teamId);
+    if (team) {
+      if (team.roster && team.roster.length > 0) {
+        setSquad(team.roster.map(p => {
+          let fit = 'Fit';
+          if (p.healthStatus === 'niggle') fit = 'Slight Niggle';
+          else if (p.healthStatus === 'recovering') fit = 'Recovering';
+          else if (p.healthStatus === 'injured') fit = 'Doubtful';
+          return {
+            name: p.name,
+            role: p.role || 'Batsman',
+            fitness: fit
+          };
+        }));
+      } else {
+        setSquad([{ name: '', role: 'Batsman', fitness: 'Fit' }]);
+      }
+
+      if (team.schedule && team.schedule.length > 0) {
+        setMatches(team.schedule.map(s => ({
+          opponent: s.opponent,
+          date: s.date || '',
+          type: s.format === 'ODI' ? 'Friendly' : 'League'
+        })));
+      } else {
+        setMatches([{ opponent: '', date: '', type: 'League' }]);
+      }
+    }
+  };
 
   const ROLES = ['Batsman', 'Bowler', 'Allrounder', 'Wicketkeeper'];
   const FITNESS = ['Fit', 'Slight Niggle', 'Recovering', 'Doubtful'];
@@ -104,6 +141,23 @@ Return ONLY a JSON object:
 
       {!result ? (
         <div className="space-y-5">
+          {/* Load from Team */}
+          {teams.length > 0 && (
+            <div className="glass-card rounded-2xl p-6 space-y-3">
+              <label className="text-[10px] uppercase tracking-wider font-mono text-textSecondary block">Auto-Populate from Team</label>
+              <select
+                onChange={(e) => handleLoadTeam(e.target.value)}
+                defaultValue=""
+                className="w-full bg-surface2 border border-border text-textPrimary rounded-xl px-4 py-3 text-sm font-mono focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all appearance-none cursor-pointer"
+              >
+                <option value="">-- Select a Team --</option>
+                {teams.map(t => (
+                  <option key={t.id} value={t.id}>{t.emoji} {t.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {/* Squad Input */}
           <div className="glass-card rounded-2xl p-6 space-y-3">
             <label className="text-[10px] uppercase tracking-wider font-mono text-textSecondary block">Squad ({validSquad.length} players)</label>
