@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, Clipboard, AlertCircle } from 'lucide-react';
 import { parseScorecard } from '../../utils/parseScorecard';
 
@@ -66,6 +66,38 @@ Over 18: 4 runs, 1 wickets
 Over 19: 3 runs, 1 wickets
 Over 20: 4 runs, 0 wickets`;
 
+const CRICHQ_SAMPLE = `Match Scorecard: Titans vs Eagles
+Date: 2026-05-10
+T20 Match played at Ponda Cricket Ground
+
+Titans Innings:
+Batsman Out/Not Out Runs Balls 4s 6s SR
+Arjun Kumar c Patel b Dev 52 36 6 1 144.44
+Deepak Rao run out (Vikas) 28 22 2 0 127.27
+Vikram Singh not out 18 14 1 0 128.57
+Nikhil Sharma b Priya 35 30 3 0 116.67
+Prasad Oak not out 15 10 1 1 150.00
+Extras (w 6, nb 2, b 1) 9
+Total (3 wickets, 20 overs) 162
+
+Eagles Bowling:
+Bowler Overs Maidens Runs Wickets Econ
+Dev Kumar 4.0 0 32 1 8.00
+Priya Desai 4.0 0 45 1 11.25
+Jay Patel 4.0 0 28 0 7.00
+Amit Shah 4.0 0 31 0 7.75
+Rohan Verma 4.0 0 25 0 6.25
+
+Eagles Innings:
+Batsman Out/Not Out Runs Balls 4s 6s SR
+Rahul Sharma b Dev 19 28 1 0 67.86
+Vikas Patel c Arjun b Priya 34 21 4 1 161.90
+Suresh Raina c Deepak b Jay 45 40 2 0 112.50
+Karan Nair not out 8 12 0 0 66.67
+Rohit Singh c Vikram b Amit 28 18 3 1 155.56
+Extras (w 4, nb 1, lb 2) 7
+Total (4 wickets, 20 overs) 141`;
+
 export default function ScoreboardInput({ onAnalyze, onBack }) {
   const [format, setFormat] = useState('T20');
   const [phase, setPhase] = useState('Full Match');
@@ -74,8 +106,20 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
   const [importUrl, setImportUrl] = useState('');
   const [isImporting, setIsImporting] = useState(false);
   const [error, setError] = useState(null);
+  const [showExample, setShowExample] = useState(false);
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      const nextHeight = Math.min(textareaRef.current.scrollHeight, 320);
+      textareaRef.current.style.height = `${nextHeight}px`;
+      textareaRef.current.style.overflowY = textareaRef.current.scrollHeight > 320 ? 'auto' : 'hidden';
+    }
+  }, [scorecardText, inputMode]);
   
   const handleAnalyze = () => {
+    if (scorecardText.length < 100) return;
     const { isValid, error: parseError } = parseScorecard(scorecardText);
     if (!isValid) {
       setError(parseError);
@@ -86,7 +130,7 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
   };
 
   const handleLoadSample = () => {
-    setScorecardText(SAMPLE_SCORECARD);
+    setScorecardText(CRICHQ_SAMPLE);
     setError(null);
   };
 
@@ -198,12 +242,51 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
             
             {inputMode === 'paste' ? (
               <>
-                <textarea 
-                  value={scorecardText}
-                  onChange={(e) => { setScorecardText(e.target.value); setError(null); }}
-                  placeholder="Paste CricHeroes scorecard, plain text, or any structured data here..."
-                  className="w-full h-52 bg-surface2 border border-border rounded-xl p-4 text-textPrimary placeholder-textTertiary focus:outline-none focus:border-accent focus:shadow-glow-amber font-mono text-sm resize-y transition-all duration-200"
-                />
+                <div className="mb-3">
+                  <label className="block text-[10px] text-textSecondary uppercase tracking-[0.2em] font-medium mb-1">Scorecard Text</label>
+                  <p className="text-xs text-textSecondary font-sans mb-3">
+                    Paste any scorecard — CricHQ, ESPNcricinfo, WhatsApp screenshots work too
+                  </p>
+                  
+                  <div className="mb-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const nextShow = !showExample;
+                        setShowExample(nextShow);
+                        if (nextShow) {
+                          setScorecardText(CRICHQ_SAMPLE);
+                          setError(null);
+                        }
+                      }}
+                      className="flex items-center gap-1.5 text-xs text-accent hover:text-accentHover transition-colors font-mono"
+                    >
+                      {showExample ? '▼ Hide example scorecard' : '▶ Show example scorecard'}
+                    </button>
+                    {showExample && (
+                      <div className="mt-2 p-3 bg-surface1 border border-border rounded-xl max-h-32 overflow-y-auto text-[11px] font-mono text-textSecondary whitespace-pre-wrap select-all">
+                        {CRICHQ_SAMPLE}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <textarea 
+                    ref={textareaRef}
+                    value={scorecardText}
+                    onChange={(e) => { setScorecardText(e.target.value); setError(null); }}
+                    placeholder="Paste CricHeroes scorecard, plain text, or any structured data here..."
+                    className="w-full bg-surface2 border border-border rounded-xl p-4 pb-12 text-textPrimary placeholder-textTertiary focus:outline-none focus:border-accent focus:shadow-glow-amber font-mono text-sm resize-none transition-all duration-200"
+                    style={{ minHeight: '120px', maxHeight: '320px', height: 'auto' }}
+                  />
+                  <div className="absolute bottom-3 right-3 text-[10px] font-mono select-none bg-surface1/80 border border-border/50 px-2 py-0.5 rounded backdrop-blur-sm pointer-events-none transition-colors">
+                    <span className={scorecardText.length < 100 ? 'text-liability-text' : 'text-aggressor-text'}>
+                      {scorecardText.length}
+                    </span>
+                    <span className="text-textTertiary">/100 chars</span>
+                  </div>
+                </div>
                 
                 <div className="flex items-center justify-between mt-2">
                   <div>
@@ -214,9 +297,6 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
                       </p>
                     )}
                   </div>
-                  <span className="text-[10px] text-textTertiary">
-                    {scorecardText.length} characters
-                  </span>
                 </div>
               </>
             ) : (
@@ -251,11 +331,11 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
           {/* Analyze Button */}
           <button 
             onClick={handleAnalyze}
-            disabled={!scorecardText.trim()}
+            disabled={scorecardText.length < 100}
             className={`w-full font-mono font-bold text-sm tracking-wider uppercase py-4 transition-all duration-200 btn-press rounded-xl ${
-              scorecardText.trim()
+              scorecardText.length >= 100
                 ? 'bg-accent hover:bg-accentHover text-white shadow-glow-amber'
-                : 'bg-surface2 text-textTertiary cursor-not-allowed'
+                : 'bg-surface2 text-textTertiary/50 cursor-not-allowed opacity-50 border border-border/30'
             }`}
           >
             ▶ Analyze Match
