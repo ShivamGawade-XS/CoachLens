@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Users, Trophy, ChevronRight, Activity, Plus, X, AlertCircle, Trash2, Phone, Hash, Edit2, Check, Copy, MessageSquare, Calendar, Clock, MapPin } from 'lucide-react';
 import { storageService } from '../services/storageService';
+import PlayerRankings from '../components/PlayerRankings/PlayerRankings';
 import { useAuth } from '../contexts/AuthContext';
 import { getTeams, saveTeams } from './AppPages';
 
@@ -401,6 +402,9 @@ export default function TeamProfile() {
           )}
         </div>
       </div>
+
+      {/* Player Rankings */}
+      <PlayerRankings matches={matches} roster={roster} />
 
       {/* Schedule Match Modal */}
       {showScheduleModal && (
