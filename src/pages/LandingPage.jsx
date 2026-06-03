@@ -1,6 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Zap, Target, Shield, ArrowRight } from 'lucide-react';
+import { ChevronRight, Zap, Target, Shield, ArrowRight, ChevronDown } from 'lucide-react';
+
+function FAQItem({ question, answer }) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div 
+      className="bg-surface1 border border-border shadow-sm p-6 rounded-2xl cursor-pointer hover:shadow-md transition-all"
+      onClick={() => setIsOpen(!isOpen)}
+    >
+      <div className="flex items-center justify-between gap-4">
+        <h3 className="text-lg font-display text-textPrimary flex items-start gap-3 mb-0">
+          <span className="text-accent mt-1">Q.</span>
+          {question}
+        </h3>
+        <ChevronDown 
+          className={`text-textSecondary transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
+          size={20} 
+        />
+      </div>
+      <div 
+        className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'}`}
+      >
+        <p className="text-sm text-textSecondary leading-relaxed pl-8">
+          {answer}
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export default function LandingPage() {
   return (
@@ -91,49 +119,22 @@ export default function LandingPage() {
           </div>
 
           <div className="space-y-4">
-            {/* FAQ 1 */}
-            <div className="bg-surface1 border border-border shadow-sm p-6 rounded-2xl">
-              <h3 className="text-lg font-display text-textPrimary mb-2 flex items-start gap-3">
-                <span className="text-accent mt-1">Q.</span>
-                Does this work with CricHeroes?
-              </h3>
-              <p className="text-sm text-textSecondary leading-relaxed pl-8">
-                Yes! Just open your match scorecard on the CricHeroes app or website, copy the text, and paste it directly into CoachLens. Our AI automatically parses the raw text into structured data.
-              </p>
-            </div>
-
-            {/* FAQ 2 */}
-            <div className="bg-surface1 border border-border shadow-sm p-6 rounded-2xl">
-              <h3 className="text-lg font-display text-textPrimary mb-2 flex items-start gap-3">
-                <span className="text-accent mt-1">Q.</span>
-                How is this different from CricHeroes?
-              </h3>
-              <p className="text-sm text-textSecondary leading-relaxed pl-8">
-                CricHeroes is a scoreboard — it tells you *what* happened. CoachLens is an intelligence layer — it tells you *why* you lost and *what to do next*. We don't replace CricHeroes, we sit on top of it.
-              </p>
-            </div>
-
-            {/* FAQ 3 */}
-            <div className="bg-surface1 border border-border shadow-sm p-6 rounded-2xl">
-              <h3 className="text-lg font-display text-textPrimary mb-2 flex items-start gap-3">
-                <span className="text-accent mt-1">Q.</span>
-                Can I share the feedback with my players?
-              </h3>
-              <p className="text-sm text-textSecondary leading-relaxed pl-8">
-                Yes. Every player card has a "Share" button that instantly generates a 2-sentence personalised feedback message and opens it in WhatsApp, ready to send to that individual player.
-              </p>
-            </div>
-
-            {/* FAQ 4 */}
-            <div className="bg-surface1 border border-border shadow-sm p-6 rounded-2xl">
-              <h3 className="text-lg font-display text-textPrimary mb-2 flex items-start gap-3">
-                <span className="text-accent mt-1">Q.</span>
-                Is CoachLens free?
-              </h3>
-              <p className="text-sm text-textSecondary leading-relaxed pl-8">
-                Our base tier is 100% free forever and includes 5 full match analyses per month. For unlimited matches and advanced features, you can upgrade to the Pro Coach tier.
-              </p>
-            </div>
+            <FAQItem 
+              question="Does this work with CricHeroes?"
+              answer="Yes! Just open your match scorecard on the CricHeroes app or website, copy the text, and paste it directly into CoachLens. Our AI automatically parses the raw text into structured data."
+            />
+            <FAQItem 
+              question="How is this different from CricHeroes?"
+              answer="CricHeroes is a scoreboard — it tells you *what* happened. CoachLens is an intelligence layer — it tells you *why* you lost and *what to do next*. We don't replace CricHeroes, we sit on top of it."
+            />
+            <FAQItem 
+              question="Can I share the feedback with my players?"
+              answer="Yes. Every player card has a &quot;Share&quot; button that instantly generates a 2-sentence personalised feedback message and opens it in WhatsApp, ready to send to that individual player."
+            />
+            <FAQItem 
+              question="Is CoachLens free?"
+              answer="Our base tier is 100% free forever and includes 5 full match analyses per month. For unlimited matches and advanced features, you can upgrade to the Pro Coach tier."
+            />
           </div>
         </div>
       </section>
