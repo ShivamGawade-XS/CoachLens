@@ -1,1 +1,8 @@
-File not found: /v1/AUTH_mw/wikipedia-commons-local-public.e3/e/e3/Madras_Rubber_Factory_Logo.svg
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 60" width="140" height="60">
+  <defs>
+    <style>
+      .mrf-text { font-family: 'Arial Black', 'Arial', sans-serif; font-weight: 900; font-size: 42px; fill: #E31837; letter-spacing: 3px; }
+    </style>
+  </defs>
+  <text x="70" y="44" text-anchor="middle" class="mrf-text">MRF</text>
+</svg>
