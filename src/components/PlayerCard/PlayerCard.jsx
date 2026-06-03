@@ -66,7 +66,7 @@ export default function PlayerCard({ player, hideActions = false, mismatch, onVi
     if (!text) return text;
     return text.split(/(\d+(?:\.\d+)?%?)/g).map((part, i) => {
       if (/\d/.test(part)) {
-        return <span key={i} className="text-accent font-semibold">{part}</span>;
+        return <span key={i} className="text-accent font-semibold font-mono">{part}</span>;
       }
       return part;
     });

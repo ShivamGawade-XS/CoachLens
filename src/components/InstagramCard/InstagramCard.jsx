@@ -34,7 +34,7 @@ export default function InstagramCard({ match, onClose }) {
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
     ctx.fillStyle = '#3B82F6';
-    ctx.font = '700 22px "Inter", sans-serif';
+    ctx.font = '600 22px "DM Sans", sans-serif';
     ctx.letterSpacing = '3px';
     ctx.fillText('OFFICIAL MATCH REPORT', pad + 40, pad + 40);
     ctx.letterSpacing = '0px';
@@ -42,11 +42,11 @@ export default function InstagramCard({ match, onClose }) {
     // 4. Teams (With maxWidth to prevent overflow)
     const textMaxWidth = innerW - 80;
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = '900 60px "Inter", sans-serif';
+    ctx.font = '500 60px "Fraunces", serif';
     ctx.fillText((match.teamName || 'TEAM A').toUpperCase(), pad + 40, pad + 100, textMaxWidth);
     
     ctx.fillStyle = '#94A3B8';
-    ctx.font = '600 36px "Inter", sans-serif';
+    ctx.font = '500 36px "Fraunces", serif';
     ctx.fillText(`vs ${(match.opponent || 'OPPONENT').toUpperCase()}`, pad + 40, pad + 170, textMaxWidth);
 
     // 5. Result Badge
@@ -58,7 +58,7 @@ export default function InstagramCard({ match, onClose }) {
     ctx.fillRect(W - pad - 200, pad + 35, 160, 50);
     
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = '800 22px "Inter", sans-serif';
+    ctx.font = '600 22px "DM Sans", sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(badgeText, W - pad - 120, pad + 60);
@@ -72,7 +72,7 @@ export default function InstagramCard({ match, onClose }) {
     ctx.fillRect(pad, pad + 250, innerW, 70);
     
     ctx.fillStyle = '#94A3B8';
-    ctx.font = '500 22px "Inter", monospace';
+    ctx.font = '500 22px "JetBrains Mono", monospace';
     const dateStr = match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase() : '';
     ctx.textBaseline = 'middle';
     ctx.fillText(`DATE: ${dateStr}   |   FORMAT: ${match.format || 'T20'}`, pad + 40, pad + 285);
@@ -83,7 +83,7 @@ export default function InstagramCard({ match, onClose }) {
     // 7. Top Performer Section
     if (topPlayer) {
       ctx.fillStyle = '#3B82F6';
-      ctx.font = '700 18px "Inter", sans-serif';
+      ctx.font = '600 18px "DM Sans", sans-serif';
       ctx.letterSpacing = '2px';
       ctx.fillText('STAR PERFORMER', pad + 40, currentY);
       ctx.letterSpacing = '0px';
@@ -97,23 +97,23 @@ export default function InstagramCard({ match, onClose }) {
 
       // Player Name
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '800 42px "Inter", sans-serif';
+      ctx.font = '500 42px "Fraunces", serif';
       ctx.fillText(topPlayer.name ? topPlayer.name.toUpperCase() : 'PLAYER', pad + 70, currentY + 65, innerW - 350);
 
       // Role
       ctx.fillStyle = '#94A3B8';
-      ctx.font = '500 22px "Inter", sans-serif';
+      ctx.font = '500 22px "DM Sans", sans-serif';
       ctx.fillText(topPlayer.role ? topPlayer.role.toUpperCase() : 'ROLE', pad + 70, currentY + 120, innerW - 350);
 
       // Key Stat
       if (topPlayer.key_stat) {
         ctx.textAlign = 'right';
         ctx.fillStyle = '#3B82F6';
-        ctx.font = '900 48px "Inter", sans-serif';
+        ctx.font = '600 48px "JetBrains Mono", monospace';
         ctx.fillText(topPlayer.key_stat, W - pad - 70, currentY + 65, 250);
         
         ctx.fillStyle = '#64748B';
-        ctx.font = '600 18px "Inter", sans-serif';
+        ctx.font = '600 18px "JetBrains Mono", monospace';
         ctx.fillText(`IMPACT: ${topPlayer.match_impact || 0}/10`, W - pad - 70, currentY + 120);
         ctx.textAlign = 'left';
       }
@@ -125,13 +125,13 @@ export default function InstagramCard({ match, onClose }) {
     const summary = match.analysis?.team_summary;
     if (summary?.what_won_lost_match) {
       ctx.fillStyle = '#3B82F6';
-      ctx.font = '700 18px "Inter", sans-serif';
+      ctx.font = '500 18px "Fraunces", serif';
       ctx.letterSpacing = '2px';
       ctx.fillText('TURNING POINT', pad + 40, currentY);
       ctx.letterSpacing = '0px';
 
       ctx.fillStyle = '#E2E8F0';
-      ctx.font = '400 28px "Inter", sans-serif';
+      ctx.font = '400 28px "DM Sans", sans-serif';
       wrapText(ctx, summary.what_won_lost_match, pad + 40, currentY + 40, innerW - 80, 42);
     }
 
@@ -140,12 +140,12 @@ export default function InstagramCard({ match, onClose }) {
     ctx.fillRect(pad, H - pad - 80, innerW, 80);
     
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = '800 28px "Inter", sans-serif';
+    ctx.font = '500 28px "Fraunces", serif';
     ctx.textBaseline = 'middle';
     ctx.fillText('COACHLENS', pad + 40, H - pad - 40);
 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-    ctx.font = '500 18px "Inter", sans-serif';
+    ctx.font = '500 18px "DM Sans", sans-serif';
     ctx.textAlign = 'right';
     ctx.fillText('AI CRICKET ANALYTICS', W - pad - 40, H - pad - 40);
 

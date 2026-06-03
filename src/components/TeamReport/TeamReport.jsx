@@ -16,7 +16,7 @@ export default function TeamReport({ report, rawScorecard, teamName, opponent })
     if (!text) return text;
     return text.split(/(\d+(?:\.\d+)?%?)/g).map((part, i) => {
       if (/\d/.test(part)) {
-        return <span key={i} className="text-accent font-semibold">{part}</span>;
+        return <span key={i} className="text-accent font-semibold font-mono">{part}</span>;
       }
       return part;
     });
