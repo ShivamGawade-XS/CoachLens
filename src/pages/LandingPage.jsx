@@ -12,10 +12,7 @@ export default function LandingPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/20 blur-[120px] rounded-full pointer-events-none" />
         
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-accent/30 bg-accent/10 text-accent text-xs font-mono mb-8 animate-fade-in-up">
-            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-            CoachLens 2.0 is Live
-          </div>
+
           
           <h1 className="text-5xl md:text-7xl font-display text-textPrimary leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
             Turn raw scorecards into<br />
