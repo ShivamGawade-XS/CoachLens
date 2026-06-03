@@ -156,9 +156,6 @@ export default function ChatAssistant() {
                 <Send size={18} />
               </button>
             </form>
-            <div className="text-center mt-2">
-              <span className="text-[9px] font-mono text-textTertiary">CoachLens AI uses live dashboard data to answer.</span>
-            </div>
           </div>
         </div>
       )}
