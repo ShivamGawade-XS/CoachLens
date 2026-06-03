@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Users, Trophy, ChevronRight, Activity, Plus, X, AlertCircle, Trash2, Phone, Hash, Edit2, Check, Copy, MessageSquare, Calendar, Clock, MapPin } from 'lucide-react';
 import { storageService } from '../services/storageService';
 import PlayerRankings from '../components/PlayerRankings/PlayerRankings';
+import PlayerHealthTracker, { HealthDot } from '../components/PlayerHealthTracker/PlayerHealthTracker';
 import { useAuth } from '../contexts/AuthContext';
 import { getTeams, saveTeams } from './AppPages';
 
@@ -56,7 +57,7 @@ export default function TeamProfile() {
     const playersMap = new Map();
     if (currentTeam?.roster) {
       currentTeam.roster.forEach(p => {
-        playersMap.set(p.name, { ...p, appearances: 0, lastTag: 'Untested' });
+        playersMap.set(p.name, { ...p, healthStatus: p.healthStatus || 'fit', injuryNote: p.injuryNote || '', appearances: 0, lastTag: 'Untested' });
       });
     }
     const activeNames = new Set((currentTeam?.roster || []).map(p => p.name));
@@ -64,7 +65,7 @@ export default function TeamProfile() {
     teamMatches.forEach(match => {
       (match.analysis?.players || []).forEach(p => {
         if (!playersMap.has(p.name)) {
-          playersMap.set(p.name, { name: p.name, role: p.role, jerseyNo: '', phone: '', appearances: 1, lastTag: p.tag, isInactive: !activeNames.has(p.name) });
+          playersMap.set(p.name, { name: p.name, role: p.role, jerseyNo: '', phone: '', healthStatus: 'fit', injuryNote: '', appearances: 1, lastTag: p.tag, isInactive: !activeNames.has(p.name) });
         } else {
           const ex = playersMap.get(p.name);
           ex.appearances = (ex.appearances || 0) + 1;
@@ -76,6 +77,17 @@ export default function TeamProfile() {
   };
 
   useEffect(() => { loadData(); }, [teamName, user]);
+
+  const handleUpdateHealth = (playerName, status, note) => {
+    const allTeams = getTeams(user.id);
+    const idx = allTeams.findIndex(t => t.name === teamName);
+    if (idx === -1) return;
+    allTeams[idx].roster = (allTeams[idx].roster || []).map(p =>
+      p.name === playerName ? { ...p, healthStatus: status, injuryNote: note } : p
+    );
+    saveTeams(user.id, allTeams);
+    loadData();
+  };
 
   const handleAddPlayer = () => {
     setModalError('');
@@ -290,6 +302,7 @@ export default function TeamProfile() {
                       </td>
                       <td className="px-4 py-3.5">
                         <div className="font-display text-textPrimary text-sm leading-tight flex items-center gap-2">
+                          <HealthDot status={player.healthStatus} />
                           {player.name}
                           {player.isInactive && <span className="text-[8px] bg-surface3 text-textTertiary px-1.5 py-0.5 rounded-sm uppercase tracking-widest font-mono">Inactive</span>}
                         </div>
@@ -405,6 +418,11 @@ export default function TeamProfile() {
 
       {/* Player Rankings */}
       <PlayerRankings matches={matches} roster={roster} />
+
+      {/* Squad Fitness & Health */}
+      {roster.length > 0 && (
+        <PlayerHealthTracker roster={roster} onUpdateHealth={handleUpdateHealth} />
+      )}
 
       {/* Schedule Match Modal */}
       {showScheduleModal && (
