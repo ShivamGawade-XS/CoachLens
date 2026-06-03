@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=DM+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -45,14 +45,14 @@
 
   .dark {
     /* ─── Dark Mode (Midnight Sports Ops) ─── */
-    --color-primary: 10, 12, 16;       /* Deep Black/Navy */
-    --color-surface1: 18, 20, 26;
-    --color-surface2: 30, 32, 40;
-    --color-surface3: 45, 48, 60;
+    --color-primary: 19, 22, 29;       /* #13161D background */
+    --color-surface1: 26, 30, 39;      /* Muted layered surface */
+    --color-surface2: 34, 39, 51;
+    --color-surface3: 43, 49, 64;
     
-    --color-text-primary: 248, 250, 252;
-    --color-text-secondary: 148, 163, 184;
-    --color-text-tertiary: 71, 85, 105;
+    --color-text-primary: 224, 224, 224; /* 0.88 opacity white */
+    --color-text-secondary: 160, 160, 160;
+    --color-text-tertiary: 110, 110, 110;
     
     --color-accent: 59, 130, 246;       /* Vibrant Blue */
     --color-accent-hover: 96, 165, 250;
@@ -77,7 +77,30 @@
 
   body {
     @apply bg-primary text-textPrimary antialiased selection:bg-accent/30 selection:text-textPrimary;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: 'Fraunces', serif !important;
+    font-optical-sizing: auto;
+    font-variation-settings: 'opsz' 144 !important;
+    font-weight: 500 !important;
+  }
+
+  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6, .dark .font-display {
+    color: #ffffff !important;
+  }
+
+  .font-mono, code, pre, [class*="mono-"] {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-variant-numeric: tabular-nums !important;
+  }
+
+  /* Cap all font weights at 600 */
+  .font-bold, .font-extrabold, .font-black, strong, b {
+    font-weight: 600 !important;
   }
 }
 

@@ -44,16 +44,17 @@ export default {
         error:   '#EF4444',
       },
       fontFamily: {
-        display: ['"DM Serif Display"', 'serif'],
-        mono: ['"IBM Plex Mono"', 'monospace']
+        sans: ['"DM Sans"', 'sans-serif'],
+        display: ['Fraunces', 'serif'],
+        mono: ['"JetBrains Mono"', 'monospace']
       },
       fontSize: {
-        'display-xl': ['32px', { lineHeight: '1.2', fontWeight: '400' }],
-        'display-lg': ['24px', { lineHeight: '1.3', fontWeight: '400' }],
+        'display-xl': ['32px', { lineHeight: '1.2', fontWeight: '500' }],
+        'display-lg': ['24px', { lineHeight: '1.3', fontWeight: '500' }],
         'heading-md': ['18px', { lineHeight: '1.4', fontWeight: '600' }],
-        'body-md': ['14px', { lineHeight: '1.6', fontWeight: '400' }],
+        'body-md': ['15px', { lineHeight: '1.6', fontWeight: '400' }],
         'body-sm': ['12px', { lineHeight: '1.5', fontWeight: '400' }],
-        'mono-stat': ['20px', { lineHeight: '1.2', fontWeight: '700' }],
+        'mono-stat': ['20px', { lineHeight: '1.2', fontWeight: '600' }],
         'mono-sm': ['12px', { lineHeight: '1.4', fontWeight: '500' }],
       },
       keyframes: {
