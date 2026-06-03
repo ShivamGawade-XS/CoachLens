@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, FileText, Copy, Check, Loader2, Send } from 'lucide-react';
+import { X, FileText, Copy, Check, Loader2, Send, Download } from 'lucide-react';
 import { groqService } from '../../services/groqService';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 // Simple markdown formatter since we don't have react-markdown installed
 const formatMarkdown = (text) => {
@@ -43,7 +45,38 @@ export default function FormalReportModal({ match, onClose }) {
   const [report, setReport] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isCopied, setIsCopied] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [error, setError] = useState(null);
+
+  const handleDownloadPDF = async () => {
+    const element = document.getElementById('formal-report-content');
+    if (!element) return;
+    
+    setIsDownloading(true);
+    try {
+      const isDark = document.documentElement.classList.contains('dark');
+      const canvas = await html2canvas(element, {
+        backgroundColor: isDark ? '#12141A' : '#FFFFFF',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      pdf.save(`Formal-Report-${match.teamName.replace(/\s+/g, '-')}.pdf`);
+    } catch (err) {
+      console.error('Failed to generate PDF', err);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -116,7 +149,7 @@ export default function FormalReportModal({ match, onClose }) {
               <p className="text-liability-text">{error}</p>
             </div>
           ) : (
-            <div className="prose prose-invert max-w-none text-textSecondary selection:bg-accent/30 bg-surface2/30 p-6 rounded-xl border border-border/50">
+            <div id="formal-report-content" className="prose prose-invert max-w-none text-textSecondary selection:bg-accent/30 bg-surface2/30 p-6 rounded-xl border border-border/50">
               {formatMarkdown(report)}
             </div>
           )}
@@ -127,22 +160,31 @@ export default function FormalReportModal({ match, onClose }) {
           <div className="p-5 border-t border-border bg-surface2/50 rounded-b-2xl flex items-center justify-end gap-3 shrink-0">
             <button 
               onClick={handleCopy}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all ${
                 isCopied ? 'bg-aggressor-bg/20 text-aggressor-text border border-aggressor-border/50' : 'bg-surface3 text-textPrimary hover:bg-surface2 border border-border'
               }`}
             >
               {isCopied ? <Check size={16} /> : <Copy size={16} />}
-              {isCopied ? 'Copied to Clipboard' : 'Copy Report'}
+              <span className="hidden sm:inline">{isCopied ? 'Copied' : 'Copy'}</span>
+            </button>
+            <button 
+              onClick={handleDownloadPDF}
+              disabled={isDownloading}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all bg-surface3 text-textPrimary hover:bg-surface2 border border-border disabled:opacity-50"
+            >
+              {isDownloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+              <span className="hidden sm:inline">{isDownloading ? 'Downloading' : 'Download PDF'}</span>
             </button>
             <button 
               onClick={() => {
-                const mailto = `mailto:?subject=${encodeURIComponent(`Match Report: ${match.teamName}`)}&body=${encodeURIComponent(report)}`;
+                const bodyText = report.length > 1500 ? report.substring(0, 1500) + '\n\n...[Report Truncated due to email limits. Please use the Download PDF button in CoachLens for the full report.]' : report;
+                const mailto = `mailto:?subject=${encodeURIComponent(`Match Report: ${match.teamName}`)}&body=${encodeURIComponent(bodyText)}`;
                 window.location.href = mailto;
               }}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all bg-accent hover:bg-accentHover text-white shadow-glow-amber btn-press"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all bg-accent hover:bg-accentHover text-white shadow-glow-amber btn-press"
             >
               <Send size={16} />
-              Share via Email
+              <span className="hidden sm:inline">Email</span>
             </button>
           </div>
         )}
