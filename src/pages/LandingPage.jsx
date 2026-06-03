@@ -31,15 +31,15 @@ function FAQItem({ question, answer }) {
 }
 
 const PARTNERS = [
-  { name: 'BCCI', logoUrl: '/logos/bcci.svg' },
-  { name: 'CricHeroes', logoUrl: '/logos/cricheroes.svg' },
-  { name: 'Groq', logoUrl: '/logos/groq.svg' },
-  { name: 'Dream11', logoUrl: '/logos/dream11.svg' },
-  { name: 'CEAT', logoUrl: '/logos/ceat.svg' },
-  { name: 'MRF', logoUrl: '/logos/mrf.svg' },
   { name: 'Emirates', logoUrl: '/logos/emirates.svg' },
-  { name: 'Mastercard', logoUrl: '/logos/mastercard.svg' },
-  { name: 'TATA', logoUrl: '/logos/tata.svg' },
+  { name: 'Aramco', logoUrl: '/logos/aramco.svg' },
+  { name: 'DP World', logoUrl: '/logos/dpworld.svg' },
+  { name: 'Hyundai', logoUrl: '/logos/hyundai.svg' },
+  { name: 'Coca-Cola', logoUrl: '/logos/cocacola.svg' },
+  { name: 'Booking.com', logoUrl: '/logos/booking.svg' },
+  { name: 'MRF', logoUrl: '/logos/mrf.svg' },
+  { name: 'IndusInd Bank', logoUrl: '/logos/indusind.svg' },
+  { name: 'Google', logoUrl: '/logos/google.svg' },
 ];
 
 function PartnersMarquee() {

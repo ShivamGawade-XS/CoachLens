@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 50" width="170" height="50">
+  <path d="M10 12 L22 25 L10 38" stroke="#D71920" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  <text x="32" y="28" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="16" fill="#D71920">IndusInd</text>
+  <text x="32" y="42" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="12" fill="#8F8F8F" letter-spacing="1">Bank</text>
+</svg>

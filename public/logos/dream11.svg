@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50" width="160" height="50">
-  <g fill="#E21A22">
-    <path d="M10 5 L32 15 L25 40 L10 32 Z" />
-    <path d="M32 15 L45 22 L38 45 L25 40 Z" opacity="0.8" />
-  </g>
-  <text x="55" y="32" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="22" font-style="italic" fill="#E21A22" letter-spacing="1">DREAM11</text>
-</svg>
