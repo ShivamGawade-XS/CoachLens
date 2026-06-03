@@ -277,8 +277,8 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
                     value={scorecardText}
                     onChange={(e) => { setScorecardText(e.target.value); setError(null); }}
                     placeholder="Paste CricHeroes scorecard, plain text, or any structured data here..."
-                    className="w-full bg-surface2 border border-border rounded-xl p-4 pb-12 text-textPrimary placeholder-textTertiary focus:outline-none focus:border-accent focus:shadow-glow-amber font-mono text-sm resize-none transition-all duration-200"
-                    style={{ minHeight: '120px', maxHeight: '320px', height: 'auto' }}
+                    className="w-full bg-surface2 border border-border rounded-xl p-3 md:p-4 pb-12 text-textPrimary placeholder-textTertiary focus:outline-none focus:border-accent focus:shadow-glow-amber font-mono text-sm resize-none transition-all duration-200"
+                    style={{ minHeight: '140px', maxHeight: '320px', height: 'auto' }}
                   />
                   <div className="absolute bottom-3 right-3 text-[10px] font-mono select-none bg-surface1/80 border border-border/50 px-2 py-0.5 rounded backdrop-blur-sm pointer-events-none transition-colors">
                     <span className={scorecardText.length < 100 ? 'text-liability-text' : 'text-aggressor-text'}>
@@ -329,6 +329,7 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
           </div>
 
           {/* Analyze Button */}
+          <div className="sticky-submit-mobile">
           <button 
             onClick={handleAnalyze}
             disabled={scorecardText.length < 100}
@@ -340,6 +341,7 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
           >
             ▶ Analyze Match
           </button>
+          </div>
         </div>
       </div>
     </div>

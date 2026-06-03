@@ -165,7 +165,7 @@ export default function PlayerCard({ player, hideActions = false, mismatch, onVi
       {/* Zone 2: Middle (3 Headline Stats) */}
       <div className="grid grid-cols-3 gap-2 bg-surface2/30 border border-border/20 rounded-xl p-3 mb-3">
         <div className="text-center">
-          <div className="font-mono text-[22px] font-semibold text-textPrimary leading-none mb-1">
+          <div className="font-mono text-[18px] sm:text-[22px] font-semibold text-textPrimary leading-none mb-1">
             {stats.stat1.value}
           </div>
           <div className="font-sans text-[11px] text-textSecondary uppercase tracking-wider">
@@ -173,7 +173,7 @@ export default function PlayerCard({ player, hideActions = false, mismatch, onVi
           </div>
         </div>
         <div className="text-center border-x border-border/20">
-          <div className="font-mono text-[22px] font-semibold text-textPrimary leading-none mb-1">
+          <div className="font-mono text-[18px] sm:text-[22px] font-semibold text-textPrimary leading-none mb-1">
             {stats.stat2.value}
           </div>
           <div className="font-sans text-[11px] text-textSecondary uppercase tracking-wider">
@@ -181,7 +181,7 @@ export default function PlayerCard({ player, hideActions = false, mismatch, onVi
           </div>
         </div>
         <div className="text-center">
-          <div className="font-mono text-[22px] font-semibold text-textPrimary leading-none mb-1">
+          <div className="font-mono text-[18px] sm:text-[22px] font-semibold text-textPrimary leading-none mb-1">
             {stats.stat3.value}
           </div>
           <div className="font-sans text-[11px] text-textSecondary uppercase tracking-wider">

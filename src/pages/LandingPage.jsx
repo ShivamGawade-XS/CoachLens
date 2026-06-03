@@ -99,7 +99,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
 
           
-          <h1 className="text-5xl md:text-7xl font-display text-textPrimary leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+          <h1 className="text-5xl md:text-7xl font-display text-textPrimary leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: '100ms', fontSize: 'clamp(28px, 6vw, 56px)' }}>
             Turn raw scorecards into<br />
             <span className="text-gradient-amber">match-winning intelligence.</span>
           </h1>
@@ -124,7 +124,7 @@ export default function LandingPage() {
           </div>
 
           {/* Slim Trust Bar */}
-          <div className="mt-14 w-full max-w-4xl mx-auto bg-[#1A1D24] border border-border/40 rounded-xl px-5 py-2.5 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-textSecondary animate-fade-in-up max-h-[160px] md:max-h-[60px] overflow-hidden" style={{ animationDelay: '400ms' }}>
+          <div className="mt-14 w-full max-w-4xl mx-auto bg-[#1A1D24] border border-border/40 rounded-xl px-5 py-2.5 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-textSecondary animate-fade-in-up max-h-[160px] md:max-h-[60px] overflow-hidden trust-bar-mobile" style={{ animationDelay: '400ms' }}>
             {/* 1. Scorecards Analysed */}
             <div className="flex items-center gap-2 shrink-0">
               <svg className="w-4 h-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">

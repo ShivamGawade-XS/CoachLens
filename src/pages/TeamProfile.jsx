@@ -243,7 +243,7 @@ export default function TeamProfile() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="glass-card p-5 rounded-2xl text-center">
           <div className="text-[10px] text-textTertiary uppercase font-mono mb-2 flex items-center justify-center gap-1"><Activity size={12} /> Matches</div>
           <div className="text-3xl font-display text-textPrimary">{stats.total}</div>

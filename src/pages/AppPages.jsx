@@ -402,7 +402,7 @@ export default function Teams({ addToast }) {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-2 mb-5">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5">
                   <div className="bg-surface2 p-2.5 rounded-xl border border-border text-center">
                     <div className="text-[9px] text-textTertiary uppercase font-mono mb-0.5">Players</div>
                     <div className="text-lg font-display text-textPrimary">{s.rosterCount ?? (team.roster?.length || 0)}</div>

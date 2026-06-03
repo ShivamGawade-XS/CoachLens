@@ -44,9 +44,9 @@ export default {
         error:   '#EF4444',
       },
       fontFamily: {
-        sans: ['"DM Sans"', 'sans-serif'],
-        display: ['Fraunces', 'serif'],
-        mono: ['"JetBrains Mono"', 'monospace']
+        sans: ['"DM Sans"', '"DM Sans Fallback"', 'Arial', 'sans-serif'],
+        display: ['Fraunces', '"Fraunces Fallback"', 'Georgia', 'serif'],
+        mono: ['"JetBrains Mono"', '"JetBrains Mono Fallback"', '"Courier New"', 'monospace']
       },
       fontSize: {
         'display-xl': ['32px', { lineHeight: '1.2', fontWeight: '500', letterSpacing: '-0.02em' }],
