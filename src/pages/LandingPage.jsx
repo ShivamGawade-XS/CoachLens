@@ -52,7 +52,7 @@ function PartnersMarquee() {
     <section className="py-12 bg-surface1 border-t border-border overflow-hidden relative">
       <div className="max-w-7xl mx-auto px-6 mb-6 text-center">
         <span className="text-[10px] uppercase tracking-widest font-mono text-textTertiary font-semibold bg-surface2 px-3 py-1 rounded-full border border-border">
-          Dugout Intelligence Partners & Sponsors
+          Intelligence Partners & Sponsors
         </span>
       </div>
 
