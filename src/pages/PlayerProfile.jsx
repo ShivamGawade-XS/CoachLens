@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Target, Shield, Zap, History, Send, MessageSquare } from 'lucide-react';
 import { storageService } from '../services/storageService';
 import { calculateIntentScore, getPressureIndex, calculateClutchFactors } from '../utils/coachingMetrics';
+import PlayerAchievements from '../components/PlayerAchievements/PlayerAchievements';
 
 const badgeColorMap = {
   aggressor: 'bg-aggressor-bg text-aggressor-text border-aggressor-border',
@@ -146,6 +147,9 @@ export default function PlayerProfile() {
               )}
             </div>
           </div>
+
+          {/* Achievements */}
+          <PlayerAchievements playerName={name} allMatches={allMatches} />
 
           {/* Historical Analysis Feed */}
           <div>
