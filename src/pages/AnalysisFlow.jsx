@@ -20,8 +20,23 @@ function LoadingScreen({ elapsed, progress, activeStep, steps }) {
         <div className="space-y-3 w-full mb-8">
           {steps.map((step, i) => (
             <div key={i} className={`flex items-center gap-3 text-sm font-mono transition-all duration-500 ${i <= activeStep ? 'text-textPrimary' : 'text-textTertiary'}`} style={{ opacity: i <= activeStep ? 1 : 0.3, transform: i <= activeStep ? 'translateX(0)' : 'translateX(8px)' }}>
-              <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${i <= activeStep ? 'bg-accent/20 border border-accent/40' : 'border border-border'}`}>
-                {i <= activeStep && <div className="w-2 h-2 rounded-full bg-accent animate-scale-pop" />}
+              <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 relative transition-all duration-300 ${
+                i < activeStep 
+                  ? 'bg-aggressor-text/20 border border-aggressor-text/40 text-aggressor-text' 
+                  : i === activeStep 
+                    ? 'bg-accent/20 border border-accent/40 text-accent' 
+                    : 'border border-border'
+              }`}>
+                {i < activeStep ? (
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : i === activeStep ? (
+                  <div className="relative flex items-center justify-center w-2 h-2">
+                    <div className="absolute w-2 h-2 rounded-full bg-accent animate-ping" />
+                    <div className="relative w-2 h-2 rounded-full bg-accent" />
+                  </div>
+                ) : null}
               </div>
               {step}
             </div>
@@ -31,7 +46,9 @@ function LoadingScreen({ elapsed, progress, activeStep, steps }) {
           <div className="h-full bg-gradient-to-r from-aggressor-text to-aggressor-text rounded-full transition-all duration-300 ease-out" style={{ width: `${progress}%` }} />
         </div>
         <div className="w-full flex justify-between mt-2">
-          <span className="text-[10px] text-textTertiary font-mono uppercase tracking-wider">{steps[activeStep]}</span>
+          <span className="text-[10px] text-textTertiary font-mono uppercase tracking-wider">
+            {activeStep < steps.length ? steps[activeStep] : 'Analysis complete'}
+          </span>
           <span className="text-xs text-textTertiary font-mono">{elapsed.toFixed(1)}s</span>
         </div>
       </div>
@@ -48,9 +65,9 @@ export default function AnalysisFlow({ addToast }) {
 
   const steps = [
     'Reading scorecard...',
-    'Analyzing players...',
-    'Building team report...',
-    'Preparing coach brief...',
+    'Building player profiles...',
+    'Analysing team patterns...',
+    'Writing coaching brief...',
   ];
 
   const handleBack = () => navigate('/dashboard');
@@ -60,20 +77,20 @@ export default function AnalysisFlow({ addToast }) {
     const startTime = Date.now();
     let analysisData;
     
-    // Timer to update elapsed seconds UI smoothly
+    // Timer to update elapsed seconds UI smoothly and advance steps every 6s
     const timerInterval = setInterval(() => {
-      setElapsed((Date.now() - startTime) / 1000);
+      const sec = (Date.now() - startTime) / 1000;
+      setElapsed(sec);
+      
+      const step = Math.min(Math.floor(sec / 6), 3);
+      setActiveStep(step);
+      
+      const pct = Math.min((sec / 24) * 100, 99);
+      setProgress(pct);
     }, 100);
 
-    const handleProgress = (stage) => {
-      if (stage === 'stage1') { setActiveStep(0); setProgress(25); }
-      if (stage === 'stage2') { setActiveStep(1); setProgress(60); }
-      if (stage === 'stage3') { setActiveStep(2); setProgress(85); }
-      if (stage === 'stage4') { setActiveStep(3); setProgress(100); }
-    };
-
     try {
-      analysisData = await groqService.analyze(scorecardText, format, phase, 'Direct', handleProgress);
+      analysisData = await groqService.analyze(scorecardText, format, phase, 'Direct');
     } catch (error) {
       console.error("Analysis failed:", error);
       clearInterval(timerInterval);
@@ -83,6 +100,8 @@ export default function AnalysisFlow({ addToast }) {
     }
 
     clearInterval(timerInterval);
+    setActiveStep(4);
+    setProgress(100);
     const totalTimeMs = Date.now() - startTime;
     setElapsed(totalTimeMs / 1000);
 
