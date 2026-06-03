@@ -1,9 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, X, Send, Bot, User, Loader, ChevronDown } from 'lucide-react';
+import { MessageSquare, X, Send, Bot, User, Loader, ChevronDown, Sparkles } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { groqService } from '../../services/groqService';
 import { getTeams } from '../../pages/AppPages';
 import { storageService } from '../../services/storageService';
+
+const SUGGESTED_PROMPTS = [
+  { label: '📊 Analyze Match Trends', text: 'Analyze our recent matches and summarize key performance trends.' },
+  { label: '🔥 Top Performers', text: 'Who are our top performers right now and what is their match impact?' },
+  { label: '💡 Areas to Improve', text: 'Based on our team profile, what are the primary areas we need to improve?' }
+];
 
 export default function ChatAssistant() {
   const { user, isAuthenticated } = useAuth();
@@ -49,12 +55,14 @@ export default function ChatAssistant() {
     };
   };
 
-  const handleSend = async (e) => {
+  const handleSend = async (e, textOverride = null) => {
     e?.preventDefault();
-    if (!input.trim() || isLoading) return;
+    const textToSend = textOverride || input;
+    if (!textToSend.trim() || isLoading) return;
 
-    const userMessage = input.trim();
-    setInput('');
+    const userMessage = textToSend.trim();
+    if (!textOverride) setInput('');
+    
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setIsLoading(true);
 
@@ -82,53 +90,75 @@ export default function ChatAssistant() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 p-4 bg-accent hover:bg-accentHover text-white rounded-full shadow-glow-amber transition-all btn-press animate-fade-in"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-accent hover:bg-accentHover text-white rounded-full shadow-glow-amber transition-all duration-300 btn-press animate-fade-in hover:scale-105 group"
         >
-          <MessageSquare size={24} />
+          <Sparkles size={16} className="group-hover:rotate-12 transition-transform duration-300 text-amber-200" />
+          <span className="text-xs font-semibold tracking-wide">CoachLens AI</span>
         </button>
       )}
 
       {/* Chat Panel */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-full max-w-[360px] h-[550px] max-h-[85vh] flex flex-col glass-card border border-border shadow-2xl rounded-2xl overflow-hidden animate-scale-pop">
+        <div className="fixed bottom-6 right-6 z-50 w-full max-w-[380px] h-[580px] max-h-[85vh] flex flex-col glass-card border border-border shadow-2xl rounded-2xl overflow-hidden animate-scale-pop">
           
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 bg-surface2 border-b border-border">
+          <div className="flex items-center justify-between px-5 py-4 bg-surface2/80 border-b border-border/60 backdrop-blur-md">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-accent/20 text-accent rounded-xl">
-                <Bot size={20} />
+              <div className="p-2 bg-accent/15 text-accent rounded-xl border border-accent/25">
+                <Sparkles size={18} />
               </div>
               <div>
-                <h3 className="text-sm font-display text-textPrimary">CoachLens AI</h3>
-                <p className="text-[10px] font-mono text-accent flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" /> Online
+                <h3 className="text-sm font-semibold tracking-wide text-textPrimary animate-fade-in">CoachLens AI</h3>
+                <p className="text-[10px] text-textSecondary flex items-center gap-1.5 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-success shadow-glow-green animate-pulse" /> Stats Analyst
                 </p>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="p-2 text-textTertiary hover:text-textPrimary hover:bg-surface3 rounded-lg transition-colors">
-              <ChevronDown size={18} />
+            <button onClick={() => setIsOpen(false)} className="p-1.5 text-textTertiary hover:text-textPrimary hover:bg-surface3 rounded-lg transition-colors border border-transparent hover:border-border">
+              <X size={16} />
             </button>
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-5 space-y-4">
+          <div className="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar">
             {messages.map((msg, idx) => (
-              <div key={idx} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${msg.role === 'user' ? 'bg-surface3 text-textSecondary' : 'bg-accent text-white'}`}>
-                  {msg.role === 'user' ? <User size={14} /> : <Bot size={14} />}
-                </div>
-                <div className={`px-4 py-3 rounded-2xl max-w-[75%] text-sm leading-relaxed ${msg.role === 'user' ? 'bg-surface2 border border-border text-textPrimary rounded-tr-sm' : 'bg-accent/10 border border-accent/20 text-textPrimary rounded-tl-sm'}`}>
+              <div key={idx} className={`flex flex-col gap-1.5 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                <span className="text-[9px] font-mono tracking-widest text-textTertiary uppercase px-1">
+                  {msg.role === 'user' ? 'Coach' : 'CoachLens AI'}
+                </span>
+                <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                  msg.role === 'user'
+                    ? 'bg-surface3 border border-border text-textPrimary rounded-tr-none max-w-[85%] shadow-sm'
+                    : 'bg-accent/[0.05] border border-accent/15 text-textPrimary rounded-tl-none max-w-[88%] shadow-glow-amber/5'
+                }`}>
                   {msg.content}
                 </div>
               </div>
             ))}
+
+            {/* Suggested Prompts (rendered only when greeting message is the only message) */}
+            {messages.length === 1 && !isLoading && (
+              <div className="flex flex-col gap-2 pt-2 animate-fade-in-up">
+                <p className="text-[10px] font-mono tracking-widest text-textTertiary uppercase px-1 mb-1">Suggested Prompts</p>
+                {SUGGESTED_PROMPTS.map((prompt, idx) => (
+                  <button
+                    key={idx}
+                    onClick={(e) => handleSend(e, prompt.text)}
+                    className="w-full text-left px-4 py-3 text-xs bg-surface2 hover:bg-surface3 border border-border hover:border-borderHover rounded-xl text-textSecondary hover:text-textPrimary transition-all duration-200 shadow-sm flex items-center justify-between group"
+                  >
+                    <span>{prompt.label}</span>
+                    <span className="text-accent opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-xs">→</span>
+                  </button>
+                ))}
+              </div>
+            )}
             
             {isLoading && (
-              <div className="flex gap-3">
-                <div className="shrink-0 w-8 h-8 rounded-full bg-accent text-white flex items-center justify-center">
-                  <Bot size={14} />
-                </div>
-                <div className="px-4 py-3 rounded-2xl bg-accent/10 border border-accent/20 rounded-tl-sm flex items-center gap-1.5">
+              <div className="flex flex-col gap-1.5 items-start">
+                <span className="text-[9px] font-mono tracking-widest text-textTertiary uppercase px-1">
+                  CoachLens AI
+                </span>
+                <div className="px-4 py-3.5 rounded-2xl bg-accent/[0.05] border border-accent/15 rounded-tl-none flex items-center gap-1.5 shadow-glow-amber/5">
                   <span className="w-1.5 h-1.5 bg-accent/60 rounded-full animate-bounce" />
                   <span className="w-1.5 h-1.5 bg-accent/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                   <span className="w-1.5 h-1.5 bg-accent/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -139,21 +169,21 @@ export default function ChatAssistant() {
           </div>
 
           {/* Input Area */}
-          <div className="p-4 bg-surface2 border-t border-border">
+          <div className="p-4 bg-surface2/60 border-t border-border/60 backdrop-blur-md">
             <form onSubmit={handleSend} className="relative flex items-center">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about your team..."
-                className="w-full bg-surface3 border border-border text-sm text-textPrimary placeholder:text-textTertiary rounded-xl pl-4 pr-12 py-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all"
+                placeholder="Ask about team status or player metrics..."
+                className="w-full bg-surface3/80 border border-border text-sm text-textPrimary placeholder:text-textTertiary rounded-xl pl-4 pr-12 py-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all shadow-inner"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || isLoading}
-                className="absolute right-2 p-1.5 text-accent hover:text-accentHover hover:bg-accent/10 rounded-lg disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+                className="absolute right-2.5 p-1.5 text-accent hover:text-accentHover hover:bg-accent/10 rounded-lg disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
               >
-                <Send size={18} />
+                <Send size={16} />
               </button>
             </form>
           </div>
