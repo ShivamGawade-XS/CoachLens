@@ -145,3 +145,19 @@
   from { transform: translateX(0) scale(1); opacity: 1; }
   to { transform: translateX(20%) scale(0.9); opacity: 0; }
 }
+
+/* Infinite Marquee Scroll */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee-paused {
+  animation-play-state: paused;
+}
