@@ -18,86 +18,135 @@ export default function InstagramCard({ match, onClose }) {
     canvas.width = W;
     canvas.height = H;
 
-    // 1. Solid Background (Slate 900)
-    ctx.fillStyle = '#0F172A';
+    // 1. Background
+    ctx.fillStyle = '#0B0F19'; // Deep sleek dark
     ctx.fillRect(0, 0, W, H);
 
-    // 2. Minimal Top Accent Bar (Blue 500)
-    ctx.fillStyle = '#3B82F6';
-    ctx.fillRect(0, 0, W, 8);
-
-    // 3. Teams Header
-    ctx.textAlign = 'center';
-    ctx.fillStyle = '#F8FAFC';
-    ctx.font = 'bold 56px "Inter", sans-serif';
-    ctx.fillText(match.teamName || 'Team A', W / 2, 180);
+    // 2. Inner Frame / Grid
+    const pad = 80;
+    const innerW = W - (pad * 2);
     
-    ctx.fillStyle = '#94A3B8';
-    ctx.font = '400 32px "Inter", sans-serif';
-    ctx.fillText(`vs ${match.opponent || 'Opponent'}`, W / 2, 240);
-
-    // 4. Match Meta (Date, Format, Result)
-    const dateStr = match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
-    const resultText = match.result ? match.result.toUpperCase() : 'COMPLETED';
-    ctx.fillStyle = '#64748B';
-    ctx.font = '500 24px "Inter", monospace';
-    ctx.fillText(`${dateStr}  •  ${match.format || 'T20'}  •  ${resultText}`, W / 2, 310);
-
-    // 5. Divider
+    // Clean border frame
     ctx.strokeStyle = '#1E293B';
     ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(160, 390);
-    ctx.lineTo(W - 160, 390);
-    ctx.stroke();
+    ctx.strokeRect(pad, pad, innerW, H - (pad * 2));
 
-    // 6. Top Performer
+    // 3. Header Label
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = '#3B82F6'; // Blue accent
+    ctx.font = '700 24px "Inter", sans-serif';
+    ctx.letterSpacing = '4px';
+    ctx.fillText('OFFICIAL MATCH REPORT', pad + 50, pad + 50);
+    ctx.letterSpacing = '0px';
+
+    // 4. Teams
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = '900 64px "Inter", sans-serif';
+    ctx.fillText((match.teamName || 'TEAM A').toUpperCase(), pad + 50, pad + 110);
+    
+    ctx.fillStyle = '#64748B';
+    ctx.font = '600 40px "Inter", sans-serif';
+    ctx.fillText(`vs ${(match.opponent || 'OPPONENT').toUpperCase()}`, pad + 50, pad + 190);
+
+    // 5. Result Badge
+    const isWon = match.result === 'Won';
+    const badgeColor = isWon ? '#10B981' : '#EF4444';
+    const badgeText = isWon ? 'VICTORY' : 'DEFEAT';
+    
+    ctx.fillStyle = badgeColor;
+    ctx.fillRect(W - pad - 250, pad + 50, 200, 60);
+    
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = '800 28px "Inter", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(badgeText, W - pad - 150, pad + 80);
+
+    // Reset alignment
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+
+    // 6. Meta info bar (Date, Format)
+    ctx.fillStyle = '#1E293B';
+    ctx.fillRect(pad, pad + 270, innerW, 80);
+    
+    ctx.fillStyle = '#94A3B8';
+    ctx.font = '500 24px "Inter", monospace';
+    const dateStr = match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase() : '';
+    ctx.fillText(`DATE: ${dateStr}   |   FORMAT: ${match.format || 'T20'}`, pad + 50, pad + 295);
+
+    let currentY = pad + 410;
+
+    // 7. Top Performer Section
     if (topPlayer) {
+      // Section Title
       ctx.fillStyle = '#3B82F6';
-      ctx.font = '600 18px "Inter", sans-serif';
+      ctx.font = '700 20px "Inter", sans-serif';
       ctx.letterSpacing = '2px';
-      ctx.fillText('TOP PERFORMER', W / 2, 470);
+      ctx.fillText('STAR PERFORMER', pad + 50, currentY);
       ctx.letterSpacing = '0px';
+      
+      // Box
+      ctx.fillStyle = '#0F172A';
+      ctx.strokeStyle = '#1E293B';
+      ctx.lineWidth = 2;
+      ctx.fillRect(pad + 50, currentY + 40, innerW - 100, 160);
+      ctx.strokeRect(pad + 50, currentY + 40, innerW - 100, 160);
 
-      ctx.fillStyle = '#F8FAFC';
-      ctx.font = 'bold 52px "Inter", sans-serif';
-      ctx.fillText(topPlayer.name || 'Player', W / 2, 540);
+      // Player Name
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '800 48px "Inter", sans-serif';
+      ctx.fillText(topPlayer.name ? topPlayer.name.toUpperCase() : 'PLAYER', pad + 90, currentY + 70);
 
+      // Role
       ctx.fillStyle = '#94A3B8';
-      ctx.font = '400 24px "Inter", sans-serif';
-      ctx.fillText(topPlayer.role || '', W / 2, 590);
+      ctx.font = '500 24px "Inter", sans-serif';
+      ctx.fillText(topPlayer.role ? topPlayer.role.toUpperCase() : 'ROLE', pad + 90, currentY + 130);
 
+      // Key Stat
       if (topPlayer.key_stat) {
-        ctx.fillStyle = '#F8FAFC';
-        ctx.font = 'bold 40px "Inter", sans-serif';
-        ctx.fillText(topPlayer.key_stat, W / 2, 660);
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#3B82F6';
+        ctx.font = '900 56px "Inter", sans-serif';
+        ctx.fillText(topPlayer.key_stat, W - pad - 90, currentY + 70);
+        
+        ctx.fillStyle = '#64748B';
+        ctx.font = '600 20px "Inter", sans-serif';
+        ctx.fillText(`IMPACT: ${topPlayer.match_impact || 0}/10`, W - pad - 90, currentY + 140);
+        ctx.textAlign = 'left';
       }
+
+      currentY += 260;
     }
 
-    // 7. Divider 2
-    ctx.beginPath();
-    ctx.moveTo(160, 750);
-    ctx.lineTo(W - 160, 750);
-    ctx.stroke();
-
-    // 8. Match Summary
+    // 8. Match Summary Section
     const summary = match.analysis?.team_summary;
     if (summary?.what_won_lost_match) {
-      ctx.fillStyle = '#64748B';
-      ctx.font = '600 16px "Inter", sans-serif';
+      ctx.fillStyle = '#3B82F6';
+      ctx.font = '700 20px "Inter", sans-serif';
       ctx.letterSpacing = '2px';
-      ctx.fillText('MATCH SUMMARY', W / 2, 820);
+      ctx.fillText('TURNING POINT', pad + 50, currentY);
       ctx.letterSpacing = '0px';
 
-      ctx.fillStyle = '#F8FAFC';
-      ctx.font = '400 24px "Inter", sans-serif';
-      wrapText(ctx, summary.what_won_lost_match, W / 2, 870, W - 240, 36);
+      ctx.fillStyle = '#E2E8F0';
+      ctx.font = '400 32px "Inter", sans-serif';
+      wrapText(ctx, summary.what_won_lost_match, pad + 50, currentY + 50, innerW - 100, 48);
     }
 
     // 9. Footer Branding
-    ctx.fillStyle = '#334155';
-    ctx.font = '500 22px "Inter", sans-serif';
-    ctx.fillText('COACHLENS', W / 2, H - 60);
+    ctx.fillStyle = '#3B82F6';
+    ctx.fillRect(pad, H - pad - 100, innerW, 100);
+    
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = '800 32px "Inter", sans-serif';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('COACHLENS', pad + 50, H - pad - 50);
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    ctx.font = '500 20px "Inter", sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('AI CRICKET ANALYTICS', W - pad - 50, H - pad - 50);
 
     setIsRendering(false);
   }, [match]);
