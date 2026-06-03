@@ -1,10 +1,31 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Twitter, Github, Linkedin, Mail } from 'lucide-react';
+import { Twitter, Github, Linkedin, Mail, Cpu, ShieldCheck, Trophy } from 'lucide-react';
 
 export default function Footer() {
   return (
     <footer className="bg-surface1 border-t border-border mt-auto relative z-10">
+      {/* How CoachLens Works */}
+      <div className="border-b border-border/40 py-5 bg-surface2/20">
+        <div className="max-w-7xl mx-auto px-6">
+          <h4 className="text-[10px] font-mono font-semibold uppercase tracking-widest text-textTertiary mb-2.5">How CoachLens works</h4>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-textSecondary">
+            <div className="flex items-center gap-2.5">
+              <Cpu size={14} className="text-accent shrink-0" />
+              <span>Powered by Claude AI — Anthropic's model with cricket-specific prompting</span>
+            </div>
+            <div className="flex items-center gap-2.5">
+              <ShieldCheck size={14} className="text-aggressor-text shrink-0" />
+              <span>Your scorecard is never stored — processed in real time and discarded</span>
+            </div>
+            <div className="flex items-center gap-2.5">
+              <Trophy size={14} className="text-anchor-text shrink-0" />
+              <span>Designed for amateur club cricket — formats from Under-12 to Masters</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto px-6 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
           
