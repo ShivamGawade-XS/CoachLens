@@ -30,76 +30,16 @@ function FAQItem({ question, answer }) {
   );
 }
 
-/* ─── Partner Vector SVG Logos ─── */
-const BCCILogo = (props) => (
-  <svg viewBox="0 0 100 100" className="h-9 w-auto" fill="currentColor" {...props}>
-    <path d="M50 5 L55 25 L75 15 L65 35 L85 35 L68 50 L85 65 L65 65 L75 85 L55 75 L50 95 L45 75 L25 85 L35 65 L15 65 L32 50 L15 35 L35 35 L25 15 L45 25 Z" />
-    <circle cx="50" cy="50" r="14" fill="none" stroke="currentColor" strokeWidth="3" />
-  </svg>
-);
-
-const CricHeroesLogo = (props) => (
-  <svg viewBox="0 0 140 40" className="h-8 w-auto" fill="currentColor" {...props}>
-    <path d="M5 5 H25 V20 C25 28 5 32 5 32 C5 32 -15 28 -15 20 V5 H-5 V20 C-5 22 5 24 5 24 C5 24 15 22 15 20 V10 H5 Z" transform="translate(20, 2)" />
-    <text x="45" y="27" fontFamily="sans-serif" fontWeight="800" fontSize="16">CricHeroes</text>
-  </svg>
-);
-
-const GroqLogo = (props) => (
-  <svg viewBox="0 0 100 40" className="h-7 w-auto" fill="currentColor" {...props}>
-    <text x="5" y="28" fontFamily="sans-serif" fontWeight="900" fontSize="28" letterSpacing="-1">groq</text>
-  </svg>
-);
-
-const Dream11Logo = (props) => (
-  <svg viewBox="0 0 130 40" className="h-8 w-auto" fill="currentColor" {...props}>
-    <path d="M5 5 L25 12 L18 32 L5 25 Z" transform="translate(10, 2)" />
-    <text x="42" y="28" fontFamily="sans-serif" fontWeight="900" fontSize="18" fontStyle="italic">DREAM11</text>
-  </svg>
-);
-
-const CeatLogo = (props) => (
-  <svg viewBox="0 0 100 40" className="h-7 w-auto" fill="currentColor" {...props}>
-    <text x="5" y="28" fontFamily="sans-serif" fontWeight="900" fontSize="30" letterSpacing="-1">CEAT</text>
-  </svg>
-);
-
-const MrfLogo = (props) => (
-  <svg viewBox="0 0 100 40" className="h-8 w-auto" fill="currentColor" {...props}>
-    <text x="5" y="28" fontFamily="sans-serif" fontWeight="950" fontSize="32" fontStyle="italic" letterSpacing="-2">MRF</text>
-  </svg>
-);
-
-const EmiratesLogo = (props) => (
-  <svg viewBox="0 0 130 40" className="h-7 w-auto" fill="currentColor" {...props}>
-    <text x="5" y="28" fontFamily="sans-serif" fontWeight="900" fontSize="24" letterSpacing="1.5">Emirates</text>
-  </svg>
-);
-
-const MastercardLogo = (props) => (
-  <svg viewBox="0 0 90 40" className="h-8 w-auto" fill="currentColor" {...props}>
-    <circle cx="30" cy="20" r="16" fillOpacity="0.85" />
-    <circle cx="50" cy="20" r="16" fillOpacity="0.85" />
-  </svg>
-);
-
-const TataLogo = (props) => (
-  <svg viewBox="0 0 100 40" className="h-8 w-auto" fill="currentColor" {...props}>
-    <ellipse cx="50" cy="20" rx="35" ry="18" fill="none" stroke="currentColor" strokeWidth="3" />
-    <path d="M38 15 C42 15 44 28 44 28 M62 15 C58 15 56 28 56 28 M50 12 L50 30" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-  </svg>
-);
-
 const PARTNERS = [
-  { name: 'BCCI', logo: BCCILogo, color: 'hover:text-[#004B93]' },
-  { name: 'CricHeroes', logo: CricHeroesLogo, color: 'hover:text-[#0B83D9]' },
-  { name: 'Groq', logo: GroqLogo, color: 'hover:text-[#ED6C24]' },
-  { name: 'Dream11', logo: Dream11Logo, color: 'hover:text-[#E21A22]' },
-  { name: 'CEAT', logo: CeatLogo, color: 'hover:text-[#2F3E90]' },
-  { name: 'MRF', logo: MrfLogo, color: 'hover:text-[#E31E24]' },
-  { name: 'Emirates', logo: EmiratesLogo, color: 'hover:text-[#D71920]' },
-  { name: 'Mastercard', logo: MastercardLogo, color: 'hover:text-[#FF5F00]' },
-  { name: 'TATA', logo: TataLogo, color: 'hover:text-[#0A5CA8]' },
+  { name: 'BCCI', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Board_of_Control_for_Cricket_in_India_Logo_%282024%29.svg' },
+  { name: 'CricHeroes', logoUrl: 'https://cricheroes.in/assets/images/logo.png' },
+  { name: 'Groq', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Groq_logo.svg' },
+  { name: 'Dream11', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/8c/Dream11_logo.svg' },
+  { name: 'CEAT', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/ea/CEAT_Logo.svg' },
+  { name: 'MRF', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Madras_Rubber_Factory_Logo.svg' },
+  { name: 'Emirates', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d0/Emirates_logo.svg' },
+  { name: 'Mastercard', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg' },
+  { name: 'TATA', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/8f/Tata_logo.svg' },
 ];
 
 function PartnersMarquee() {
@@ -125,16 +65,19 @@ function PartnersMarquee() {
         <div className="absolute left-0 top-0 bottom-0 w-20 md:w-40 bg-gradient-to-r from-primary to-transparent z-10 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-20 md:w-40 bg-gradient-to-l from-primary to-transparent z-10 pointer-events-none" />
 
-        <div className={`flex items-center gap-12 animate-marquee ${isPaused ? 'animate-marquee-paused' : ''}`}>
+        <div className={`flex items-center gap-16 animate-marquee ${isPaused ? 'animate-marquee-paused' : ''}`}>
           {doublePartners.map((p, idx) => {
-            const Logo = p.logo;
             return (
               <div 
                 key={`${p.name}-${idx}`} 
-                className={`flex items-center justify-center shrink-0 text-textSecondary/40 transition-all duration-300 hover:scale-105 cursor-pointer ${p.color}`}
+                className="flex items-center justify-center shrink-0 w-28 md:w-36 h-10 hover:scale-110 transition-all duration-300 cursor-pointer"
                 title={p.name}
               >
-                <Logo />
+                <img 
+                  src={p.logoUrl} 
+                  alt={`${p.name} logo`}
+                  className="h-full max-h-8 md:max-h-10 w-auto object-contain grayscale opacity-45 dark:opacity-35 hover:grayscale-0 hover:opacity-100 transition-all duration-300"
+                />
               </div>
             );
           })}
