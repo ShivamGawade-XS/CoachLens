@@ -49,7 +49,7 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="glass-card p-8 rounded-2xl group">
+            <div className="bg-surface1 border border-border p-8 rounded-2xl group hover:shadow-md transition-all duration-300">
               <div className="w-12 h-12 rounded-xl bg-aggressor-bg/50 border border-aggressor-border flex items-center justify-center text-aggressor-text mb-6 group-hover:scale-110 transition-transform">
                 <Zap size={24} />
               </div>
@@ -59,7 +59,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="glass-card p-8 rounded-2xl group">
+            <div className="bg-surface1 border border-border p-8 rounded-2xl group hover:shadow-md transition-all duration-300">
               <div className="w-12 h-12 rounded-xl bg-anchor-bg/50 border border-anchor-border flex items-center justify-center text-anchor-text mb-6 group-hover:scale-110 transition-transform">
                 <Shield size={24} />
               </div>
@@ -69,7 +69,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="glass-card p-8 rounded-2xl group">
+            <div className="bg-surface1 border border-border p-8 rounded-2xl group hover:shadow-md transition-all duration-300">
               <div className="w-12 h-12 rounded-xl bg-improving-bg/50 border border-improving-border flex items-center justify-center text-improving-text mb-6 group-hover:scale-110 transition-transform">
                 <Target size={24} />
               </div>
@@ -92,7 +92,7 @@ export default function LandingPage() {
 
           <div className="space-y-4">
             {/* FAQ 1 */}
-            <div className="glass-card p-6 rounded-2xl">
+            <div className="bg-surface1 border border-border shadow-sm p-6 rounded-2xl">
               <h3 className="text-lg font-display text-textPrimary mb-2 flex items-start gap-3">
                 <span className="text-accent mt-1">Q.</span>
                 Does this work with CricHeroes?
@@ -103,7 +103,7 @@ export default function LandingPage() {
             </div>
 
             {/* FAQ 2 */}
-            <div className="glass-card p-6 rounded-2xl">
+            <div className="bg-surface1 border border-border shadow-sm p-6 rounded-2xl">
               <h3 className="text-lg font-display text-textPrimary mb-2 flex items-start gap-3">
                 <span className="text-accent mt-1">Q.</span>
                 How is this different from CricHeroes?
@@ -114,7 +114,7 @@ export default function LandingPage() {
             </div>
 
             {/* FAQ 3 */}
-            <div className="glass-card p-6 rounded-2xl">
+            <div className="bg-surface1 border border-border shadow-sm p-6 rounded-2xl">
               <h3 className="text-lg font-display text-textPrimary mb-2 flex items-start gap-3">
                 <span className="text-accent mt-1">Q.</span>
                 Can I share the feedback with my players?
@@ -125,7 +125,7 @@ export default function LandingPage() {
             </div>
 
             {/* FAQ 4 */}
-            <div className="glass-card p-6 rounded-2xl">
+            <div className="bg-surface1 border border-border shadow-sm p-6 rounded-2xl">
               <h3 className="text-lg font-display text-textPrimary mb-2 flex items-start gap-3">
                 <span className="text-accent mt-1">Q.</span>
                 Is CoachLens free?
