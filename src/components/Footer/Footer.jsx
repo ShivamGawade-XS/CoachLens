@@ -12,7 +12,7 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-textSecondary">
             <div className="flex items-center gap-2.5">
               <Cpu size={14} className="text-accent shrink-0" />
-              <span>Powered by Claude AI — Anthropic's model with cricket-specific prompting</span>
+              <span>Powered by Synthetic Leather & Willow — AI trained on grass stains, tea-breaks, and tactical genius</span>
             </div>
             <div className="flex items-center gap-2.5">
               <ShieldCheck size={14} className="text-aggressor-text shrink-0" />
