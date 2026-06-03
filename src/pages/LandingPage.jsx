@@ -124,7 +124,7 @@ export default function LandingPage() {
           </div>
 
           {/* Slim Trust Bar */}
-          <div className="mt-14 w-full max-w-4xl mx-auto bg-[#1A1D24] border border-border/40 rounded-xl px-5 py-2.5 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-textSecondary animate-fade-in-up max-h-[160px] md:max-h-[60px] overflow-hidden trust-bar-mobile" style={{ animationDelay: '400ms' }}>
+          <div className="mt-14 w-full max-w-4xl mx-auto bg-surface1 dark:bg-[#1A1D24] border border-border/60 dark:border-border/40 shadow-sm dark:shadow-none rounded-xl px-5 py-2.5 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-textSecondary animate-fade-in-up max-h-[160px] md:max-h-[60px] overflow-hidden trust-bar-mobile" style={{ animationDelay: '400ms' }}>
             {/* 1. Scorecards Analysed */}
             <div className="flex items-center gap-2 shrink-0">
               <svg className="w-4 h-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
