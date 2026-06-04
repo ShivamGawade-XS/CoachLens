@@ -125,7 +125,7 @@ export default function PlayerCard({ player, hideActions = false, mismatch, onVi
   const handleCopyLink = () => {
     try {
       const uuid = shareId || 'placeholder-uuid';
-      const url = `https://coach-lens.vercel.app/share/${uuid}?player=${encodeURIComponent(player.name)}`;
+      const url = `${window.location.origin}/share/${uuid}?player=${encodeURIComponent(player.name)}`;
       navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);

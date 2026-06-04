@@ -1,4 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
 export const config = {
   runtime: 'edge',
@@ -10,6 +12,25 @@ export default async function handler(req) {
       status: 405,
       headers: { 'Content-Type': 'application/json' }
     });
+  }
+
+  // Rate Limiting
+  const upstashUrl = process.env.UPSTASH_REDIS_REST_URL;
+  const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (upstashUrl && upstashToken) {
+    const ratelimit = new Ratelimit({
+      redis: new Redis({ url: upstashUrl, token: upstashToken }),
+      limiter: Ratelimit.slidingWindow(60, '1 h'),
+      analytics: false,
+    });
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+    const { success } = await ratelimit.limit(ip);
+    if (!success) {
+      return new Response(JSON.stringify({ error: 'Rate limit exceeded. Try again in an hour.' }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
   }
 
   const url = new URL(req.url);

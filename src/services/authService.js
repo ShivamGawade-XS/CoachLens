@@ -3,10 +3,88 @@ import { supabase, isSupabaseConfigured } from './supabaseClient';
 const USERS_KEY = 'coachlens_users';
 const SESSION_KEY = 'coachlens_session';
 
-const encode = (str) => btoa(unescape(encodeURIComponent(str)));
-const decode = (str) => {
-  try { return decodeURIComponent(escape(atob(str))); }
-  catch { return ''; }
+function sha256(ascii) {
+  function rightRotate(value, amount) {
+    return (value >>> amount) | (value << (32 - amount));
+  }
+  var mathPow = Math.pow;
+  var maxWord = mathPow(2, 32);
+  var lengthProperty = 'length';
+  var i, j;
+  var result = '';
+  var words = [];
+  var asciiLength = ascii[lengthProperty] * 8;
+  var hash = sha256.h = sha256.h || [];
+  var k = sha256.k = sha256.k || [];
+  var primeCounter = k[lengthProperty];
+  var isPrime = {};
+  for (var candidate = 2; primeCounter < 64; candidate++) {
+    if (!isPrime[candidate]) {
+      for (i = 0; i < 300; i += candidate) {
+        isPrime[i] = 1;
+      }
+      hash[primeCounter] = (mathPow(candidate, .5)*maxWord)|0;
+      k[primeCounter++] = (mathPow(candidate, 1/3)*maxWord)|0;
+    }
+  }
+  ascii += '\x80';
+  while (ascii[lengthProperty] % 64 - 56) ascii += '\x00';
+  for (i = 0; i < ascii[lengthProperty]; i++) {
+    j = ascii.charCodeAt(i);
+    if (j >> 8) return '';
+    words[i >> 2] |= j << (24 - (i % 4) * 8);
+  }
+  words[words[lengthProperty]] = ((asciiLength / maxWord) | 0);
+  words[words[lengthProperty]] = (asciiLength);
+  for (j = 0; j < words[lengthProperty]; j += 16) {
+    var w = words.slice(j, j + 16);
+    var oldHash = hash.slice(0);
+    var a = hash[0], b = hash[1], c = hash[2], d = hash[3], e = hash[4], f = hash[5], g = hash[6], h = hash[7];
+    for (i = 0; i < 64; i++) {
+      var wItem = w[i];
+      if (i >= 16) {
+        var s0 = rightRotate(w[i - 15], 7) ^ rightRotate(w[i - 15], 18) ^ (w[i - 15] >>> 3);
+        var s1 = rightRotate(w[i - 2], 17) ^ rightRotate(w[i - 2], 19) ^ (w[i - 2] >>> 10);
+        wItem = w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
+      }
+      var ch = (e & f) ^ (~e & g);
+      var maj = (a & b) ^ (a & c) ^ (b & c);
+      var t1 = (h + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25)) + ch + k[i] + wItem) | 0;
+      var t2 = ((rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22)) + maj) | 0;
+      h = g;
+      g = f;
+      f = e;
+      e = (d + t1) | 0;
+      d = c;
+      c = b;
+      b = a;
+      a = (t1 + t2) | 0;
+    }
+    hash[0] = (hash[0] + a) | 0;
+    hash[1] = (hash[1] + b) | 0;
+    hash[2] = (hash[2] + c) | 0;
+    hash[3] = (hash[3] + d) | 0;
+    hash[4] = (hash[4] + e) | 0;
+    hash[5] = (hash[5] + f) | 0;
+    hash[6] = (hash[6] + g) | 0;
+    hash[7] = (hash[7] + h) | 0;
+  }
+  for (i = 0; i < 8; i++) {
+    for (j = 3; j + 1; j--) {
+      var b = (hash[i] >> (j * 8)) & 255;
+      result += (b < 16 ? '0' : '') + b.toString(16);
+    }
+  }
+  return result;
+}
+
+const hashPassword = (str) => sha256(str);
+const isBase64Match = (storedHash, plainPassword) => {
+  try {
+    return btoa(unescape(encodeURIComponent(plainPassword))) === storedHash;
+  } catch {
+    return false;
+  }
 };
 
 function getUsers() {
@@ -48,7 +126,7 @@ export const authService = {
       id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
       fullName: userData.fullName.trim(),
       email: userData.email.trim().toLowerCase(),
-      password: encode(userData.password),
+      password: hashPassword(userData.password),
       organization: userData.organization?.trim() || '',
       role: userData.role || 'Head Coach',
       experience: userData.experience || '1-3 years',
@@ -84,7 +162,7 @@ export const authService = {
       return { success: false, error: 'No account found with this email.' };
     }
 
-    if (decode(user.password) !== password) {
+    if (user.password !== hashPassword(password) && !isBase64Match(user.password, password)) {
       return { success: false, error: 'Incorrect password. Please try again.' };
     }
 
@@ -169,11 +247,11 @@ export const authService = {
     const idx = users.findIndex(u => u.id === session.id);
     if (idx === -1) return { success: false, error: 'User not found.' };
 
-    if (decode(users[idx].password) !== currentPassword) {
+    if (users[idx].password !== hashPassword(currentPassword) && !isBase64Match(users[idx].password, currentPassword)) {
       return { success: false, error: 'Current password is incorrect.' };
     }
 
-    users[idx].password = encode(newPassword);
+    users[idx].password = hashPassword(newPassword);
     saveUsers(users);
 
     return { success: true };

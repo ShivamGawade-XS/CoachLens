@@ -138,25 +138,26 @@ Formatting: Use standard markdown headers (##), bold text, and bullet points. Do
 Match Data:
 {matchData}`;
 
+const getHeaders = () => {
+  let apiKey = import.meta.env.VITE_GROQ_API_KEY;
+  if (!apiKey && typeof window !== 'undefined') {
+    apiKey = localStorage.getItem('GROQ_API_KEY');
+  }
+  const headers = {
+    "Content-Type": "application/json"
+  };
+  if (apiKey) {
+    headers["Authorization"] = `Bearer ${apiKey}`;
+  }
+  return headers;
+};
+
 export const groqService = {
   getTurningPoint: async (overData) => {
-    let apiKey = import.meta.env.VITE_GROQ_API_KEY;
-    if (!apiKey && typeof window !== 'undefined') {
-      apiKey = localStorage.getItem('GROQ_API_KEY');
-    }
-
-    if (!apiKey) {
-      // Fallback turning point for demo
-      return { over: 14, reason: "Over 14 — Wicket + 4 dot balls, run rate dropped from 9.2 to 5.1" };
-    }
-
     try {
-      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      const response = await fetch("/api/groq", {
         method: "POST",
-        headers: {
-          "Authorization": `Bearer ${apiKey}`,
-          "Content-Type": "application/json"
-        },
+        headers: getHeaders(),
         body: JSON.stringify({
           model: "llama-3.1-8b-instant",
           messages: [
@@ -273,15 +274,6 @@ export const groqService = {
   },
 
   generateWhatsAppMessages: async (players) => {
-    let apiKey = import.meta.env.VITE_GROQ_API_KEY;
-    if (!apiKey && typeof window !== 'undefined') {
-      apiKey = localStorage.getItem('GROQ_API_KEY');
-    }
-
-    if (!apiKey) {
-      throw new Error("No API key");
-    }
-
     const playerSummaries = players.map(p => ({
       name: p.name,
       role: p.role,
@@ -294,12 +286,9 @@ export const groqService = {
 
     const prompt = WHATSAPP_PROMPT.replace('{players}', JSON.stringify(playerSummaries, null, 2));
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    const response = await fetch("/api/groq", {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
+      headers: getHeaders(),
       body: JSON.stringify({
         model: "llama-3.1-8b-instant",
         messages: [
@@ -327,21 +316,11 @@ export const groqService = {
   },
 
   getTossDecision: async (teamHistory) => {
-    let apiKey = import.meta.env.VITE_GROQ_API_KEY;
-    if (!apiKey && typeof window !== 'undefined') {
-      apiKey = localStorage.getItem('GROQ_API_KEY');
-    }
-
-    if (!apiKey) throw new Error("No API key");
-
     const prompt = TOSS_PROMPT.replace('{history}', JSON.stringify(teamHistory, null, 2));
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    const response = await fetch("/api/groq", {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
+      headers: getHeaders(),
       body: JSON.stringify({
         model: "llama-3.1-8b-instant",
         messages: [
@@ -367,27 +346,16 @@ export const groqService = {
   },
 
   chatWithCoachLens: async (messages, contextData) => {
-    let apiKey = import.meta.env.VITE_GROQ_API_KEY;
-    if (!apiKey && typeof window !== 'undefined') {
-      apiKey = localStorage.getItem('GROQ_API_KEY');
-    }
-
-    if (!apiKey) throw new Error("No API key");
-
     const systemPrompt = CHAT_SYSTEM_PROMPT.replace('{context}', JSON.stringify(contextData));
     
-    // Construct messages array starting with system prompt
     const apiMessages = [
       { role: "system", content: systemPrompt },
       ...messages.map(m => ({ role: m.role, content: m.content }))
     ];
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    const response = await fetch("/api/groq", {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
+      headers: getHeaders(),
       body: JSON.stringify({
         model: "llama-3.1-8b-instant",
         messages: apiMessages,
@@ -402,24 +370,12 @@ export const groqService = {
   },
 
   generateFormalReport: async (matchData) => {
-    let apiKey = import.meta.env.VITE_GROQ_API_KEY;
-    if (!apiKey && typeof window !== 'undefined') {
-      apiKey = localStorage.getItem('GROQ_API_KEY');
-    }
-    if (!apiKey) {
-      throw new Error("No Groq API key configured.");
-    }
-
-    // Strip rawScorecard to save massive token overhead and prevent Payload Too Large errors
     const { rawScorecard, ...leanMatchData } = matchData;
     const prompt = FORMAL_REPORT_PROMPT.replace('{matchData}', JSON.stringify(leanMatchData, null, 2));
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    const response = await fetch("/api/groq", {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
+      headers: getHeaders(),
       body: JSON.stringify({
         model: "llama-3.1-8b-instant",
         messages: [{ role: "user", content: prompt }],
@@ -438,14 +394,6 @@ export const groqService = {
   },
 
   getOverRecommendation: async (matchState) => {
-    let apiKey = import.meta.env.VITE_GROQ_API_KEY;
-    if (!apiKey && typeof window !== 'undefined') {
-      apiKey = localStorage.getItem('GROQ_API_KEY');
-    }
-    if (!apiKey || apiKey.trim() === '') {
-      throw new Error("No Groq API key configured.");
-    }
-
     const prompt = `You are a tactical cricket coach sitting in the dugout during a live match. Based on the current match state below, give exactly 2-3 sharp tactical recommendations for the next over.
 
 Rules:
@@ -467,12 +415,9 @@ Return ONLY a JSON object:
   "projected_total": <number or null>
 }`;
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    const response = await fetch("/api/groq", {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
+      headers: getHeaders(),
       body: JSON.stringify({
         model: "llama-3.1-8b-instant",
         messages: [{ role: "user", content: prompt }],
@@ -495,14 +440,6 @@ Return ONLY a JSON object:
   },
 
   selectBestXI: async (squad, opponentInfo) => {
-    let apiKey = import.meta.env.VITE_GROQ_API_KEY;
-    if (!apiKey && typeof window !== 'undefined') {
-      apiKey = localStorage.getItem('GROQ_API_KEY');
-    }
-    if (!apiKey || apiKey.trim() === '') {
-      throw new Error("No Groq API key configured.");
-    }
-
     const prompt = `You are a cricket team selector. From the squad below, pick the best playing XI for the given match context.
 
 Squad (${squad.length} players):
@@ -529,12 +466,9 @@ Return ONLY a JSON object:
   "team_balance": "brief 1-sentence assessment of team composition"
 }`;
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    const response = await fetch("/api/groq", {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
+      headers: getHeaders(),
       body: JSON.stringify({
         model: "llama-3.1-8b-instant",
         messages: [{ role: "user", content: prompt }],
