@@ -29,7 +29,16 @@ export default async function handler(req) {
 
   const upstashUrl = process.env.UPSTASH_REDIS_REST_URL;
   const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (upstashUrl && upstashToken) {
+  const isProd = process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production';
+
+  if (!upstashUrl || !upstashToken) {
+    if (isProd) {
+      return new Response(JSON.stringify({ error: 'Rate limit service misconfigured' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+  } else {
     const ratelimit = new Ratelimit({
       redis: new Redis({ url: upstashUrl, token: upstashToken }),
       limiter: Ratelimit.slidingWindow(10, '1 h'),

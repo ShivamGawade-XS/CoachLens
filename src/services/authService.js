@@ -87,15 +87,41 @@ const isBase64Match = (storedHash, plainPassword) => {
   }
 };
 
+const OBFUSCATION_KEY = 42;
+
+const obfuscate = (str) => {
+  let result = '';
+  for (let i = 0; i < str.length; i++) {
+    result += String.fromCharCode(str.charCodeAt(i) ^ OBFUSCATION_KEY);
+  }
+  return btoa(unescape(encodeURIComponent(result)));
+};
+
+const deobfuscate = (str) => {
+  try {
+    const decoded = decodeURIComponent(escape(atob(str)));
+    let result = '';
+    for (let i = 0; i < decoded.length; i++) {
+      result += String.fromCharCode(decoded.charCodeAt(i) ^ OBFUSCATION_KEY);
+    }
+    return result;
+  } catch {
+    return str;
+  }
+};
+
 function getUsers() {
   try {
     const data = localStorage.getItem(USERS_KEY);
-    return data ? JSON.parse(data) : [];
+    if (!data) return [];
+    const deobfuscated = deobfuscate(data);
+    return JSON.parse(deobfuscated);
   } catch { return []; }
 }
 
 function saveUsers(users) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  const obfuscated = obfuscate(JSON.stringify(users));
+  localStorage.setItem(USERS_KEY, obfuscated);
 }
 
 export const authService = {
