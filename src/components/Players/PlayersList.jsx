@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Users } from 'lucide-react';
-import { getAllPlayers, savePlayer, searchPlayers } from '../../services/playerService';
+import { getAllPlayers, savePlayer, searchPlayers, seedDemoPlayers } from '../../services/playerService';
 import PlayerCardItem from './PlayerCard';
 import PlayerModal from './PlayerModal';
 
@@ -18,7 +18,13 @@ export default function PlayersList() {
     setPlayers(results);
   }, [searchQuery]);
 
+  // Seed demo players on first visit (idempotent) and load
   useEffect(() => {
+    const demoMatchIds = [
+      'demo-panaji_vs_margao', 'demo-margao_vs_vasco', 'demo-vasco_vs_ponda',
+      'demo-panaji_vs_vasco', 'demo-panaji_vs_ponda'
+    ];
+    seedDemoPlayers(demoMatchIds);
     loadPlayers();
   }, [loadPlayers]);
 
