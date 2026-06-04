@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, FileText, Copy, Check, Loader2, Send, Download } from 'lucide-react';
 import { groqService } from '../../services/groqService';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+
 
 // Simple markdown formatter since we don't have react-markdown installed
 const formatMarkdown = (text) => {
@@ -54,6 +53,9 @@ export default function FormalReportModal({ match, onClose }) {
     
     setIsDownloading(true);
     try {
+      const html2canvas = (await import('html2canvas')).default;
+      const { jsPDF } = await import('jspdf');
+
       const isDark = document.documentElement.classList.contains('dark');
       const canvas = await html2canvas(element, {
         backgroundColor: isDark ? '#12141A' : '#FFFFFF',

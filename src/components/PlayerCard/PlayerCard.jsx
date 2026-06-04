@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Download, MessageCircle, Link as LinkIcon, CheckCircle, AlertTriangle, ArrowRight } from 'lucide-react';
-import html2canvas from 'html2canvas';
+
 import { calculateIntentScore, getPressureIndex } from '../../utils/coachingMetrics';
 
 // Static mapping for dynamic badge colors - Tailwind can't resolve template-literal class names
@@ -103,6 +103,7 @@ export default function PlayerCard({ player, hideActions = false, mismatch, onVi
     const element = document.getElementById(cardId);
     if (!element) return;
     try {
+      const html2canvas = (await import('html2canvas')).default;
       const isDark = document.documentElement.classList.contains('dark');
       const canvas = await html2canvas(element, {
         backgroundColor: isDark ? '#0A0C10' : '#F8FAFC',

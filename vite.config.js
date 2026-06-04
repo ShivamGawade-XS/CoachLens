@@ -10,7 +10,7 @@ export default defineConfig({
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-charts': ['recharts'],
-          'vendor-utils': ['lucide-react', 'html2canvas', 'jspdf'],
+          'vendor-utils': ['lucide-react'],
         }
       }
     }

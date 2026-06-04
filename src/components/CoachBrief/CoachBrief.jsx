@@ -1,7 +1,5 @@
 import React, { useContext } from 'react';
 import { Download, AlertTriangle, Lock, Zap } from 'lucide-react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import TossAdvisor from './TossAdvisor';
 import { PlanContext } from '../../App';
 
@@ -22,6 +20,9 @@ export default function CoachBrief({ match, brief, flaggedMismatches = [] }) {
     const element = document.getElementById('coach-brief-content');
     if (!element) return;
     try {
+      const html2canvas = (await import('html2canvas')).default;
+      const { jsPDF } = await import('jspdf');
+
       const isDark = document.documentElement.classList.contains('dark');
       const canvas = await html2canvas(element, { backgroundColor: isDark ? '#0A0C10' : '#F8FAFC', scale: 2 });
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });

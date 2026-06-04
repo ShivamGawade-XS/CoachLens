@@ -3,8 +3,7 @@ import { useParams, useNavigate, Link, useOutletContext } from 'react-router-dom
 import { ChevronLeft, Download, Loader2, MessageCircle, RefreshCcw } from 'lucide-react';
 import { storageService } from '../services/storageService';
 import { groqService } from '../services/groqService';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+
 import PlayerCard from '../components/PlayerCard/PlayerCard';
 import TeamReport from '../components/TeamReport/TeamReport';
 import CoachBrief from '../components/CoachBrief/CoachBrief';
@@ -62,6 +61,9 @@ export default function MatchResults() {
     
     setIsExporting(true);
     try {
+      const html2canvas = (await import('html2canvas')).default;
+      const { jsPDF } = await import('jspdf');
+
       const isDark = document.documentElement.classList.contains('dark');
       const canvas = await html2canvas(element, {
         backgroundColor: isDark ? '#0A0C10' : '#F8FAFC',
