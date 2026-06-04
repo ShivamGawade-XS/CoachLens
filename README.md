@@ -71,13 +71,15 @@ npm install
 Create a `.env` file in the project root:
 
 ```env
-VITE_GROQ_API_KEY=your_groq_api_key_here
+GROQ_API_KEY=your_groq_api_key_here
 ```
 
 > ⚠️ Never commit your `.env` file. It is already in `.gitignore`.  
-> In production, set the key in **Settings → API Configuration** inside the app (stored in `localStorage`).
+> The API key is never exposed to the browser. All Groq calls are routed through `/api/analyze`.
 
 ### Run Locally
+
+For local development, the API key is only needed as a server-side environment variable (defined in `.env`), not as a frontend Vite environment variable.
 
 ```bash
 npm run dev
@@ -218,7 +220,7 @@ Set via **Settings → API Configuration** in the app. No `.env` needed in produ
 
 1. Push to GitHub (`git push origin main`)
 2. Connect repo to [Vercel](https://vercel.com)
-3. Optionally add `VITE_GROQ_API_KEY` in Vercel environment variables
+3. Add `GROQ_API_KEY` in Vercel environment variables
 4. Deploy — auto-deploys on every `main` push
 
 ---
