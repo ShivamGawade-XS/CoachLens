@@ -1,4 +1,4 @@
-import React, { useState, useCallback, createContext, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useCallback, createContext, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { X, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import { usePlan } from './hooks/usePlan';
@@ -26,6 +26,8 @@ const TeamProfile    = lazy(() => import('./pages/TeamProfile'));
 const PlayerProfile  = lazy(() => import('./pages/PlayerProfile'));
 const TeamRankings   = lazy(() => import('./pages/TeamRankings'));
 const CoachTools     = lazy(() => import('./pages/CoachTools'));
+const PlayersList    = lazy(() => import('./components/Players/PlayersList'));
+const PlayerDetailPage = lazy(() => import('./components/Players/PlayerDetail'));
 const ShareView      = lazy(() => import('./pages/ShareView'));
 const PublicPlayerCard = lazy(() => import('./pages/PublicPlayerCard'));
 const AppPages       = lazy(() => import('./pages/AppPages'));
@@ -174,6 +176,8 @@ function App() {
               <Route path="/settings" element={<AppPages page="settings" addToast={addToast} />} />
               <Route path="/tools" element={<CoachTools />} />
               <Route path="/rankings" element={<TeamRankings />} />
+              <Route path="/players" element={<PlayersList />} />
+              <Route path="/players/:playerId" element={<PlayerDetailPage />} />
             </Route>
 
             {/* 404 */}

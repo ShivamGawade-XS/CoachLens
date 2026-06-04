@@ -1,5 +1,6 @@
 import { FALLBACK_ANALYSES } from '../utils/fallbackData';
 import { supabase, isSupabaseConfigured } from './supabaseClient';
+import { linkAllPlayersFromAnalysis, seedDemoPlayers } from './playerService';
 
 const getCurrentUserId = () => {
   try {
@@ -203,6 +204,15 @@ export const storageService = {
           console.warn("Supabase save warning:", error);
         }
       }
+
+      // Auto-link player profiles to this analysis
+      if (newMatch.analysis?.players) {
+        const playerNames = newMatch.analysis.players
+          .map((p) => p.name)
+          .filter(Boolean);
+        linkAllPlayersFromAnalysis(playerNames, newMatch.id);
+      }
+
       return newMatch;
     } catch (e) {
       console.error('Error saving match', e);
@@ -405,6 +415,11 @@ export const storageService = {
         localStorage.setItem(teamsKey, JSON.stringify(demoTeams));
       }
       // ─────────────────────────────────────────────────────────────────
+
+      // ── Seed Demo Players ──────────────────────────────────────────
+      const demoMatchIds = demoKeys.map(k => `demo-${k}`);
+      seedDemoPlayers(demoMatchIds);
+      // ──────────────────────────────────────────────────────────────────
 
       return true;
     } catch (e) {
