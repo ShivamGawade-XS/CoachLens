@@ -33,16 +33,16 @@ export default function CoachTools() {
 
       <div className="flex flex-col lg:flex-row gap-8 items-start">
         {/* Sidebar Tool Selector */}
-        <div className="w-full lg:w-64 shrink-0 flex flex-col gap-2">
+        <div className="w-full flex flex-row overflow-x-auto pb-4 gap-2 flex-nowrap scrollbar-none sm:flex-col sm:overflow-visible sm:pb-0 lg:w-64 lg:shrink-0">
           {tools.map(tool => (
             <button
               key={tool.key}
               onClick={() => setActiveTool(tool.key)}
-              className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-mono transition-all border ${
+              className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-mono transition-all border shrink-0 sm:shrink ${
                 activeTool === tool.key
                   ? 'bg-accent/10 text-accent border-accent/20 font-bold shadow-[0_0_15px_rgba(232,160,32,0.1)]'
                   : 'bg-surface2 text-textSecondary border-border hover:text-textPrimary hover:bg-surface3'
-              }`}
+              } flex-shrink-0 w-48 sm:w-full`}
             >
               <div className="shrink-0">{tool.icon}</div>
               <div className="text-left flex-1 min-w-0">

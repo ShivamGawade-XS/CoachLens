@@ -56,7 +56,7 @@ export default function CoachBrief({ match, brief, flaggedMismatches = [] }) {
         <div className="h-[2px] bg-gradient-to-r from-accent via-accent/40 to-transparent" />
 
         {/* Header */}
-        <div className="flex justify-between items-center px-8 py-5 border-b border-border">
+        <div className="flex justify-between items-center px-4 sm:px-8 py-4 sm:py-5 border-b border-border">
           <div>
             <h2 className="font-mono uppercase tracking-[0.2em] text-sm font-bold text-textPrimary">
               Pre-Match Decision Brief
@@ -78,7 +78,7 @@ export default function CoachBrief({ match, brief, flaggedMismatches = [] }) {
 
         {/* Client-Side Flagged Issues */}
         {flaggedMismatches.length > 0 && (
-          <div className="px-8 py-6 border-b border-border bg-liability-bg/5">
+          <div className="px-4 sm:px-8 py-5 sm:py-6 border-b border-border bg-liability-bg/5">
             <h3 className="text-[11px] uppercase tracking-[0.2em] font-medium text-liability-text mb-4 flex items-center gap-2">
               <AlertTriangle size={14} /> Tactical Mismatches Flagged
             </h3>
@@ -97,7 +97,7 @@ export default function CoachBrief({ match, brief, flaggedMismatches = [] }) {
 
         {/* AI Decisions — blurred for free users */}
         <div className="relative">
-          <div className={`px-8 py-6 space-y-8 ${!isPaid ? 'select-none' : ''}`}>
+          <div className={`px-4 sm:px-8 py-5 sm:py-6 space-y-8 ${!isPaid ? 'select-none' : ''}`}>
             {decisions.map((decision, index) => (
               <div
                 key={decision.key}
@@ -107,13 +107,13 @@ export default function CoachBrief({ match, brief, flaggedMismatches = [] }) {
                 <div className="flex-shrink-0">
                   <span className="text-2xl font-mono font-bold text-accent/30">{decision.num}</span>
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <h3 className={`text-[11px] uppercase tracking-[0.2em] mb-2 font-medium flex items-center gap-1.5 ${
                     decision.isHighlight ? 'text-accent' : 'text-textSecondary'
                   }`}>
                     {decision.label}
                   </h3>
-                  <p className={`text-base leading-relaxed ${
+                  <p className={`text-base leading-relaxed break-words ${
                     decision.isHighlight ? 'text-textPrimary font-medium' : 'text-textPrimary/90'
                   }`}>
                     {isPaid ? highlightNumbers(brief[decision.key]) : brief[decision.key]}
@@ -159,7 +159,7 @@ export default function CoachBrief({ match, brief, flaggedMismatches = [] }) {
         <div className="h-[2px] bg-gradient-to-r from-accent via-accent/40 to-transparent" />
 
         {/* Footer */}
-        <div className="px-8 py-3 flex justify-between items-center">
+        <div className="px-4 sm:px-8 py-3 flex justify-between items-center">
           <span className="text-[9px] text-textTertiary font-mono uppercase tracking-widest">CoachLens v1.0</span>
           <span className="text-[9px] text-textTertiary font-mono">{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
         </div>

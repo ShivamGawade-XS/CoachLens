@@ -171,7 +171,7 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
 
         <div className="space-y-6">
           {/* Format + Phase Card */}
-          <div className="glass-card rounded-xl p-6">
+          <div className="glass-card rounded-xl p-4 sm:p-6">
             {/* Match Format */}
             <div className="mb-6">
               <label className="block text-[10px] text-textSecondary mb-3 uppercase tracking-[0.2em] font-medium">Match Format</label>
@@ -214,7 +214,7 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
           </div>
 
           {/* Scorecard Input Card */}
-          <div className="glass-card rounded-xl p-6">
+          <div className="glass-card rounded-xl p-4 sm:p-6">
             <div className="flex items-center justify-between mb-4 border-b border-border pb-3">
               <div className="flex gap-4">
                 <button 
@@ -277,7 +277,7 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
                     value={scorecardText}
                     onChange={(e) => { setScorecardText(e.target.value); setError(null); }}
                     placeholder="Paste CricHeroes scorecard, plain text, or any structured data here..."
-                    className="w-full bg-surface2 border border-border rounded-xl p-3 md:p-4 pb-12 text-textPrimary placeholder-textTertiary focus:outline-none focus:border-accent focus:shadow-glow-amber font-mono text-sm resize-none transition-all duration-200"
+                    className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 md:p-4 pb-12 text-textPrimary placeholder-textTertiary focus:outline-none focus:border-accent focus:shadow-glow-amber font-mono text-sm resize-none transition-all duration-200"
                     style={{ minHeight: '140px', maxHeight: '320px', height: 'auto' }}
                   />
                   <div className="absolute bottom-3 right-3 text-[10px] font-mono select-none bg-surface1/80 border border-border/50 px-2 py-0.5 rounded backdrop-blur-sm pointer-events-none transition-colors">

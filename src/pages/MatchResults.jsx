@@ -202,12 +202,12 @@ export default function MatchResults() {
           </div>
           
           {/* Tab Navigation */}
-          <nav className="flex space-x-1">
+          <nav className="flex space-x-1 overflow-x-auto flex-nowrap scrollbar-none">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`px-4 pb-3 pt-1 text-sm tracking-wider uppercase font-medium border-b-2 transition-all duration-200 flex items-center gap-1.5 ${
+                className={`px-4 pb-3 pt-1 text-sm tracking-wider uppercase font-medium border-b-2 transition-all duration-200 flex items-center gap-1.5 flex-shrink-0 ${
                   activeTab === tab.key 
                     ? 'border-accent text-textPrimary' 
                     : 'border-transparent text-textSecondary hover:text-textPrimary'

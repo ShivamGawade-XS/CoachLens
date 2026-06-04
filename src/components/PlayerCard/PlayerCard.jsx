@@ -153,16 +153,16 @@ export default function PlayerCard({ player, hideActions = false, mismatch, onVi
       className={`relative glass-card rounded-xl border-l-[3px] ${config.border} p-5 flex flex-col group min-h-[380px]`}
     >
       {/* Zone 1: Top (Name & Role Pill) */}
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-2">
-          <h3 className="font-sans font-medium text-[16px] leading-tight text-textPrimary">
+      <div className="flex justify-between items-center mb-4 gap-2">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <h3 className="font-sans font-medium text-[16px] leading-tight text-textPrimary truncate" title={player.name}>
             {player.name}
           </h3>
-          <span title={player.tag} className="text-xs cursor-default">
+          <span title={player.tag} className="text-xs cursor-default shrink-0">
             {config.icon}
           </span>
         </div>
-        <span className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider ${
+        <span className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider shrink-0 ${
           normalizedRole === 'Batsman' 
             ? 'bg-accent/10 text-accent border border-accent/20' 
             : normalizedRole === 'Bowler' 
@@ -176,7 +176,7 @@ export default function PlayerCard({ player, hideActions = false, mismatch, onVi
       </div>
 
       {/* Zone 2: Middle (3 Headline Stats) */}
-      <div className="grid grid-cols-3 gap-2 bg-surface2/30 border border-border/20 rounded-xl p-3 mb-3">
+      <div className="grid grid-cols-3 grid-cols-3-keep gap-2 bg-surface2/30 border border-border/20 rounded-xl p-3 mb-3">
         <div className="text-center">
           <div className="font-mono text-[18px] sm:text-[22px] font-semibold text-textPrimary leading-none mb-1">
             {stats.stat1.value}
