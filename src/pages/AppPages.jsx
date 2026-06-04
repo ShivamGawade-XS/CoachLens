@@ -42,9 +42,12 @@ export default function Teams({ addToast }) {
   const { user } = useAuth();
   const [teams, setTeams] = useState([]);
   const [teamStats, setTeamStats] = useState({});
+  const [showModal, setShowModal] = useState(false);
   const [newTeam, setNewTeam] = useState({ name: '', emoji: '🏏', logo: null });
   const [modalError, setModalError] = useState('');
   const [editingTeam, setEditingTeam] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('recent');
 
   const handleLogoUpload = (e, isEdit = false) => {
     const file = e.target.files?.[0];
@@ -59,8 +62,6 @@ export default function Teams({ addToast }) {
     };
     reader.readAsDataURL(file);
   };
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('recent');
 
   const loadTeams = () => {
     if (!user) return;
