@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { getTeamFormGuide } from '../utils/seasonScoring';
 import { PlanContext } from '../App';
 import { storageService } from '../services/storageService';
+import { isSupabaseConfigured } from '../services/supabaseClient';
 
 const TEAMS_KEY = (userId) => `coachlens_teams_${userId}`;
 const SETTINGS_KEY = (userId) => `coachlens_settings_${userId}`;
@@ -17,6 +18,9 @@ export function getTeams(userId) {
 }
 export function saveTeams(userId, teams) {
   localStorage.setItem(TEAMS_KEY(userId), JSON.stringify(teams));
+  if (isSupabaseConfigured() && userId) {
+    storageService.syncTeamsToSupabase(userId, teams);
+  }
 }
 function getSettings(userId) {
   try {
@@ -110,7 +114,19 @@ export function Teams({ addToast }) {
     setTeamStats(stats);
   };
 
-  useEffect(() => { loadTeams(); }, [user]);
+  useEffect(() => {
+    if (!user) return;
+    loadTeams();
+
+    if (isSupabaseConfigured()) {
+      storageService.fetchTeamsFromSupabase(user.id).then(dbTeams => {
+        if (dbTeams && dbTeams.length > 0) {
+          localStorage.setItem(`coachlens_teams_${user.id}`, JSON.stringify(dbTeams));
+          loadTeams();
+        }
+      });
+    }
+  }, [user]);
 
   const handleAdd = () => {
     setModalError('');

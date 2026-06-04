@@ -4,6 +4,71 @@ import { Camera, Upload, Loader2, Check, AlertCircle, RotateCcw, Copy, CheckCirc
 import { groqService } from '../../services/groqService';
 import { storageService } from '../../services/storageService';
 
+const preprocessImage = (imageFile) => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        const MAX_DIM = 2048;
+        let w = img.width;
+        let h = img.height;
+        if (w > MAX_DIM || h > MAX_DIM) {
+          if (w > h) {
+            h = Math.round((h * MAX_DIM) / w);
+            w = MAX_DIM;
+          } else {
+            w = Math.round((w * MAX_DIM) / h);
+            h = MAX_DIM;
+          }
+        }
+        canvas.width = w;
+        canvas.height = h;
+        ctx.drawImage(img, 0, 0, w, h);
+        
+        try {
+          const imgData = ctx.getImageData(0, 0, w, h);
+          const data = imgData.data;
+          
+          let sum = 0;
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i+1];
+            const b = data[i+2];
+            const v = 0.299 * r + 0.587 * g + 0.114 * b;
+            data[i] = v;
+            sum += v;
+          }
+          
+          const avg = sum / (w * h);
+          const threshold = avg * 0.85;
+          
+          for (let i = 0; i < data.length; i += 4) {
+            const v = data[i];
+            const newVal = v < threshold ? 0 : 255;
+            data[i] = newVal;
+            data[i+1] = newVal;
+            data[i+2] = newVal;
+          }
+          
+          ctx.putImageData(imgData, 0, 0);
+          canvas.toBlob((blob) => {
+            resolve(blob || imageFile);
+          }, 'image/png');
+        } catch (err) {
+          console.warn("Canvas manipulation failed, raw image passed:", err);
+          resolve(imageFile);
+        }
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(imageFile);
+  });
+};
+
 export default function ScorecardScanner({ onScanComplete }) {
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
@@ -43,7 +108,9 @@ export default function ScorecardScanner({ onScanComplete }) {
     try {
       const Tesseract = await import('tesseract.js');
       
-      const result = await Tesseract.recognize(image, 'eng', {
+      const processedImage = await preprocessImage(image);
+      
+      const result = await Tesseract.recognize(processedImage, 'eng', {
         logger: (m) => {
           if (m.status === 'recognizing text') {
             setProgress(Math.round(m.progress * 100));

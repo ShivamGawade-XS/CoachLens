@@ -1,4 +1,16 @@
 import { FALLBACK_ANALYSES } from '../utils/fallbackData';
+import { supabase, isSupabaseConfigured } from './supabaseClient';
+
+const getCurrentUserId = () => {
+  try {
+    const session = localStorage.getItem('coachlens_session');
+    if (session) {
+      const parsed = JSON.parse(session);
+      return parsed.id;
+    }
+  } catch {}
+  return null;
+};
 
 const STORAGE_KEY = 'coachlens_matches';
 const SEEDED_KEY = 'coachlens_seeded';
@@ -111,28 +123,89 @@ const MIGRATION_KEY = 'coachlens_sample_patch_v2';
 export const storageService = {
   getMatches: async () => {
     try {
-      const data = localStorage.getItem(STORAGE_KEY);
-      return data ? JSON.parse(data) : [];
+      const localData = localStorage.getItem(STORAGE_KEY);
+      const localMatches = localData ? JSON.parse(localData) : [];
+      
+      const userId = getCurrentUserId();
+      if (isSupabaseConfigured() && userId) {
+        const { data, error } = await supabase
+          .from('matches')
+          .select('*')
+          .eq('user_id', userId)
+          .order('date', { ascending: false });
+          
+        if (!error && data) {
+          const dbMatches = data.map(m => ({
+            id: m.id,
+            date: m.date,
+            format: m.format,
+            phase: m.phase,
+            teamName: m.team_name,
+            opponent: m.opponent,
+            result: m.result,
+            rawScorecard: m.raw_scorecard,
+            analysis: m.analysis,
+            isDemo: m.is_demo,
+            processingTime: m.processing_time
+          }));
+          
+          // Merge to avoid losing local-only matches
+          const merged = [...dbMatches];
+          localMatches.forEach(lm => {
+            if (!merged.some(mm => mm.id === lm.id)) {
+              merged.push(lm);
+            }
+          });
+          return merged;
+        } else {
+          console.warn("Supabase fetch failed or table missing, using local storage:", error);
+        }
+      }
+      return localMatches;
     } catch (e) {
-      console.error('Error reading from localStorage', e);
+      console.error('Error reading from storage', e);
       return [];
     }
   },
   
   saveMatch: async (matchRecord) => {
     try {
-      const matches = await storageService.getMatches();
+      const userId = getCurrentUserId();
       const newMatch = {
         ...matchRecord,
-        id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
-        date: new Date().toISOString()
+        id: matchRecord.id || (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString()),
+        date: matchRecord.date || new Date().toISOString()
       };
       
-      const updatedMatches = [newMatch, ...matches];
+      // Save locally first
+      const matches = await storageService.getMatches();
+      const updatedMatches = [newMatch, ...matches.filter(m => m.id !== newMatch.id)];
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedMatches));
+      
+      if (isSupabaseConfigured() && userId) {
+        const { error } = await supabase
+          .from('matches')
+          .upsert({
+            id: newMatch.id,
+            user_id: userId,
+            date: newMatch.date,
+            format: newMatch.format,
+            phase: newMatch.phase,
+            team_name: newMatch.teamName,
+            opponent: newMatch.opponent,
+            result: newMatch.result,
+            raw_scorecard: newMatch.rawScorecard,
+            analysis: newMatch.analysis,
+            is_demo: !!newMatch.isDemo,
+            processing_time: newMatch.processingTime || 0
+          });
+        if (error) {
+          console.warn("Supabase save warning:", error);
+        }
+      }
       return newMatch;
     } catch (e) {
-      console.error('Error saving to localStorage', e);
+      console.error('Error saving match', e);
       return null;
     }
   },
@@ -148,9 +221,32 @@ export const storageService = {
       const index = matches.findIndex(m => m.id === id);
       if (index === -1) return null;
       
-      matches[index] = { ...matches[index], ...updates };
+      const updatedMatch = { ...matches[index], ...updates };
+      matches[index] = updatedMatch;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(matches));
-      return matches[index];
+      
+      const userId = getCurrentUserId();
+      if (isSupabaseConfigured() && userId) {
+        const { error } = await supabase
+          .from('matches')
+          .update({
+            format: updatedMatch.format,
+            phase: updatedMatch.phase,
+            team_name: updatedMatch.teamName,
+            opponent: updatedMatch.opponent,
+            result: updatedMatch.result,
+            raw_scorecard: updatedMatch.rawScorecard,
+            analysis: updatedMatch.analysis,
+            is_demo: !!updatedMatch.isDemo,
+            processing_time: updatedMatch.processingTime || 0
+          })
+          .eq('id', id)
+          .eq('user_id', userId);
+        if (error) {
+          console.warn("Supabase update warning:", error);
+        }
+      }
+      return updatedMatch;
     } catch (e) {
       console.error('Error updating match', e);
       return null;
@@ -162,6 +258,18 @@ export const storageService = {
       const matches = await storageService.getMatches();
       const filtered = matches.filter(m => m.id !== id);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+      
+      const userId = getCurrentUserId();
+      if (isSupabaseConfigured() && userId) {
+        const { error } = await supabase
+          .from('matches')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', userId);
+        if (error) {
+          console.warn("Supabase delete warning:", error);
+        }
+      }
       return true;
     } catch (e) {
       console.error('Error deleting match', e);
@@ -303,5 +411,110 @@ export const storageService = {
       console.error('Error seeding demo matches', e);
       return false;
     }
+  },
+
+  syncLocalDataToSupabase: async (userId) => {
+    if (!isSupabaseConfigured() || !userId) return;
+    
+    // 1. Sync local teams
+    try {
+      const teamsKey = `coachlens_teams_${userId}`;
+      const localTeamsRaw = localStorage.getItem(teamsKey);
+      if (localTeamsRaw) {
+        const localTeams = JSON.parse(localTeamsRaw);
+        for (const team of localTeams) {
+          await supabase
+            .from('teams')
+            .upsert({
+              id: team.id,
+              user_id: userId,
+              name: team.name,
+              emoji: team.emoji,
+              logo: team.logo || null,
+              roster: team.roster || [],
+              schedule: team.schedule || [],
+              created_at: team.createdAt || new Date().toISOString()
+            });
+        }
+      }
+    } catch (err) {
+      console.warn("Failed to sync teams to Supabase:", err);
+    }
+
+    // 2. Sync local matches
+    try {
+      const localMatchesRaw = localStorage.getItem(STORAGE_KEY);
+      if (localMatchesRaw) {
+        const localMatches = JSON.parse(localMatchesRaw);
+        for (const m of localMatches) {
+          await supabase
+            .from('matches')
+            .upsert({
+              id: m.id,
+              user_id: userId,
+              date: m.date || new Date().toISOString(),
+              format: m.format,
+              phase: m.phase,
+              team_name: m.teamName,
+              opponent: m.opponent,
+              result: m.result,
+              raw_scorecard: m.rawScorecard,
+              analysis: m.analysis,
+              is_demo: !!m.isDemo,
+              processing_time: m.processingTime || 0
+            });
+        }
+      }
+    } catch (err) {
+      console.warn("Failed to sync matches to Supabase:", err);
+    }
+  },
+
+  syncTeamsToSupabase: async (userId, teams) => {
+    if (!isSupabaseConfigured() || !userId) return;
+    try {
+      for (const team of teams) {
+        await supabase
+          .from('teams')
+          .upsert({
+            id: team.id,
+            user_id: userId,
+            name: team.name,
+            emoji: team.emoji,
+            logo: team.logo || null,
+            roster: team.roster || [],
+            schedule: team.schedule || [],
+            created_at: team.createdAt || new Date().toISOString()
+          });
+      }
+    } catch (err) {
+      console.warn("Background teams sync failed:", err);
+    }
+  },
+
+  fetchTeamsFromSupabase: async (userId) => {
+    if (!isSupabaseConfigured() || !userId) return null;
+    try {
+      const { data, error } = await supabase
+        .from('teams')
+        .select('*')
+        .eq('user_id', userId);
+      
+      if (!error && data) {
+        const mappedTeams = data.map(t => ({
+          id: t.id,
+          name: t.name,
+          emoji: t.emoji,
+          logo: t.logo,
+          roster: t.roster || [],
+          schedule: t.schedule || [],
+          createdAt: t.created_at
+        }));
+        return mappedTeams;
+      }
+    } catch (err) {
+      console.warn("Failed to fetch teams from Supabase:", err);
+    }
+    return null;
   }
 };

@@ -1,4 +1,5 @@
 import { supabase, isSupabaseConfigured } from './supabaseClient';
+import { storageService } from './storageService';
 
 const USERS_KEY = 'coachlens_users';
 const SESSION_KEY = 'coachlens_session';
@@ -87,26 +88,54 @@ const isBase64Match = (storedHash, plainPassword) => {
   }
 };
 
-const OBFUSCATION_KEY = 42;
+const getObfuscationKey = () => {
+  let key = localStorage.getItem('coachlens_sys_k');
+  if (!key) {
+    key = crypto.randomUUID ? crypto.randomUUID() : (Math.random().toString(36).substring(2) + Date.now().toString(36));
+    localStorage.setItem('coachlens_sys_k', key);
+  }
+  let numKey = 0;
+  for (let i = 0; i < key.length; i++) {
+    numKey = (numKey + key.charCodeAt(i)) % 256;
+  }
+  return numKey || 42;
+};
 
 const obfuscate = (str) => {
   let result = '';
+  const key = getObfuscationKey();
   for (let i = 0; i < str.length; i++) {
-    result += String.fromCharCode(str.charCodeAt(i) ^ OBFUSCATION_KEY);
+    result += String.fromCharCode(str.charCodeAt(i) ^ key);
   }
   return btoa(unescape(encodeURIComponent(result)));
 };
 
 const deobfuscate = (str) => {
+  // 1. Try with the dynamic key
   try {
     const decoded = decodeURIComponent(escape(atob(str)));
     let result = '';
+    const key = getObfuscationKey();
     for (let i = 0; i < decoded.length; i++) {
-      result += String.fromCharCode(decoded.charCodeAt(i) ^ OBFUSCATION_KEY);
+      result += String.fromCharCode(decoded.charCodeAt(i) ^ key);
     }
+    JSON.parse(result); // Validate it is valid JSON
     return result;
   } catch {
-    return str;
+    // 2. Fallback to legacy static key 42 and migrate
+    try {
+      const decoded = decodeURIComponent(escape(atob(str)));
+      let result = '';
+      for (let i = 0; i < decoded.length; i++) {
+        result += String.fromCharCode(decoded.charCodeAt(i) ^ 42);
+      }
+      const users = JSON.parse(result);
+      // Migrate on the next tick so we don't interfere with the current read operation
+      setTimeout(() => saveUsers(users), 50);
+      return result;
+    } catch {
+      return str;
+    }
   }
 };
 
@@ -138,6 +167,10 @@ export const authService = {
         }
       });
       if (error) return { success: false, error: error.message };
+      // Background sync local data to Supabase
+      if (data?.user) {
+        storageService.syncLocalDataToSupabase(data.user.id);
+      }
       return { success: true, user: data.user };
     }
 
@@ -177,6 +210,10 @@ export const authService = {
         password: password,
       });
       if (error) return { success: false, error: error.message };
+      // Background sync local data to Supabase
+      if (data?.user) {
+        storageService.syncLocalDataToSupabase(data.user.id);
+      }
       return { success: true, user: data.user };
     }
 
