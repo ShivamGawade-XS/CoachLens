@@ -1,6 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { X, AlertCircle, CheckCircle, Info } from 'lucide-react';
+import { usePlan } from './hooks/usePlan';
+import UpgradeModal from './components/UpgradeModal/UpgradeModal';
+import PromoModal from './components/PromoModal/PromoModal';
+
+export const PlanContext = createContext(null);
 
 // Auth
 import { AuthProvider } from './contexts/AuthContext';
@@ -68,6 +73,9 @@ function Toast({ message, type = 'info', onClose }) {
 function App() {
   /** @type {[Array<{id: number, message: string, type: 'success'|'error'|'warning'|'info'}>, React.Dispatch<React.SetStateAction<Array<{id: number, message: string, type: 'success'|'error'|'warning'|'info'}>>>]} */
   const [toasts, setToasts] = useState([]);
+  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [showPromo, setShowPromo] = useState(false);
+  const plan = usePlan();
 
   const addToast = useCallback((message, type = 'info') => {
     const id = Date.now();
@@ -78,7 +86,14 @@ function App() {
     setToasts(prev => prev.filter(t => t.id !== id));
   }, []);
 
+  const planContext = {
+    ...plan,
+    openUpgradeModal: () => setShowUpgrade(true),
+    openPromoModal: () => setShowPromo(true),
+  };
+
   return (
+    <PlanContext.Provider value={planContext}>
     <AuthProvider>
       <BrowserRouter>
         {/* Global Toasts */}
@@ -87,6 +102,26 @@ function App() {
             <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
           ))}
         </div>
+
+        {showUpgrade && (
+          <UpgradeModal
+            onClose={() => setShowUpgrade(false)}
+            onGetPlan={() => {
+              window.open('https://wa.me/919999999999?text=Hi%2C%20I%27d%20like%20to%20get%20the%20CoachLens%20Team%20Plan%20%E2%80%94%20%E2%82%B999%2Fmonth', '_blank');
+            }}
+          />
+        )}
+
+        {showPromo && (
+          <PromoModal
+            onClose={() => setShowPromo(false)}
+            onRedeem={(code) => {
+              const ok = plan.redeemPromo(code);
+              if (ok) addToast('🎉 Team Plan activated!', 'success');
+              return ok;
+            }}
+          />
+        )}
 
         <ChatAssistant />
 
@@ -130,6 +165,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </AuthProvider>
+    </PlanContext.Provider>
   );
 }
 

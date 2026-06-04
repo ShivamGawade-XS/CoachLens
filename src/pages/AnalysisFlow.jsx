@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ScoreboardInput from '../components/ScoreboardInput/ScoreboardInput';
 import { groqService } from '../services/groqService';
 import { storageService } from '../services/storageService';
 import { FALLBACK_ANALYSES } from '../utils/fallbackData';
+import { PlanContext } from '../App';
 
 function LoadingScreen({ elapsed, thinkingText }) {
   const textareaRef = React.useRef(null);
@@ -47,6 +48,7 @@ export default function AnalysisFlow({ addToast }) {
   const [thinkingText, setThinkingText] = useState('');
   const [elapsed, setElapsed] = useState(0);
   const navigate = useNavigate();
+  const plan = useContext(PlanContext);
 
   const handleBack = () => navigate('/dashboard');
 
@@ -124,6 +126,17 @@ export default function AnalysisFlow({ addToast }) {
       const savedMatch = await storageService.saveMatch(newMatchRecord);
       
       addToast('Analysis complete', 'success');
+
+      // Increment free-tier counter; show upgrade modal if limit now hit
+      if (plan) {
+        plan.incrementCount();
+        // Check after increment: if the NEW count hits the limit, open modal
+        const newCount = (plan.analysisCount ?? 0) + 1;
+        if (!plan.isPaid && newCount >= plan.FREE_LIMIT) {
+          plan.openUpgradeModal();
+        }
+      }
+
       navigate(`/match/${savedMatch.id}`);
     }, 500);
   };

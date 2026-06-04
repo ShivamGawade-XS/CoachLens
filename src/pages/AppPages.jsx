@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { Trophy, Users, Shield, ArrowRight, Plus, X, Trash2, AlertCircle, User, Bell, Key, Palette, TrendingUp, TrendingDown, Edit2, Search, Filter } from 'lucide-react';
+import { Trophy, Users, Shield, ArrowRight, Plus, X, Trash2, AlertCircle, User, Bell, Key, Palette, TrendingUp, TrendingDown, Edit2, Search, Filter, Zap } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getTeamFormGuide } from '../utils/seasonScoring';
+import { PlanContext } from '../App';
 
 const TEAMS_KEY = (userId) => `coachlens_teams_${userId}`;
 const SETTINGS_KEY = (userId) => `coachlens_settings_${userId}`;
@@ -550,6 +551,7 @@ const EXPERIENCE = ['Less than 1 year', '1-3 years', '3-5 years', '5-10 years', 
 
 export function Settings({ addToast }) {
   const { user, updateProfile, changePassword, deleteAccount, logout } = useAuth();
+  const plan = useContext(PlanContext);
   const [profile, setProfile] = useState({ fullName: '', email: '', organization: '', role: '', experience: '' });
   const [passwords, setPasswords] = useState({ current: '', newPwd: '', confirm: '' });
   const [prefs, setPrefs] = useState({ defaultFormat: 'T20', notifications: { analysisComplete: true, weeklySummary: false } });
@@ -742,6 +744,47 @@ export function Settings({ addToast }) {
           <input type="password" placeholder="Confirm new password" value={passwords.confirm} onChange={e => setPasswords(p => ({...p, confirm: e.target.value}))} className="w-full bg-surface2 border border-border rounded-xl px-4 py-2.5 text-sm text-textPrimary placeholder:text-textTertiary focus:outline-none focus:border-accent transition-all" />
         </div>
         <button onClick={handleChangePassword} className="w-full bg-surface2 hover:bg-surface3 border border-border text-textPrimary py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all">Update Password</button>
+      </div>
+
+      <div className={`glass-card rounded-2xl p-6 space-y-4 ${plan?.isPaid ? 'border border-aggressor-border/40' : 'border border-accent/20'}`}>
+        <SectionHeader icon={<Zap size={12} />} title="Plan & Upgrade" />
+        {plan?.isPaid ? (
+          <div className="flex items-center gap-4 p-4 bg-aggressor-bg/30 border border-aggressor-border/40 rounded-xl">
+            <div className="w-10 h-10 rounded-xl bg-aggressor-text/10 border border-aggressor-border flex items-center justify-center text-lg">✓</div>
+            <div>
+              <div className="text-sm font-bold text-aggressor-text font-mono">Team Plan Active</div>
+              <div className="text-[11px] text-textTertiary font-mono mt-0.5">All features unlocked · Coach Brief available</div>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between p-4 bg-surface2 rounded-xl border border-border">
+              <div>
+                <div className="text-sm font-medium text-textPrimary">Free Tier</div>
+                <div className="text-[11px] text-textTertiary font-mono mt-0.5">
+                  {plan?.analysisCount ?? 0} / {plan?.FREE_LIMIT ?? 3} analyses used · Coach Brief locked
+                </div>
+              </div>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-improving-bg border border-improving-border text-improving-text">Free</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                id="settings-upgrade-btn"
+                onClick={() => plan?.openUpgradeModal?.()}
+                className="flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-primary py-3 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all"
+              >
+                <Zap size={13} /> Get Team Plan
+              </button>
+              <button
+                id="settings-promo-btn"
+                onClick={() => plan?.openPromoModal?.()}
+                className="flex items-center justify-center gap-2 bg-surface2 hover:bg-surface3 border border-border text-textPrimary py-3 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all"
+              >
+                <Key size={13} /> Promo Code
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="glass-card rounded-2xl p-6 space-y-4 border-liability-border/30">
