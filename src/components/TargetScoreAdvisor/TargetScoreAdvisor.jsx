@@ -166,7 +166,7 @@ export default function TargetScoreAdvisor() {
         <button
           onClick={handleCalculate}
           disabled={!currentScore || !oversPlayed}
-          className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white font-mono font-bold py-3.5 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-amber disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white font-mono font-bold py-3.5 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-accent disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <Zap size={16} /> Calculate Target
         </button>

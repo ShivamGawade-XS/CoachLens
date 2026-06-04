@@ -257,7 +257,7 @@ export default function PlayerHealthTracker({ roster, onUpdateHealth }) {
 
             <button
               onClick={handleSave}
-              className="w-full bg-accent hover:bg-accentHover text-white py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press"
+              className="w-full bg-accent hover:bg-accentHover text-white py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-accent btn-press"
             >
               Update Health Status
             </button>

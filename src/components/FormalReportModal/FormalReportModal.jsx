@@ -183,7 +183,7 @@ export default function FormalReportModal({ match, onClose }) {
                 const mailto = `mailto:?subject=${encodeURIComponent(`Match Report: ${match.teamName}`)}&body=${encodeURIComponent(bodyText)}`;
                 window.location.href = mailto;
               }}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all bg-accent hover:bg-accentHover text-white shadow-glow-amber btn-press"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all bg-accent hover:bg-accentHover text-white shadow-glow-accent btn-press"
             >
               <Send size={16} />
               <span className="hidden sm:inline">Email</span>

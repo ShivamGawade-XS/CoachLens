@@ -214,7 +214,7 @@ export default function PlayerComparison() {
         <button
           onClick={handleCompare}
           disabled={!playerA || !playerB || playerA === playerB}
-          className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white font-mono font-bold py-3.5 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-amber disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white font-mono font-bold py-3.5 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-accent disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <GitCompare size={16} /> Compare Players
         </button>

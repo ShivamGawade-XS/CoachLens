@@ -99,7 +99,7 @@ export default function Dashboard() {
         </div>
         <button 
           onClick={() => navigate('/analyze')}
-          className="flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white px-6 py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press"
+          className="flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white px-6 py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-accent btn-press"
         >
           <Plus size={16} /> New Analysis
         </button>
@@ -159,7 +159,7 @@ export default function Dashboard() {
             {seasonForm.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {seasonForm.slice(0, Math.min(3, seasonForm.length)).map((player, idx) => (
-                  <div key={idx} className={`glass-card rounded-xl p-5 border-t-[3px] animate-fade-in-up ${idx === 0 ? 'border-accent shadow-glow-amber' : idx === 1 ? 'border-textSecondary' : 'border-textTertiary'}`} style={{ animationDelay: `${idx * 100}ms`, opacity: 0 }}>
+                  <div key={idx} className={`glass-card rounded-xl p-5 border-t-[3px] animate-fade-in-up ${idx === 0 ? 'border-accent shadow-glow-accent' : idx === 1 ? 'border-textSecondary' : 'border-textTertiary'}`} style={{ animationDelay: `${idx * 100}ms`, opacity: 0 }}>
                     <div className="flex justify-between items-start mb-3">
                       <span className="text-[10px] font-mono font-bold text-textTertiary uppercase tracking-widest">#{idx + 1}</span>
                       <div className="flex items-center gap-2">

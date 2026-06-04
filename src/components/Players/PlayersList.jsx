@@ -50,7 +50,7 @@ export default function PlayersList() {
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white px-6 py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press"
+          className="flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white px-6 py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-accent btn-press"
         >
           <Plus size={16} /> Add Player
         </button>
@@ -92,7 +92,7 @@ export default function PlayersList() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
           {players.map((player, index) => (
             <div
               key={player.id}

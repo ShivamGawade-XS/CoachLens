@@ -44,13 +44,26 @@
     --color-accent-hover: 29, 78, 216;
     
     --color-border: 226, 232, 240;
+    --color-border-hover: 148, 163, 184; /* Slate 400 */
     --shadow-color: 0, 0, 0;
+
+    /* Elevation shadows */
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.06);
+    --shadow-card-hover: 0 4px 16px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.08);
+
+    /* Accent glow (adapts to accent color per mode) */
+    --glow-accent: rgba(30, 64, 175, 0.18);
 
     /* Status Colors (Sports Themed) */
     --color-aggressor: 16, 185, 129;   /* Emerald Green */
     --color-anchor: 14, 165, 233;      /* Sky Blue */
     --color-improving: 245, 158, 11;   /* Amber */
     --color-liability: 239, 68, 68;    /* Crimson Red */
+
+    /* Semantic utility colors */
+    --color-success: 16, 185, 129;
+    --color-warning: 245, 158, 11;
+    --color-error: 239, 68, 68;
 
     /* Status Background / Text / Border variants */
     --color-aggressor-bg: 240, 253, 244;
@@ -82,7 +95,20 @@
     --color-accent-hover: 96, 165, 250;
     
     --color-border: 45, 48, 60;
+    --color-border-hover: 75, 85, 110;
     --shadow-color: 0, 0, 0;
+
+    /* Elevation shadows (dark) */
+    --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.2);
+    --shadow-card-hover: 0 4px 20px rgba(0,0,0,0.4), 0 8px 32px rgba(0,0,0,0.3);
+
+    /* Accent glow (dark mode — vibrant blue) */
+    --glow-accent: rgba(59, 130, 246, 0.20);
+
+    /* Semantic utility colors (dark) */
+    --color-success: 52, 211, 153;
+    --color-warning: 251, 191, 36;
+    --color-error: 252, 129, 129;
 
     /* Status Background / Text / Border variants (Dark) */
     --color-aggressor-bg: 6, 78, 59;
@@ -115,8 +141,14 @@
     letter-spacing: -0.02em !important;
   }
 
-  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6, .dark .font-display {
-    color: #ffffff !important;
+  /* Dark mode headings default to near-white, but CAN be overridden by semantic color classes */
+  .dark h1:not([class*="text-"]),
+  .dark h2:not([class*="text-"]),
+  .dark h3:not([class*="text-"]),
+  .dark h4:not([class*="text-"]),
+  .dark h5:not([class*="text-"]),
+  .dark h6:not([class*="text-"]) {
+    color: rgba(255,255,255,0.95);
   }
 
   .font-mono, code, pre, [class*="mono-"] {
@@ -125,8 +157,8 @@
     letter-spacing: 0.04em !important;
   }
 
-  /* Cap all font weights at 600 */
-  .font-bold, .font-extrabold, .font-black, strong, b {
+  /* Cap bold at 600, but allow extrabold/black to exceed */
+  .font-bold, strong, b {
     font-weight: 600 !important;
   }
 }
@@ -141,7 +173,7 @@
   }
 
   .modal-card {
-    background: rgba(255, 255, 255, 0.94) !important;
+    background: rgba(var(--color-surface1), 0.96) !important;
     backdrop-filter: blur(24px) !important;
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.15) !important;
     border: 1px solid rgb(var(--color-border)) !important;
@@ -154,13 +186,15 @@
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
   }
 
-  /* Upgrade modal backdrops globally for premium contrast and perfect readability */
-  div.fixed[class*="z-"] > div.absolute.inset-0 {
-    background-color: rgba(15, 23, 42, 0.40) !important;
+  /* Modal backdrops: only target divs that carry bg-primary/opacity or bg-black/opacity backdrop patterns */
+  div.fixed[class*="z-"] > div.absolute.inset-0[class*="bg-primary"],
+  div.fixed[class*="z-"] > div.absolute.inset-0[class*="bg-black"] {
+    background-color: rgba(15, 23, 42, 0.45) !important;
     backdrop-filter: blur(16px) !important;
   }
 
-  .dark div.fixed[class*="z-"] > div.absolute.inset-0 {
+  .dark div.fixed[class*="z-"] > div.absolute.inset-0[class*="bg-primary"],
+  .dark div.fixed[class*="z-"] > div.absolute.inset-0[class*="bg-black"] {
     background-color: rgba(2, 6, 23, 0.85) !important;
     backdrop-filter: blur(16px) !important;
   }
@@ -170,7 +204,8 @@
   }
 
   .card-interactive:hover {
-    @apply -translate-y-1 shadow-glow-amber border-accent/30;
+    @apply -translate-y-1 border-accent/30;
+    box-shadow: 0 0 20px var(--glow-accent);
   }
 
   .btn-press {

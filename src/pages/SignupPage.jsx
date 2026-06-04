@@ -132,7 +132,7 @@ export default function SignupPage() {
         <div className="flex items-center gap-3 mb-8 px-4">
           <div className="flex items-center gap-2 flex-1">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-mono font-bold shrink-0 transition-all duration-300 ${
-              step >= 1 ? 'bg-accent text-white shadow-glow-amber' : 'bg-surface2 border border-border text-textTertiary'
+              step >= 1 ? 'bg-accent text-white shadow-glow-accent' : 'bg-surface2 border border-border text-textTertiary'
             }`}>
               {step > 1 ? <CheckCircle size={14} /> : '1'}
             </div>
@@ -142,7 +142,7 @@ export default function SignupPage() {
           <div className="flex items-center gap-2 flex-1 justify-end">
             <span className={`text-xs font-mono transition-colors ${step >= 2 ? 'text-textPrimary font-bold' : 'text-textTertiary'}`}>Profile</span>
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-mono font-bold shrink-0 transition-all duration-300 ${
-              step >= 2 ? 'bg-accent text-white shadow-glow-amber' : 'bg-surface2 border border-border text-textTertiary'
+              step >= 2 ? 'bg-accent text-white shadow-glow-accent' : 'bg-surface2 border border-border text-textTertiary'
             }`}>
               2
             </div>
@@ -150,7 +150,7 @@ export default function SignupPage() {
         </div>
 
         {/* Form Card */}
-        <div className="glass-card rounded-2xl p-8 border border-border">
+        <div className="glass-card rounded-2xl p-8 border border-border shadow-xl">
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Error Alert */}
             {error && (
@@ -265,7 +265,7 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white py-3.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press"
+                  className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white py-3.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-accent btn-press"
                 >
                   Continue to Profile <ArrowRight size={16} />
                 </button>
@@ -340,7 +340,7 @@ export default function SignupPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 flex items-center justify-center gap-2 bg-accent hover:bg-accentHover disabled:opacity-60 disabled:cursor-not-allowed text-white py-3.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press"
+                    className="flex-1 flex items-center justify-center gap-2 bg-accent hover:bg-accentHover disabled:opacity-60 disabled:cursor-not-allowed text-white py-3.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-accent btn-press"
                   >
                     {isSubmitting ? (
                       <>

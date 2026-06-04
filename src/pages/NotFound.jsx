@@ -24,7 +24,7 @@ export default function NotFound() {
           </button>
           <Link
             to="/dashboard"
-            className="px-6 py-3 rounded-xl bg-accent hover:bg-accentHover text-white font-mono font-bold text-sm uppercase tracking-wider transition-all shadow-glow-amber text-center"
+            className="px-6 py-3 rounded-xl bg-accent hover:bg-accentHover text-white font-mono font-bold text-sm uppercase tracking-wider transition-all shadow-glow-accent text-center"
           >
             Dashboard
           </Link>

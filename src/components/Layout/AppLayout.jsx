@@ -93,7 +93,7 @@ export default function AppLayout({ addToast }) {
         <div className="p-4 border-t border-border flex flex-col gap-4">
           <button 
             onClick={handleNewAnalysis}
-            className="w-full flex items-center justify-center bg-accent hover:bg-accentHover text-white font-mono font-bold py-3.5 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-amber"
+            className="w-full flex items-center justify-center bg-accent hover:bg-accentHover text-white font-mono font-bold py-3.5 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-accent"
           >
             <Plus size={16} className="mr-2" /> New Analysis
           </button>

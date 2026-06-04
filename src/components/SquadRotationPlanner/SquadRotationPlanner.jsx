@@ -197,7 +197,7 @@ Return ONLY a JSON object:
 
           {error && <p className="text-xs font-mono text-liability-text">{error}</p>}
 
-          <button onClick={handlePlan} disabled={validSquad.length < 11 || validMatches.length < 2 || isLoading} className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white font-mono font-bold py-3.5 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-amber disabled:opacity-40">
+          <button onClick={handlePlan} disabled={validSquad.length < 11 || validMatches.length < 2 || isLoading} className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white font-mono font-bold py-3.5 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-accent disabled:opacity-40">
             {isLoading ? <><Loader2 size={16} className="animate-spin" /> Planning...</> : <><Calendar size={16} /> Generate Rotation Plan</>}
           </button>
         </div>

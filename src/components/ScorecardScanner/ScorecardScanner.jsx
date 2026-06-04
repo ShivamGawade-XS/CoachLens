@@ -278,7 +278,7 @@ export default function ScorecardScanner({ onScanComplete }) {
 
           {/* Scan Button */}
           {!scannedText && !isScanning && (
-            <button onClick={handleScan} className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white font-mono font-bold py-3.5 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-amber">
+            <button onClick={handleScan} className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white font-mono font-bold py-3.5 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-accent">
               <Upload size={16} /> Scan & Extract Text
             </button>
           )}
@@ -326,7 +326,7 @@ export default function ScorecardScanner({ onScanComplete }) {
                 <textarea
                   value={scannedText}
                   onChange={(e) => setScannedText(e.target.value)}
-                  className="w-full h-56 bg-surface2 border border-accent/30 rounded-xl p-4 text-textPrimary font-mono text-xs resize-y focus:outline-none focus:border-accent focus:shadow-glow-amber transition-all"
+                  className="w-full h-56 bg-surface2 border border-accent/30 rounded-xl p-4 text-textPrimary font-mono text-xs resize-y focus:outline-none focus:border-accent focus:shadow-glow-accent transition-all"
                 />
               ) : (
                 <div className="bg-surface2 border border-border rounded-xl p-4 max-h-48 overflow-y-auto custom-scrollbar">
@@ -357,7 +357,7 @@ export default function ScorecardScanner({ onScanComplete }) {
                 {/* Direct Analyze */}
                 <button
                   onClick={handleDirectAnalyze}
-                  className="flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white py-3.5 rounded-xl text-sm font-mono font-bold uppercase tracking-wider transition-all btn-press shadow-glow-amber"
+                  className="flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white py-3.5 rounded-xl text-sm font-mono font-bold uppercase tracking-wider transition-all btn-press shadow-glow-accent"
                 >
                   <Zap size={16} />
                   Analyze Now

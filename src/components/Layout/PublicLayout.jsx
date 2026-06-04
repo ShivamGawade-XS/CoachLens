@@ -34,7 +34,7 @@ export default function PublicLayout() {
             {isAuthenticated ? (
               <Link 
                 to="/dashboard"
-                className="hidden sm:flex items-center gap-2 bg-accent hover:bg-accentHover text-white px-5 py-2.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press"
+                className="hidden sm:flex items-center gap-2 bg-accent hover:bg-accentHover text-white px-5 py-2.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-accent btn-press"
               >
                 Dashboard <ChevronRight size={16} />
               </Link>
@@ -48,7 +48,7 @@ export default function PublicLayout() {
                 </Link>
                 <Link 
                   to="/signup"
-                  className="hidden sm:flex items-center gap-2 bg-accent hover:bg-accentHover text-white px-5 py-2.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press"
+                  className="hidden sm:flex items-center gap-2 bg-accent hover:bg-accentHover text-white px-5 py-2.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-accent btn-press"
                 >
                   Get Started <ChevronRight size={16} />
                 </Link>

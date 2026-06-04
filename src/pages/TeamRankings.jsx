@@ -213,7 +213,7 @@ export default function TeamRankings() {
           </p>
           <Link
             to="/teams"
-            className="inline-flex items-center gap-2 bg-accent hover:bg-accentHover text-white px-6 py-2.5 rounded-xl text-xs font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber"
+            className="inline-flex items-center gap-2 bg-accent hover:bg-accentHover text-white px-6 py-2.5 rounded-xl text-xs font-mono font-bold tracking-wider uppercase transition-all shadow-glow-accent"
           >
             Go to Teams <ArrowRight size={14} />
           </Link>

@@ -338,7 +338,7 @@ export default function PlayerModal({ player = null, onSave, onClose }) {
           </button>
           <button
             onClick={handleSubmit}
-            className="flex-1 px-4 py-3 rounded-xl bg-accent hover:bg-accentHover text-white font-mono text-sm font-bold uppercase tracking-wider transition-all shadow-glow-amber btn-press"
+            className="flex-1 px-4 py-3 rounded-xl bg-accent hover:bg-accentHover text-white font-mono text-sm font-bold uppercase tracking-wider transition-all shadow-glow-accent btn-press"
           >
             {isEdit ? 'Update Player' : 'Save Player'}
           </button>

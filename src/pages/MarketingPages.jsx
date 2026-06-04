@@ -70,7 +70,7 @@ export function Pricing() {
           <Link to="/signup" className="block w-full text-center bg-surface2 hover:bg-surface3 text-textPrimary py-3 rounded-xl font-mono font-bold transition-all">Start Free</Link>
         </div>
         
-        <div className="glass-card p-8 rounded-2xl border-2 border-accent relative transform md:-translate-y-4 shadow-glow-amber">
+        <div className="glass-card p-8 rounded-2xl border-2 border-accent relative transform md:-translate-y-4 shadow-glow-accent">
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-white px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">Most Popular</div>
           <h3 className="text-lg font-mono text-textPrimary mb-2 uppercase tracking-widest">Pro Coach</h3>
           <div className="text-4xl font-display text-textPrimary mb-6">₹299<span className="text-sm text-textSecondary font-sans">/mo</span></div>

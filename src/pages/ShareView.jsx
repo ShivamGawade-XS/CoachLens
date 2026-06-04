@@ -86,7 +86,7 @@ export default function ShareView() {
             </div>
             <h2 className="text-lg font-display text-textPrimary mb-2">Oops!</h2>
             <p className="text-sm text-textSecondary mb-6">{error}</p>
-            <Link to="/" className="inline-flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white px-6 py-3 rounded-xl text-xs font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber">
+            <Link to="/" className="inline-flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white px-6 py-3 rounded-xl text-xs font-mono font-bold tracking-wider uppercase transition-all shadow-glow-accent">
               Go to Homepage
             </Link>
           </div>

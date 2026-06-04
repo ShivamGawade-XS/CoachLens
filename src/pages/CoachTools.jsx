@@ -41,7 +41,7 @@ export default function CoachTools() {
               onClick={() => setActiveTool(tool.key)}
               className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-mono transition-all border shrink-0 sm:shrink ${
                 activeTool === tool.key
-                  ? 'bg-accent/10 text-accent border-accent/20 font-bold shadow-[0_0_15px_rgba(232,160,32,0.1)]'
+                  ? 'bg-accent/10 text-accent border-accent/20 font-bold shadow-glow-accent'
                   : 'bg-surface2 text-textSecondary border-border hover:text-textPrimary hover:bg-surface3'
               } flex-shrink-0 w-48 sm:w-full`}
             >

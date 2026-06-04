@@ -39,9 +39,9 @@ export default {
           text:   'rgb(var(--color-liability-text))', 
           border: 'rgb(var(--color-liability-border))', 
         },
-        success: '#22C55E',
-        warning: '#EAB308',
-        error:   '#EF4444',
+        success: 'rgb(var(--color-success))',
+        warning: 'rgb(var(--color-warning))',
+        error:   'rgb(var(--color-error))',
       },
       fontFamily: {
         sans: ['"DM Sans"', '"DM Sans Fallback"', 'Arial', 'sans-serif'],
@@ -84,8 +84,8 @@ export default {
           '100%': { backgroundPosition: '200% 0' },
         },
         'pulse-glow': {
-          '0%, 100%': { boxShadow: '0 0 0 0 rgba(232, 160, 32, 0.4)' },
-          '50%': { boxShadow: '0 0 20px 4px rgba(232, 160, 32, 0.15)' },
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.4)' },
+          '50%':       { boxShadow: '0 0 20px 4px rgba(59, 130, 246, 0.15)' },
         },
         'spin-slow': {
           '0%': { transform: 'rotate(0deg)' },
@@ -119,6 +119,7 @@ export default {
         'card': 'var(--shadow-card)',
         'card-hover': 'var(--shadow-card-hover)',
         'glow-amber': '0 0 20px rgba(232, 160, 32, 0.2)',
+        'glow-accent': '0 0 20px var(--glow-accent)',
         'glow-green': '0 0 16px rgba(34, 197, 94, 0.15)',
         'glow-blue': '0 0 16px rgba(59, 130, 246, 0.15)',
         'glow-red': '0 0 16px rgba(239, 68, 68, 0.15)',

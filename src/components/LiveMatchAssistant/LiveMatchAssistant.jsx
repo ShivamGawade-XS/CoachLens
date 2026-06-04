@@ -211,7 +211,7 @@ export default function LiveMatchAssistant() {
         </div>
 
         {currentOver.balls.length === 6 && (
-          <button onClick={completeOver} className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white font-mono font-bold py-3 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-amber">
+          <button onClick={completeOver} className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white font-mono font-bold py-3 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-accent">
             <Zap size={16} /> Complete Over — Get AI Advice
           </button>
         )}

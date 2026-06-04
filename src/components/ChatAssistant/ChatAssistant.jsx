@@ -90,7 +90,7 @@ export default function ChatAssistant() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-accent hover:bg-accentHover text-white rounded-full shadow-glow-amber transition-all duration-300 btn-press animate-fade-in hover:scale-105 group"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-accent hover:bg-accentHover text-white rounded-full shadow-glow-accent transition-all duration-300 btn-press animate-fade-in hover:scale-105 group"
         >
           <Sparkles size={16} className="group-hover:rotate-12 transition-transform duration-300 text-amber-200" />
           <span className="text-xs font-semibold tracking-wide">CoachLens AI</span>
@@ -129,7 +129,7 @@ export default function ChatAssistant() {
                 <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
                   msg.role === 'user'
                     ? 'bg-surface3 border border-border text-textPrimary rounded-tr-none max-w-[85%] shadow-sm'
-                    : 'bg-accent/[0.05] border border-accent/15 text-textPrimary rounded-tl-none max-w-[88%] shadow-glow-amber/5'
+                    : 'bg-accent/[0.05] border border-accent/15 text-textPrimary rounded-tl-none max-w-[88%] shadow-glow-accent/5'
                 }`}>
                   {msg.content}
                 </div>
@@ -158,7 +158,7 @@ export default function ChatAssistant() {
                 <span className="text-[9px] font-mono tracking-widest text-textTertiary uppercase px-1">
                   CoachLens AI
                 </span>
-                <div className="px-4 py-3.5 rounded-2xl bg-accent/[0.05] border border-accent/15 rounded-tl-none flex items-center gap-1.5 shadow-glow-amber/5">
+                <div className="px-4 py-3.5 rounded-2xl bg-accent/[0.05] border border-accent/15 rounded-tl-none flex items-center gap-1.5 shadow-glow-accent/5">
                   <span className="w-1.5 h-1.5 bg-accent/60 rounded-full animate-bounce" />
                   <span className="w-1.5 h-1.5 bg-accent/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                   <span className="w-1.5 h-1.5 bg-accent/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />

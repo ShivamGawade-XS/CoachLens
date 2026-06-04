@@ -355,7 +355,7 @@ export function Teams({ addToast }) {
           <button onClick={loadSampleTeams} className="flex items-center justify-center gap-2 bg-surface2 hover:bg-surface3 text-textPrimary px-4 py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all border border-border">
             <Users size={16} /> Samples
           </button>
-          <button onClick={() => setShowModal(true)} className="flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white px-5 py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press">
+          <button onClick={() => setShowModal(true)} className="flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white px-5 py-3 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-accent btn-press">
             <Plus size={16} /> New Team
           </button>
         </div>
@@ -394,7 +394,7 @@ export function Teams({ addToast }) {
           <div className="text-5xl mb-4">🏏</div>
           <h3 className="text-lg font-display text-textPrimary mb-2">No teams yet</h3>
           <p className="text-textSecondary text-sm mb-6 max-w-sm mx-auto font-mono">Create your first team to start tracking rosters and performance trends.</p>
-          <button onClick={() => setShowModal(true)} className="bg-accent hover:bg-accentHover text-white px-6 py-2.5 rounded-xl text-xs font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber">Create Team</button>
+          <button onClick={() => setShowModal(true)} className="bg-accent hover:bg-accentHover text-white px-6 py-2.5 rounded-xl text-xs font-mono font-bold tracking-wider uppercase transition-all shadow-glow-accent">Create Team</button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -549,7 +549,7 @@ export function Teams({ addToast }) {
                   className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary placeholder:text-textTertiary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all"
                 />
               </div>
-              <button onClick={handleAdd} className="w-full bg-accent hover:bg-accentHover text-white py-3.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press mt-2">
+              <button onClick={handleAdd} className="w-full bg-accent hover:bg-accentHover text-white py-3.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-accent btn-press mt-2">
                 Create Team
               </button>
             </div>
@@ -621,7 +621,7 @@ export function Teams({ addToast }) {
               </div>
               <div className="grid grid-cols-2 gap-3 mt-2">
                 <button onClick={() => setEditingTeam(null)} className="py-3 rounded-xl bg-surface2 hover:bg-surface3 border border-border text-textPrimary text-sm font-mono font-bold uppercase tracking-wider transition-all">Cancel</button>
-                <button onClick={handleEditSave} className="py-3 rounded-xl bg-accent hover:bg-accentHover text-white text-sm font-mono font-bold uppercase tracking-wider transition-all shadow-glow-amber btn-press">
+                <button onClick={handleEditSave} className="py-3 rounded-xl bg-accent hover:bg-accentHover text-white text-sm font-mono font-bold uppercase tracking-wider transition-all shadow-glow-accent btn-press">
                   Save
                 </button>
               </div>
@@ -768,7 +768,7 @@ export function Settings({ addToast }) {
           </div>
         </div>
         <div className="p-6 border-t border-border">
-          <button onClick={handleSaveProfile} disabled={saving} className="w-full bg-accent hover:bg-accentHover disabled:opacity-60 text-white py-3.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press">
+          <button onClick={handleSaveProfile} disabled={saving} className="w-full bg-accent hover:bg-accentHover disabled:opacity-60 text-white py-3.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-accent btn-press">
             {saving ? 'Saving...' : 'Save Profile'}
           </button>
         </div>

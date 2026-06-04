@@ -188,7 +188,7 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
                     onClick={() => setFormat(f)}
                     className={`px-5 py-2 text-sm font-mono font-medium tracking-wider transition-all duration-200 rounded-xl ${
                       format === f 
-                        ? 'bg-accent text-white shadow-glow-amber' 
+                        ? 'bg-accent text-white shadow-glow-accent' 
                         : 'bg-surface2 text-textSecondary hover:text-textPrimary hover:bg-surface3 border border-border'
                     }`}
                   >
@@ -283,7 +283,7 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
                     value={scorecardText}
                     onChange={(e) => { setScorecardText(e.target.value); setError(null); }}
                     placeholder="Paste CricHeroes scorecard, plain text, or any structured data here..."
-                    className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 md:p-4 pb-12 text-textPrimary placeholder-textTertiary focus:outline-none focus:border-accent focus:shadow-glow-amber font-mono text-sm resize-none transition-all duration-200"
+                    className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 md:p-4 pb-12 text-textPrimary placeholder-textTertiary focus:outline-none focus:border-accent focus:shadow-glow-accent font-mono text-sm resize-none transition-all duration-200"
                     style={{ minHeight: '140px', maxHeight: '320px', height: 'auto' }}
                   />
                   <div className="absolute bottom-3 right-3 text-[10px] font-mono select-none bg-surface1/80 border border-border/50 px-2 py-0.5 rounded backdrop-blur-sm pointer-events-none transition-colors">
@@ -341,7 +341,7 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
             disabled={scorecardText.length < 100}
             className={`w-full font-mono font-bold text-sm tracking-wider uppercase py-4 transition-all duration-200 btn-press rounded-xl ${
               scorecardText.length >= 100
-                ? 'bg-accent hover:bg-accentHover text-white shadow-glow-amber'
+                ? 'bg-accent hover:bg-accentHover text-white shadow-glow-accent'
                 : 'bg-surface2 text-textTertiary/50 cursor-not-allowed opacity-50 border border-border/30'
             }`}
           >

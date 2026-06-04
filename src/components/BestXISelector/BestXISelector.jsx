@@ -125,7 +125,7 @@ export default function BestXISelector() {
 
           {error && <p className="text-xs font-mono text-liability-text">{error}</p>}
 
-          <button onClick={handleSelect} disabled={validSquad.length < 11 || isLoading} className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white font-mono font-bold py-3.5 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-amber disabled:opacity-40">
+          <button onClick={handleSelect} disabled={validSquad.length < 11 || isLoading} className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accentHover text-white font-mono font-bold py-3.5 text-sm uppercase tracking-wider transition-all btn-press rounded-xl shadow-glow-accent disabled:opacity-40">
             {isLoading ? <><Loader2 size={16} className="animate-spin" /> AI Selecting...</> : <><Users size={16} /> Select Best XI</>}
           </button>
           {validSquad.length < 11 && <p className="text-[10px] text-textTertiary font-mono text-center">Need at least 11 players. Currently {validSquad.length}.</p>}

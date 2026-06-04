@@ -280,7 +280,7 @@ export default function TeamProfile() {
             <h2 className="text-lg font-display text-textPrimary flex items-center gap-2">
               <Users size={18} className="text-accent" /> Active Roster
             </h2>
-            <button onClick={() => setShowModal(true)} className="flex items-center gap-1.5 bg-accent hover:bg-accentHover text-white px-4 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press">
+            <button onClick={() => setShowModal(true)} className="flex items-center gap-1.5 bg-accent hover:bg-accentHover text-white px-4 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase transition-all shadow-glow-accent btn-press">
               <Plus size={13} /> Add Player
             </button>
           </div>
@@ -291,7 +291,7 @@ export default function TeamProfile() {
                 <div className="text-4xl mb-3">🏏</div>
                 <h3 className="font-display text-textPrimary mb-2">No players yet</h3>
                 <p className="text-textSecondary text-sm font-mono mb-4">Add players manually or analyze a match scorecard to auto-build your roster.</p>
-                <button onClick={() => setShowModal(true)} className="bg-accent hover:bg-accentHover text-white px-5 py-2.5 rounded-xl text-xs font-mono font-bold uppercase tracking-wider shadow-glow-amber">Add First Player</button>
+                <button onClick={() => setShowModal(true)} className="bg-accent hover:bg-accentHover text-white px-5 py-2.5 rounded-xl text-xs font-mono font-bold uppercase tracking-wider shadow-glow-accent">Add First Player</button>
               </div>
             ) : (
               <table className="w-full text-left">
@@ -359,8 +359,8 @@ export default function TeamProfile() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex gap-1 bg-surface2 p-1 rounded-xl border border-border">
-              <button onClick={() => setRightTab('upcoming')} className={`px-3 py-1.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider transition-all ${ rightTab === 'upcoming' ? 'bg-accent text-white shadow-glow-amber' : 'text-textSecondary hover:text-textPrimary' }`}>Upcoming</button>
-              <button onClick={() => setRightTab('history')} className={`px-3 py-1.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider transition-all ${ rightTab === 'history' ? 'bg-accent text-white shadow-glow-amber' : 'text-textSecondary hover:text-textPrimary' }`}>History</button>
+              <button onClick={() => setRightTab('upcoming')} className={`px-3 py-1.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider transition-all ${ rightTab === 'upcoming' ? 'bg-accent text-white shadow-glow-accent' : 'text-textSecondary hover:text-textPrimary' }`}>Upcoming</button>
+              <button onClick={() => setRightTab('history')} className={`px-3 py-1.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider transition-all ${ rightTab === 'history' ? 'bg-accent text-white shadow-glow-accent' : 'text-textSecondary hover:text-textPrimary' }`}>History</button>
             </div>
             {rightTab === 'upcoming' && (
               <button onClick={() => setShowScheduleModal(true)} className="flex items-center gap-1 text-accent hover:text-accentHover text-xs font-mono font-bold uppercase tracking-wider transition-colors">
@@ -480,7 +480,7 @@ export default function TeamProfile() {
                   <option value="Box Cricket">Box Cricket</option>
                 </select>
               </div>
-              <button onClick={handleAddSchedule} className="w-full bg-accent hover:bg-accentHover text-white py-3.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press">Add to Schedule</button>
+              <button onClick={handleAddSchedule} className="w-full bg-accent hover:bg-accentHover text-white py-3.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-accent btn-press">Add to Schedule</button>
             </div>
           </div>
         </div>
@@ -528,7 +528,7 @@ export default function TeamProfile() {
                   className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary placeholder:text-textTertiary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all" />
                 <p className="text-[10px] font-mono text-textTertiary">Used to send coaching feedback directly via WhatsApp</p>
               </div>
-              <button onClick={handleAddPlayer} className="w-full bg-accent hover:bg-accentHover text-white py-3.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-amber btn-press">Add to Roster</button>
+              <button onClick={handleAddPlayer} className="w-full bg-accent hover:bg-accentHover text-white py-3.5 rounded-xl text-sm font-mono font-bold tracking-wider uppercase transition-all shadow-glow-accent btn-press">Add to Roster</button>
             </div>
           </div>
         </div>
@@ -573,7 +573,7 @@ export default function TeamProfile() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <button onClick={() => setEditPlayer(null)} className="py-3 rounded-xl bg-surface2 hover:bg-surface3 border border-border text-textPrimary text-sm font-mono font-bold uppercase tracking-wider transition-all">Cancel</button>
-                <button onClick={handleSaveEdit} className="py-3 rounded-xl bg-accent hover:bg-accentHover text-white text-sm font-mono font-bold uppercase tracking-wider transition-all shadow-glow-amber btn-press">Save Changes</button>
+                <button onClick={handleSaveEdit} className="py-3 rounded-xl bg-accent hover:bg-accentHover text-white text-sm font-mono font-bold uppercase tracking-wider transition-all shadow-glow-accent btn-press">Save Changes</button>
               </div>
             </div>
           </div>
