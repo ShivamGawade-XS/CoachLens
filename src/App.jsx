@@ -26,6 +26,7 @@ import PlayerProfile from './pages/PlayerProfile';
 import ChatAssistant from './components/ChatAssistant/ChatAssistant';
 import CoachTools from './pages/CoachTools';
 import TeamRankings from './pages/TeamRankings';
+import ShareView from './pages/ShareView';
 
 /* ─── Global Toast System ─── */
 function Toast({ message, type = 'info', onClose }) {
@@ -65,6 +66,7 @@ function Toast({ message, type = 'info', onClose }) {
 }
 
 function App() {
+  /** @type {[Array<{id: number, message: string, type: 'success'|'error'|'warning'|'info'}>, React.Dispatch<React.SetStateAction<Array<{id: number, message: string, type: 'success'|'error'|'warning'|'info'}>>>]} */
   const [toasts, setToasts] = useState([]);
 
   const addToast = useCallback((message, type = 'info') => {
@@ -108,6 +110,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/card" element={<PublicPlayerCard />} />
+          <Route path="/share/:id" element={<ShareView />} />
 
           {/* Authenticated App Routes */}
           <Route element={<ProtectedRoute><AppLayout addToast={addToast} /></ProtectedRoute>}>

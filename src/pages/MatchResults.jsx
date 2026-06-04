@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useOutletContext } from 'react-router-dom';
 import { ChevronLeft, Download, Loader2, MessageCircle, RefreshCcw } from 'lucide-react';
 import { storageService } from '../services/storageService';
 import { groqService } from '../services/groqService';
@@ -17,6 +17,7 @@ import ErrorBoundary from '../components/ErrorBoundary';
 export default function MatchResults() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addToast } = useOutletContext() || {};
   const [match, setMatch] = useState(null);
   const [activeTab, setActiveTab] = useState('players');
   const [isExporting, setIsExporting] = useState(false);
@@ -247,6 +248,8 @@ export default function MatchResults() {
                         player={player} 
                         mismatch={mismatch}
                         onViewMismatch={() => setActiveTab('brief')}
+                        shareId={match.analysis?.shareId}
+                        addToast={addToast}
                       />
                     </div>
                   );

@@ -150,7 +150,7 @@ export default function AppLayout({ addToast }) {
 
         {/* ── Main Content Area ── */}
         <main className="flex-1 overflow-y-auto">
-          <Outlet />
+          <Outlet context={{ addToast }} />
         </main>
       </div>
     </div>

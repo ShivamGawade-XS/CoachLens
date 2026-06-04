@@ -199,6 +199,7 @@ export const groqService = {
       const decoder = new TextDecoder('utf-8');
       let buffer = '';
       let accumulatedText = '';
+      let shareId = null;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -216,7 +217,10 @@ export const groqService = {
           if (cleaned.startsWith('data: ')) {
             try {
               const parsed = JSON.parse(cleaned.slice(6));
-              const content = parsed.choices[0]?.delta?.content || '';
+              if (parsed && parsed.shareId) {
+                shareId = parsed.shareId;
+              }
+              const content = parsed.choices?.[0]?.delta?.content || '';
               if (content) {
                 accumulatedText += content;
                 if (onChunk) onChunk(accumulatedText);
@@ -228,6 +232,7 @@ export const groqService = {
         }
       }
 
+      /** @type {import('../types/analysis').FullAnalysis} */
       let data;
       try {
         data = JSON.parse(accumulatedText);
@@ -236,6 +241,7 @@ export const groqService = {
       }
 
       return {
+        shareId,
         players: (data.players || []).map(p => ({
           name: p.name,
           role: p.role,

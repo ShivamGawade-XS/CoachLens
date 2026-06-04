@@ -78,7 +78,18 @@ const parseStats = (player) => {
   }
 };
 
-export default function PlayerCard({ player, hideActions = false, mismatch, onViewMismatch }) {
+/**
+ * @param {Object} props
+ * @param {import('../../types/analysis').MappedPlayerAnalysis} props.player
+ * @param {boolean} [props.hideActions]
+ * @param {Object} [props.mismatch]
+ * @param {string} props.mismatch.severity
+ * @param {string} props.mismatch.reason
+ * @param {Function} [props.onViewMismatch]
+ * @param {string} [props.shareId]
+ * @param {Function} [props.addToast]
+ */
+export default function PlayerCard({ player, hideActions = false, mismatch, onViewMismatch, shareId, addToast }) {
   const [copied, setCopied] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const config = tagConfig[player.tag] || tagConfig.Anchor;
@@ -113,12 +124,14 @@ export default function PlayerCard({ player, hideActions = false, mismatch, onVi
 
   const handleCopyLink = () => {
     try {
-      const jsonString = JSON.stringify(player);
-      const encoded = btoa(unescape(encodeURIComponent(jsonString)));
-      const url = `${window.location.origin}/card?data=${encoded}`;
+      const uuid = shareId || 'placeholder-uuid';
+      const url = `https://coach-lens.vercel.app/share/${uuid}?player=${encodeURIComponent(player.name)}`;
       navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      if (addToast) {
+        addToast('Link copied', 'success');
+      }
     } catch (err) {
       console.error("Failed to generate link", err);
     }
@@ -272,10 +285,10 @@ export default function PlayerCard({ player, hideActions = false, mismatch, onVi
           <button 
             onClick={handleCopyLink}
             className="text-xs text-textSecondary hover:text-textPrimary flex items-center gap-1 transition-colors px-2 py-1 rounded-lg hover:bg-surface2"
-            title="Copy Public Web Link"
+            title="Share Player Card"
           >
             {copied ? <CheckCircle size={12} className="text-aggressor-text" /> : <LinkIcon size={12} />} 
-            {copied ? <span className="text-aggressor-text">Copied!</span> : 'Link'}
+            {copied ? <span className="text-aggressor-text">Copied!</span> : 'Share Card'}
           </button>
           <button 
             onClick={handleWhatsAppShare}
