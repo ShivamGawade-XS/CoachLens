@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, X, Send, Bot, User, Loader, ChevronDown, Sparkles } from 'lucide-react';
+import { X, Send, Sparkles } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { groqService } from '../../services/groqService';
 import { getTeams } from '../../pages/AppPages';

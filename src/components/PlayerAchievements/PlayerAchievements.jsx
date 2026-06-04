@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Trophy, Star, Target, Crosshair, Zap, Crown, Medal, Award, Flame, TrendingUp } from 'lucide-react';
+import { Trophy, Star, Target, Crosshair, Zap, Crown, Flame, TrendingUp } from 'lucide-react';
 
 /**
  * Computes player achievements from all match data.

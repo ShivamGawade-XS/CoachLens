@@ -1,0 +1,41 @@
+module.exports = {
+  root: true,
+  env: { browser: true, es2020: true },
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:react/jsx-runtime',
+    'plugin:react-hooks/recommended',
+  ],
+  ignorePatterns: ['dist', '.eslintrc.cjs', 'node_modules', 'download_logos.cjs', 'generate_docx.cjs'],
+  parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
+  settings: { react: { version: '18.2' } },
+  plugins: ['react-refresh'],
+  rules: {
+    'react/prop-types': 'off',
+    'react-refresh/only-export-components': [
+      'warn',
+      { allowConstantExport: true },
+    ],
+    'no-unused-vars': ['warn', { 'argsIgnorePattern': '^_', 'varsIgnorePattern': '^React$' }]
+  },
+  overrides: [
+    {
+      files: ['api/**/*.js'],
+      env: {
+        node: true,
+        browser: true,
+        es2020: true
+      }
+    },
+    {
+      files: ['public/sw.js'],
+      env: {
+        serviceworker: true
+      },
+      globals: {
+        __BUILD_TIME__: 'readonly'
+      }
+    }
+  ]
+}

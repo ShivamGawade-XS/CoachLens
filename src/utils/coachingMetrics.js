@@ -128,7 +128,6 @@ export const getPressureIndex = (player) => {
 
   const worked = (player.what_worked || '').toLowerCase();
   const failed = (player.what_failed || '').toLowerCase();
-  const role = (player.role || '').toLowerCase();
 
   // Pressure-positive keywords
   const clutchKeywords = ['death', 'last over', 'pressure', 'crucial', 'chase', 'closing', 'finish', 'yorker', 'held nerve', 'slog', 'final'];

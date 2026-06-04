@@ -142,7 +142,7 @@ export default function LandingPage() {
                 MD
               </div>
               <p className="line-clamp-2 leading-tight italic text-textSecondary">
-                "Saved me hours of post-match work." <span className="font-sans font-semibold not-italic text-textPrimary text-[10px]">— Davis (Wanderers CC)</span>
+                &quot;Saved me hours of post-match work.&quot; <span className="font-sans font-semibold not-italic text-textPrimary text-[10px]">— Davis (Wanderers CC)</span>
               </p>
             </div>
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Calendar, Plus, X, Loader2, Users, ChevronRight } from 'lucide-react';
-import { groqService } from '../../services/groqService';
+
 import { getTeams } from '../../pages/AppPages';
 import { useAuth } from '../../contexts/AuthContext';
 

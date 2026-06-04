@@ -176,7 +176,7 @@ export function Blog() {
       <div className="glass-card p-12 rounded-2xl text-center max-w-2xl mx-auto">
         <BookOpen size={48} className="mx-auto text-textTertiary mb-6 opacity-50" />
         <h2 className="text-2xl font-display text-textPrimary mb-4">Coming Soon</h2>
-        <p className="text-textSecondary mb-8">We're writing up our first series of articles on the intersection of AI and cricket coaching. Subscribe to our newsletter to be notified when we launch.</p>
+        <p className="text-textSecondary mb-8">We&apos;re writing up our first series of articles on the intersection of AI and cricket coaching. Subscribe to our newsletter to be notified when we launch.</p>
         <div className="flex gap-2 max-w-md mx-auto">
           <input type="email" placeholder="coach@team.com" className="flex-1 bg-surface1 border border-border rounded-xl px-4 text-sm text-textPrimary outline-none focus:border-accent" />
           <button className="bg-surface2 hover:bg-surface3 text-textPrimary px-4 py-2 rounded-xl font-mono font-bold text-sm transition-all">Subscribe</button>

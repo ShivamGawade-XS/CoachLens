@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
+import { FREE_LIMIT, STORAGE_KEYS } from '../constants';
 
-const FREE_LIMIT = 3;
-const STORAGE_KEY_TOKEN  = 'coachlens_plan_token';
-const STORAGE_KEY_COUNT  = 'coachlens_analysis_count';
+const STORAGE_KEY_TOKEN  = STORAGE_KEYS.PLAN_TOKEN;
+const STORAGE_KEY_COUNT  = STORAGE_KEYS.ANALYSIS_COUNT;
 
 /**
  * Reads the stored plan token and checks if it's structurally valid

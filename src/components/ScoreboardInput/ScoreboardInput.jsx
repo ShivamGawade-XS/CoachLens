@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, Clipboard, AlertCircle } from 'lucide-react';
 import { parseScorecard } from '../../utils/parseScorecard';
+import { MATCH_FORMATS, PHASE_OPTIONS } from '../../constants';
 
 const SAMPLE_SCORECARD = `Panaji Panthers vs Margao Strikers - T20 Match
 Date: 5 May 2026
@@ -153,8 +154,8 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
     }, 2000);
   };
 
-  const formats = ['T20', 'ODI'];
-  const phases = ['Full Match', 'Powerplay', 'Middle Overs', 'Death Overs'];
+  const formats = MATCH_FORMATS;
+  const phases = PHASE_OPTIONS;
 
   return (
     <div className="min-h-screen bg-primary relative">

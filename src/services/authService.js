@@ -1,8 +1,9 @@
 import { supabase, isSupabaseConfigured } from './supabaseClient';
 import { storageService } from './storageService';
+import { STORAGE_KEYS } from '../constants';
 
-const USERS_KEY = 'coachlens_users';
-const SESSION_KEY = 'coachlens_session';
+const USERS_KEY = STORAGE_KEYS.USERS;
+const SESSION_KEY = STORAGE_KEYS.SESSION;
 
 function sha256(ascii) {
   function rightRotate(value, amount) {
@@ -39,7 +40,6 @@ function sha256(ascii) {
   words[words[lengthProperty]] = (asciiLength);
   for (j = 0; j < words[lengthProperty]; j += 16) {
     var w = words.slice(j, j + 16);
-    var oldHash = hash.slice(0);
     var a = hash[0], b = hash[1], c = hash[2], d = hash[3], e = hash[4], f = hash[5], g = hash[6], h = hash[7];
     for (i = 0; i < 64; i++) {
       var wItem = w[i];
@@ -72,8 +72,8 @@ function sha256(ascii) {
   }
   for (i = 0; i < 8; i++) {
     for (j = 3; j + 1; j--) {
-      var b = (hash[i] >> (j * 8)) & 255;
-      result += (b < 16 ? '0' : '') + b.toString(16);
+      var byteVal = (hash[i] >> (j * 8)) & 255;
+      result += (byteVal < 16 ? '0' : '') + byteVal.toString(16);
     }
   }
   return result;
@@ -89,10 +89,10 @@ const isBase64Match = (storedHash, plainPassword) => {
 };
 
 const getObfuscationKey = () => {
-  let key = localStorage.getItem('coachlens_sys_k');
+  let key = localStorage.getItem(STORAGE_KEYS.SYS_KEY);
   if (!key) {
     key = crypto.randomUUID ? crypto.randomUUID() : (Math.random().toString(36).substring(2) + Date.now().toString(36));
-    localStorage.setItem('coachlens_sys_k', key);
+    localStorage.setItem(STORAGE_KEYS.SYS_KEY, key);
   }
   let numKey = 0;
   for (let i = 0; i < key.length; i++) {
@@ -344,8 +344,8 @@ export const authService = {
     saveUsers(filtered);
 
     // Clear user-specific data
-    localStorage.removeItem(`coachlens_teams_${session.id}`);
-    localStorage.removeItem(`coachlens_settings_${session.id}`);
+    localStorage.removeItem(`${STORAGE_KEYS.TEAMS_PREFIX}${session.id}`);
+    localStorage.removeItem(`${STORAGE_KEYS.SETTINGS_PREFIX}${session.id}`);
 
     // Clear session
     localStorage.removeItem(SESSION_KEY);

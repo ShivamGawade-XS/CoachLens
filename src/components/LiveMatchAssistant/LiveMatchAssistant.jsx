@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Radio, Zap, Plus, RotateCcw, Loader2, AlertTriangle, ChevronRight } from 'lucide-react';
+import { Radio, Zap, Plus, RotateCcw, Loader2, ChevronRight } from 'lucide-react';
 import { groqService } from '../../services/groqService';
 
 const badgeColorMap = {

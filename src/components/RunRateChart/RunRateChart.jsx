@@ -26,7 +26,7 @@ export default function RunRateChart({ report, rawScorecard, teamName, opponent 
         const totalMatch = rawScorecard.match(/total\s*:\s*(\d+)/i);
         if (totalMatch) target = parseInt(totalMatch[1]);
         
-        firstInnings.forEach((o, idx) => {
+        firstInnings.forEach((o, _idx) => {
           cumulativeRuns += o.runs;
           const overNum = o.over;
           const crr = parseFloat((cumulativeRuns / overNum).toFixed(1));

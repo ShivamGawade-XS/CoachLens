@@ -48,14 +48,14 @@ const getFieldingData = (report, rawScorecard) => {
 };
 
 export default function TeamReport({ report, rawScorecard, teamName, opponent }) {
-  if (!report) return null;
-
   const [collapsed, setCollapsed] = useState({
     batting: true,
     bowling: true,
     fielding: true,
     tactics: true,
   });
+
+  if (!report) return null;
 
   const highlightNumbers = (text) => {
     if (!text) return text;

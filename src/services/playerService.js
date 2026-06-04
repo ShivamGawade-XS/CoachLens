@@ -4,7 +4,9 @@
  * All data is persisted in localStorage (base64 images included).
  */
 
-const STORAGE_KEY = 'coachlens_players';
+import { STORAGE_KEYS } from '../constants';
+
+const STORAGE_KEY = STORAGE_KEYS.PLAYERS;
 
 /**
  * Generate a UUID (uses crypto.randomUUID where available, fallback for older browsers).
@@ -222,7 +224,7 @@ const _generateSvgAvatar = (name, jerseyNumber, accentHue) => {
   }
 };
 
-const DEMO_PLAYERS_SEEDED_KEY = 'coachlens_players_seeded';
+const DEMO_PLAYERS_SEEDED_KEY = STORAGE_KEYS.PLAYERS_SEEDED;
 
 /**
  * Seed demo player profiles that match the demo match analysis data.

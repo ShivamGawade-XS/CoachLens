@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link, useOutletContext } from 'react-router-dom
 import { ChevronLeft, Download, Loader2, MessageCircle, RefreshCcw } from 'lucide-react';
 import { storageService } from '../services/storageService';
 import { groqService } from '../services/groqService';
+import { TONE_OPTIONS } from '../constants';
 
 import PlayerCard from '../components/PlayerCard/PlayerCard';
 import TeamReport from '../components/TeamReport/TeamReport';
@@ -170,9 +171,9 @@ export default function MatchResults() {
                 onChange={(e) => setTone(e.target.value)}
                 className="bg-transparent text-xs font-mono text-textPrimary focus:outline-none px-2 cursor-pointer"
               >
-                <option value="Direct">Tone: Direct</option>
-                <option value="Encouraging">Tone: Encouraging</option>
-                <option value="Brutal Honest">Tone: Brutal Honest</option>
+                {TONE_OPTIONS.map(t => (
+                  <option key={t} value={t}>Tone: {t}</option>
+                ))}
               </select>
               <button
                 onClick={handleReanalyze}

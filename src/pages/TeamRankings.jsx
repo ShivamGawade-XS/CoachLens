@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Trophy, TrendingUp, TrendingDown, Minus, Crown, Medal, Award, ChevronUp, ChevronDown, ArrowRight, Shield, Target, Zap, BarChart3 } from 'lucide-react';
+import { Trophy, TrendingUp, TrendingDown, Minus, Crown, Medal, Award, ArrowRight, Target, Zap, BarChart3 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getTeams } from './AppPages';
 import { storageService } from '../services/storageService';

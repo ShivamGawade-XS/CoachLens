@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Target, Shield, Zap, History, Send, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Target, Shield, Zap, History, MessageSquare } from 'lucide-react';
 import { storageService } from '../services/storageService';
 import { calculateIntentScore, getPressureIndex, calculateClutchFactors } from '../utils/coachingMetrics';
 import PlayerAchievements from '../components/PlayerAchievements/PlayerAchievements';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ArrowLeft, GitCompare, ChevronRight, Trophy, Target, Zap, Shield, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { GitCompare, TrendingUp } from 'lucide-react';
 import { storageService } from '../../services/storageService';
 import { calculateIntentScore } from '../../utils/coachingMetrics';
 
@@ -105,6 +105,7 @@ export default function PlayerComparison() {
     const b = getPlayerStats(playerB);
     if (!a || !b) return null;
     return { a, b };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playerA, playerB, allMatches]);
 
   const handleCompare = () => {

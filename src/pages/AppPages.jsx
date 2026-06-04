@@ -1,6 +1,7 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { Trophy, Users, Shield, ArrowRight, Plus, X, Trash2, AlertCircle, User, Bell, Key, Palette, TrendingUp, TrendingDown, Edit2, Search, Filter, Zap } from 'lucide-react';
+import { Users, Shield, ArrowRight, Plus, X, Trash2, AlertCircle, User, Key, Palette, TrendingUp, TrendingDown, Edit2, Search, Filter, Zap } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getTeamFormGuide } from '../utils/seasonScoring';
 import { PlanContext } from '../App';
@@ -126,6 +127,7 @@ export function Teams({ addToast }) {
         }
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const handleAdd = () => {
@@ -640,7 +642,7 @@ const ROLES = ['Head Coach', 'Assistant Coach', 'Captain', 'Team Manager', 'Anal
 const EXPERIENCE = ['Less than 1 year', '1-3 years', '3-5 years', '5-10 years', '10+ years'];
 
 export function Settings({ addToast }) {
-  const { user, updateProfile, changePassword, deleteAccount, logout } = useAuth();
+  const { user, updateProfile, changePassword, deleteAccount } = useAuth();
   const plan = useContext(PlanContext);
   const [profile, setProfile] = useState({ fullName: '', email: '', organization: '', role: '', experience: '' });
   const [passwords, setPasswords] = useState({ current: '', newPwd: '', confirm: '' });

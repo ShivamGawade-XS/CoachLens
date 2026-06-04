@@ -95,7 +95,7 @@ export default function Dashboard() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-display-xl font-display text-textPrimary mb-2">Welcome back, {firstName}</h1>
-          <p className="text-textSecondary text-sm">Here is your team's operational intelligence overview.</p>
+          <p className="text-textSecondary text-sm">Here is your team&apos;s operational intelligence overview.</p>
         </div>
         <button 
           onClick={() => navigate('/analyze')}

@@ -76,6 +76,7 @@ export default function TeamProfile() {
     setRoster(Array.from(playersMap.values()).sort((a, b) => b.appearances - a.appearances));
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { loadData(); }, [teamName, user]);
 
   const handleUpdateHealth = (playerName, status, note) => {

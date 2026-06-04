@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  ReferenceLine, Cell, CartesianGrid, Legend
+  ReferenceLine, Cell, CartesianGrid
 } from 'recharts';
 import { groqService } from '../../services/groqService';
 import { TrendingUp } from 'lucide-react';
@@ -29,12 +29,10 @@ function parseOverData(rawScorecard) {
   let teamAOvers = [];
   let teamBOvers = [];
   let currentTeam = null;
-  let foundOverSection = false;
 
   for (const line of lines) {
     // Detect "Over-by-over" section marker
     if (/over[\s-]*by[\s-]*over/i.test(line)) {
-      foundOverSection = true;
       currentTeam = null; // Reset team counter for this section
       continue;
     }
@@ -136,7 +134,7 @@ function buildChartData(teamA, teamB) {
 }
 
 // ─── Custom tooltip ───────────────────────────────────────────────
-function MomentumTooltip({ active, payload, label }) {
+function MomentumTooltip({ active, payload, _label }) {
   if (!active || !payload || !payload.length) return null;
   const d = payload[0]?.payload;
   if (!d) return null;

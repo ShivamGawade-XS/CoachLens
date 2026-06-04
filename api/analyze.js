@@ -169,7 +169,7 @@ export default async function handler(req) {
     const customStream = new ReadableStream({
       async start(controller) {
         try {
-          while (true) {
+          for (;;) {
             const { done, value } = await reader.read();
             if (done) break;
 
@@ -206,7 +206,9 @@ export default async function handler(req) {
                 if (content) {
                   accumulatedText += content;
                 }
-              } catch (e) {}
+              } catch (e) {
+                // Ignore partial parsing error
+              }
             }
           }
 

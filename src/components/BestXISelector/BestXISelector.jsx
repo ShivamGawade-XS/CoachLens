@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, Plus, X, Loader2, Check, Ban, ChevronRight, Shield, RotateCcw } from 'lucide-react';
+import { Users, Plus, X, Loader2, Check, Ban, Shield, RotateCcw } from 'lucide-react';
 import { groqService } from '../../services/groqService';
 import { getTeams } from '../../pages/AppPages';
 import { useAuth } from '../../contexts/AuthContext';

@@ -68,18 +68,25 @@ npm install
 
 ### Environment Variables (Local Dev)
 
-Create a `.env` file in the project root:
+Create a `.env` file in the project root. Copy from `.env.example`:
 
 ```env
+# Backend / Vercel Edge Function variables
 GROQ_API_KEY=your_groq_api_key_here
+SUPABASE_URL=your_supabase_url_here
+SUPABASE_ANON_KEY=your_supabase_anon_key_here
+
+# Frontend / Vite Client-side variables (prefixed with VITE_)
+VITE_SUPABASE_URL=your_supabase_url_here
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 ```
 
 > ⚠️ Never commit your `.env` file. It is already in `.gitignore`.  
-> The API key is never exposed to the browser. All Groq calls are routed through `/api/analyze`.
+> Backend API keys (such as `GROQ_API_KEY`) are kept safe on the server and never exposed to the browser. Frontend settings use Vite's `VITE_` prefix to be securely bundle-loaded in the browser.
 
 ### Run Locally
 
-For local development, the API key is only needed as a server-side environment variable (defined in `.env`), not as a frontend Vite environment variable.
+For local development, use the Vite dev server. The project routes backend calls through Vercel serverless edge functions.
 
 ```bash
 npm run dev

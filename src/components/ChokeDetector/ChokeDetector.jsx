@@ -164,7 +164,7 @@ export default function ChokeDetector() {
                 <div className="flex items-start gap-2">
                   <AlertTriangle size={14} className={p.severity === 'high' ? 'text-liability-text' : 'text-accent'} style={{ marginTop: '2px' }} />
                   <p className="text-sm text-textPrimary leading-relaxed">
-                    <strong>Coach Note:</strong> {p.name}'s impact drops by <strong>{p.impactDrop} points</strong> in knockout matches. 
+                    <strong>Coach Note:</strong> {p.name}&apos;s impact drops by <strong>{p.impactDrop} points</strong> in knockout matches. 
                     {p.leagueAvg !== '--' && p.knockoutAvg !== '--' ? ` Scoring drops from ~${p.leagueAvg} to ~${p.knockoutAvg}. ` : ' '}
                     {p.severity === 'high' ? 'Do not rely on them in high-pressure situations or demote them down the order.' : 'Monitor their pressure handling and consider specialized mental conditioning.'}
                   </p>

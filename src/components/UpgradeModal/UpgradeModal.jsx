@@ -34,7 +34,7 @@ export default function UpgradeModal({ onClose, onGetPlan }) {
         </div>
 
         <p className="text-sm text-textSecondary leading-relaxed mb-2">
-          You've used all 3 free analyses. Upgrade to continue analyzing matches and unlock the <span className="text-accent font-semibold">Coach Brief</span> — batting order changes, bowling rotations, and tactical focus.
+          You&apos;ve used all 3 free analyses. Upgrade to continue analyzing matches and unlock the <span className="text-accent font-semibold">Coach Brief</span> — batting order changes, bowling rotations, and tactical focus.
         </p>
 
         <div className="bg-surface2/60 border border-border rounded-xl p-4 mb-6 mt-4">

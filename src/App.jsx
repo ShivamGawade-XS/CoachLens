@@ -1,5 +1,6 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { useState, useEffect, useCallback, createContext, Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { X, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import { usePlan } from './hooks/usePlan';
 

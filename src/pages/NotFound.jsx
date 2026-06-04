@@ -13,7 +13,7 @@ export default function NotFound() {
         <p className="text-xs font-mono uppercase tracking-[0.3em] text-textTertiary mb-3">Error 404</p>
         <h1 className="text-4xl md:text-5xl font-display text-textPrimary mb-4">Page Not Found</h1>
         <p className="text-textSecondary text-sm leading-relaxed mb-10">
-          This page went for a duck. It doesn't exist or may have been moved.
+          This page went for a duck. It doesn&apos;t exist or may have been moved.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button

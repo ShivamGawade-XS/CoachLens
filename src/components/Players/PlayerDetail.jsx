@@ -118,7 +118,7 @@ export default function PlayerDetail() {
         <div className="glass-card rounded-2xl p-12 text-center">
           <User size={32} className="mx-auto mb-4 text-textTertiary" />
           <h3 className="text-lg font-display text-textPrimary mb-2">Player Not Found</h3>
-          <p className="text-textSecondary text-sm mb-6">This player profile doesn't exist or was deleted.</p>
+          <p className="text-textSecondary text-sm mb-6">This player profile doesn&apos;t exist or was deleted.</p>
           <button onClick={() => navigate('/players')} className="bg-surface2 hover:bg-surface3 border border-border text-textPrimary px-6 py-2.5 rounded-xl text-xs font-mono font-bold tracking-wider uppercase transition-all btn-press">
             Back to Players
           </button>

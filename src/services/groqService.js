@@ -1,74 +1,4 @@
-import { FALLBACK_ANALYSES } from '../utils/fallbackData';
-
-const PLAYER_PROMPT = `You are an expert cricket coach analyst. Analyze this match scorecard and return ONLY a JSON object. No preamble.
-Match Format: {format}
-Match Phase Focus: {phase}
-Tone: {tone}
-Scorecard: {scorecard}
-
-CRITICAL: Generate all text fields (what_worked, what_failed, instructions) strictly adhering to the requested Tone.
-- If Direct: Be purely objective and analytical.
-- If Encouraging: Focus on positives, potential, and constructive learning.
-- If Brutal Honest: Do not hold back. Criticize poor numbers fiercely, use harsh truths.
-
-Return exactly this structure:
-{
-  "players": [
-    {
-      "name": "player name",
-      "role": "batsman/bowler/allrounder",
-      "tag": "Anchor|Aggressor|Liability|Improving",
-      "key_stat": "e.g. 45 (30)",
-      "match_impact": "impact score out of 10",
-      "what_worked": "specific and factual",
-      "what_failed": "specific and factual",
-      "next_match_instruction": "one concrete actionable change",
-      "practice_drill": "one specific drill"
-    }
-  ]
-}`;
-
-const TEAM_PROMPT = `You are an expert cricket coach analyst. Analyze this match scorecard and return ONLY a JSON object. No preamble.
-Match Format: {format}
-Match Phase Focus: {phase}
-Tone: {tone}
-Scorecard: {scorecard}
-
-CRITICAL: Generate all text fields strictly adhering to the requested Tone.
-- If Direct: Be purely objective and analytical.
-- If Encouraging: Focus on positives, potential, and constructive learning.
-- If Brutal Honest: Do not hold back. Criticize poor numbers fiercely, use harsh truths.
-
-Return exactly this structure:
-{
-  "team_summary": {
-    "what_won_lost_match": "specific over and event",
-    "strongest_partnership": "player names and runs",
-    "bowling_inefficiency": "specific bowler and overs",
-    "pattern": "one key team-level tactical observation"
-  }
-}`;
-
-const BRIEF_PROMPT = `You are an expert cricket coach analyst. Analyze this match scorecard and return ONLY a JSON object. No preamble.
-Match Format: {format}
-Match Phase Focus: {phase}
-Tone: {tone}
-Scorecard: {scorecard}
-
-CRITICAL: Generate all text fields strictly adhering to the requested Tone.
-- If Direct: Be purely objective and analytical.
-- If Encouraging: Focus on positives, potential, and constructive learning.
-- If Brutal Honest: Do not hold back. Criticize poor numbers fiercely, use harsh truths.
-
-Return exactly this structure:
-{
-  "coach_decisions": {
-    "batting_order_change": "specific swap with reason",
-    "bowling_rotation": "specific change with reason",
-    "player_on_notice": "name and why",
-    "tactical_focus_next_game": "one sentence"
-  }
-}`;
+import { GROQ_MODEL, GROQ_TEMPERATURE } from '../constants';
 
 const TURNING_POINT_PROMPT = `You are an expert cricket analyst. Given this over-by-over match data, identify the SINGLE over where match momentum shifted most dramatically.
 
@@ -147,12 +77,12 @@ export const groqService = {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify({
-          model: "llama-3.1-8b-instant",
+          model: GROQ_MODEL,
           messages: [
             { role: "system", content: TURNING_POINT_PROMPT },
             { role: "user", content: JSON.stringify(overData) }
           ],
-          temperature: 0.2,
+          temperature: GROQ_TEMPERATURE.TURNING_POINT,
           max_tokens: 200,
           response_format: { type: "json_object" }
         })
@@ -190,7 +120,7 @@ export const groqService = {
       let accumulatedText = '';
       let shareId = null;
 
-      while (true) {
+      for (;;) {
         const { done, value } = await reader.read();
         if (done) break;
 
@@ -278,12 +208,12 @@ export const groqService = {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
+        model: GROQ_MODEL,
         messages: [
           { role: "system", content: prompt },
           { role: "user", content: "Generate WhatsApp messages for each player listed above." }
         ],
-        temperature: 0.4,
+        temperature: GROQ_TEMPERATURE.WHATSAPP,
         max_tokens: 1000,
         response_format: { type: "json_object" }
       })
@@ -310,12 +240,12 @@ export const groqService = {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
+        model: GROQ_MODEL,
         messages: [
           { role: "system", content: prompt },
           { role: "user", content: "Recommend a toss decision based on this history." }
         ],
-        temperature: 0.3,
+        temperature: GROQ_TEMPERATURE.TOSS,
         max_tokens: 200,
         response_format: { type: "json_object" }
       })
@@ -345,9 +275,9 @@ export const groqService = {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
+        model: GROQ_MODEL,
         messages: apiMessages,
-        temperature: 0.5,
+        temperature: GROQ_TEMPERATURE.CHAT,
         max_tokens: 800
       })
     });
@@ -358,16 +288,17 @@ export const groqService = {
   },
 
   generateFormalReport: async (matchData) => {
-    const { rawScorecard, ...leanMatchData } = matchData;
+    const leanMatchData = { ...matchData };
+    delete leanMatchData.rawScorecard;
     const prompt = FORMAL_REPORT_PROMPT.replace('{matchData}', JSON.stringify(leanMatchData, null, 2));
 
     const response = await fetch("/api/groq", {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
+        model: GROQ_MODEL,
         messages: [{ role: "user", content: prompt }],
-        temperature: 0.3,
+        temperature: GROQ_TEMPERATURE.REPORT,
         max_tokens: 1000
       })
     });
@@ -407,9 +338,9 @@ Return ONLY a JSON object:
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
+        model: GROQ_MODEL,
         messages: [{ role: "user", content: prompt }],
-        temperature: 0.3,
+        temperature: GROQ_TEMPERATURE.TACTICAL,
         max_tokens: 500,
         response_format: { type: "json_object" }
       })
@@ -458,9 +389,9 @@ Return ONLY a JSON object:
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
+        model: GROQ_MODEL,
         messages: [{ role: "user", content: prompt }],
-        temperature: 0.3,
+        temperature: GROQ_TEMPERATURE.BEST_XI,
         max_tokens: 1000,
         response_format: { type: "json_object" }
       })

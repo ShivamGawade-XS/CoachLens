@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Loader2, Copy, CheckCircle, MessageCircle, Send } from 'lucide-react';
 
-export default function WhatsAppModal({ players, messages, isGenerating, onClose }) {
+export default function WhatsAppModal({ messages, isGenerating, onClose }) {
   const [copiedIdx, setCopiedIdx] = useState(null);
   const [copiedAll, setCopiedAll] = useState(false);
 
@@ -67,7 +67,7 @@ export default function WhatsAppModal({ players, messages, isGenerating, onClose
             <div className="flex flex-col items-center justify-center py-16 gap-4">
               <Loader2 size={28} className="animate-spin text-accent" />
               <p className="text-sm text-textSecondary font-mono">Crafting personal messages...</p>
-              <p className="text-[10px] text-textTertiary">AI is analyzing each player's performance</p>
+              <p className="text-[10px] text-textTertiary">AI is analyzing each player&apos;s performance</p>
             </div>
           ) : (
             <div className="space-y-4">

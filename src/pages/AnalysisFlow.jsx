@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ScoreboardInput from '../components/ScoreboardInput/ScoreboardInput';
 import { groqService } from '../services/groqService';
 import { storageService } from '../services/storageService';
-import { FALLBACK_ANALYSES } from '../utils/fallbackData';
 import { PlanContext } from '../App';
 
 function LoadingScreen({ elapsed, thinkingText }) {

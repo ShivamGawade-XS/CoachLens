@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Crown, Medal, Award, TrendingUp, TrendingDown, Minus, ChevronRight, Target, Zap, Shield, Crosshair } from 'lucide-react';
+import { Crown, Medal, Award, TrendingUp, TrendingDown, Minus, ChevronRight, Target } from 'lucide-react';
 
 const TAG_SCORES = { 'Aggressor': 8, 'Anchor': 7.5, 'Improving': 6, 'Liability': 4 };
 

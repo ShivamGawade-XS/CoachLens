@@ -1,5 +1,6 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { useState } from 'react';
-import { Heart, HeartPulse, AlertTriangle, ShieldCheck, BedDouble, X, Check, ChevronDown } from 'lucide-react';
+import { HeartPulse, AlertTriangle, X, Check, ChevronDown } from 'lucide-react';
 
 export const HEALTH_STATUSES = [
   { key: 'fit', label: 'Fit', emoji: '💚', color: 'text-emerald-400', bg: 'bg-emerald-400/10', border: 'border-emerald-400/25', dotColor: 'bg-emerald-400' },

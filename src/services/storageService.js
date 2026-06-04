@@ -1,21 +1,24 @@
 import { FALLBACK_ANALYSES } from '../utils/fallbackData';
 import { supabase, isSupabaseConfigured } from './supabaseClient';
 import { linkAllPlayersFromAnalysis, seedDemoPlayers } from './playerService';
+import { STORAGE_KEYS } from '../constants';
 
 const getCurrentUserId = () => {
   try {
-    const session = localStorage.getItem('coachlens_session');
+    const session = localStorage.getItem(STORAGE_KEYS.SESSION);
     if (session) {
       const parsed = JSON.parse(session);
       return parsed.id;
     }
-  } catch {}
+  } catch {
+    // Ignore parsing or missing item exceptions
+  }
   return null;
 };
 
-const STORAGE_KEY = 'coachlens_matches';
-const SEEDED_KEY = 'coachlens_seeded';
-const MIGRATION_KEY = 'coachlens_sample_patch_v2';
+const STORAGE_KEY = STORAGE_KEYS.MATCHES;
+const SEEDED_KEY = STORAGE_KEYS.SEEDED;
+const MIGRATION_KEY = STORAGE_KEYS.SAMPLE_PATCH;
 
 // ── One-time migration: patch existing sample matches that are missing team_summary / coach_decisions ──
 (function migrateSampleMatches() {
@@ -357,7 +360,7 @@ export const storageService = {
 
     try {
       // ── Seed/Patch Team Logos (always check/update to pre-populate existing accounts) ──
-      const teamsKey = `coachlens_teams_${userId || 'demo'}`;
+      const teamsKey = `${STORAGE_KEYS.TEAMS_PREFIX}${userId || 'demo'}`;
       const existingTeams = (() => {
         try { return JSON.parse(localStorage.getItem(teamsKey) || '[]'); } catch { return []; }
       })();
@@ -511,7 +514,7 @@ export const storageService = {
     
     // 1. Sync local teams
     try {
-      const teamsKey = `coachlens_teams_${userId}`;
+      const teamsKey = `${STORAGE_KEYS.TEAMS_PREFIX}${userId}`;
       const localTeamsRaw = localStorage.getItem(teamsKey);
       if (localTeamsRaw) {
         const localTeams = JSON.parse(localTeamsRaw);
