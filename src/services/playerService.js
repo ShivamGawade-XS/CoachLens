@@ -232,18 +232,11 @@ const DEMO_PLAYERS_SEEDED_KEY = 'coachlens_players_seeded';
  * @param {Array} demoMatchIds — IDs of the demo matches (for linkedAnalyses pre-population)
  */
 export const seedDemoPlayers = (demoMatchIds = []) => {
-  // Skip if already seeded
-  if (localStorage.getItem(DEMO_PLAYERS_SEEDED_KEY)) return false;
-
   const existing = _readPlayers();
-  if (existing.length > 0) {
-    localStorage.setItem(DEMO_PLAYERS_SEEDED_KEY, 'true');
-    return false;
-  }
-
   const now = new Date();
+  let modified = false;
 
-  // These players match the names in FALLBACK_ANALYSES so auto-linking works
+  // The 17 players corresponding to the fallback analyses and demo teams
   const demoPlayers = [
     {
       id: 'demo-player-rahul',
@@ -271,7 +264,7 @@ export const seedDemoPlayers = (demoMatchIds = []) => {
       notes: 'Explosive opener. High-risk, high-reward. Strike rate above 150 in T20s. Needs to improve shot selection against pace.',
       profilePicture: _generateSvgAvatar('Vikas Patel', 7, 30),
       createdAt: new Date(now.getFullYear(), now.getMonth() - 3, 12).toISOString(),
-      linkedAnalyses: demoMatchIds.filter((_, i) => [0, 3].includes(i)),
+      linkedAnalyses: demoMatchIds.filter((_, i) => [0, 3, 4].includes(i)),
     },
     {
       id: 'demo-player-suresh',
@@ -313,7 +306,7 @@ export const seedDemoPlayers = (demoMatchIds = []) => {
       notes: 'Talented young lefty. Beautiful cover drives. Needs more match temperament and should avoid playing across the line early.',
       profilePicture: _generateSvgAvatar('Karan Nair', 5, 270),
       createdAt: new Date(now.getFullYear(), now.getMonth() - 2, 25).toISOString(),
-      linkedAnalyses: demoMatchIds.filter((_, i) => [0].includes(i)),
+      linkedAnalyses: demoMatchIds.filter((_, i) => [0, 3, 4].includes(i)),
     },
     {
       id: 'demo-player-priya',
@@ -327,7 +320,7 @@ export const seedDemoPlayers = (demoMatchIds = []) => {
       notes: 'Left-arm spinner with good flight. Economy rate needs improvement. Gets turn on day-2 pitches. Can bat a bit at 8-9.',
       profilePicture: _generateSvgAvatar('Priya Desai', 17, 320),
       createdAt: new Date(now.getFullYear(), now.getMonth() - 2, 18).toISOString(),
-      linkedAnalyses: demoMatchIds.filter((_, i) => [3, 4].includes(i)),
+      linkedAnalyses: demoMatchIds.filter((_, i) => [0, 1, 3, 4].includes(i)),
     },
     {
       id: 'demo-player-rohit',
@@ -341,7 +334,7 @@ export const seedDemoPlayers = (demoMatchIds = []) => {
       notes: 'Sharp glovework. Quick stumpings. Batting average 28 in T20s — solid at 6 or 7. Good communicator behind the stumps.',
       profilePicture: _generateSvgAvatar('Rohit Menon', 1, 50),
       createdAt: new Date(now.getFullYear(), now.getMonth() - 3, 5).toISOString(),
-      linkedAnalyses: [],
+      linkedAnalyses: demoMatchIds.filter((_, i) => [0, 3, 4].includes(i)),
     },
     {
       id: 'demo-player-arjun',
@@ -355,11 +348,167 @@ export const seedDemoPlayers = (demoMatchIds = []) => {
       notes: 'Swing bowler. Effective with new ball. Economy spikes after 3rd over. Potential to develop a slower ball variation.',
       profilePicture: _generateSvgAvatar('Arjun Das', 9, 180),
       createdAt: new Date(now.getFullYear(), now.getMonth() - 1, 15).toISOString(),
-      linkedAnalyses: [],
+      linkedAnalyses: demoMatchIds.filter((_, i) => [0, 3, 4].includes(i)),
     },
+    {
+      id: 'demo-player-rohan',
+      name: 'Rohan Verma',
+      jerseyNumber: 2,
+      role: 'Batsman',
+      battingStyle: 'Left Hand',
+      bowlingStyle: 'Does Not Bowl',
+      age: 26,
+      phone: '9871112222',
+      notes: 'Solid top-order anchor. Plays spin well.',
+      profilePicture: _generateSvgAvatar('Rohan Verma', 2, 110),
+      createdAt: new Date(now.getFullYear(), now.getMonth() - 2, 5).toISOString(),
+      linkedAnalyses: demoMatchIds.filter((_, i) => [1].includes(i)),
+    },
+    {
+      id: 'demo-player-jay',
+      name: 'Jay Patel',
+      jerseyNumber: 13,
+      role: 'All-Rounder',
+      battingStyle: 'Right Hand',
+      bowlingStyle: 'Right Arm Medium',
+      age: 24,
+      phone: '9872223333',
+      notes: 'Dynamic all-rounder. Hard hitter in middle overs.',
+      profilePicture: _generateSvgAvatar('Jay Patel', 13, 80),
+      createdAt: new Date(now.getFullYear(), now.getMonth() - 2, 6).toISOString(),
+      linkedAnalyses: demoMatchIds.filter((_, i) => [1].includes(i)),
+    },
+    {
+      id: 'demo-player-amit',
+      name: 'Amit Shah',
+      jerseyNumber: 10,
+      role: 'Bowler',
+      battingStyle: 'Right Hand',
+      bowlingStyle: 'Right Arm Medium',
+      age: 25,
+      phone: '9873334444',
+      notes: 'Disciplined medium pacer. Moves the ball both ways.',
+      profilePicture: _generateSvgAvatar('Amit Shah', 10, 160),
+      createdAt: new Date(now.getFullYear(), now.getMonth() - 2, 7).toISOString(),
+      linkedAnalyses: demoMatchIds.filter((_, i) => [1].includes(i)),
+    },
+    {
+      id: 'demo-player-sanjay',
+      name: 'Sanjay Kumar',
+      jerseyNumber: 8,
+      role: 'All-Rounder',
+      battingStyle: 'Right Hand',
+      bowlingStyle: 'Right Arm Off-Spin',
+      age: 28,
+      phone: '9874445555',
+      notes: 'Power hitter in death overs. Useful off-spin option.',
+      profilePicture: _generateSvgAvatar('Sanjay Kumar', 8, 230),
+      createdAt: new Date(now.getFullYear(), now.getMonth() - 2, 8).toISOString(),
+      linkedAnalyses: demoMatchIds.filter((_, i) => [1].includes(i)),
+    },
+    {
+      id: 'demo-player-arjun-n',
+      name: 'Arjun Naik',
+      jerseyNumber: 18,
+      role: 'Batsman',
+      battingStyle: 'Right Hand',
+      bowlingStyle: 'Does Not Bowl',
+      age: 23,
+      phone: '9875556666',
+      notes: 'Attacking opener. Quick scorer in powerplays.',
+      profilePicture: _generateSvgAvatar('Arjun Naik', 18, 280),
+      createdAt: new Date(now.getFullYear(), now.getMonth() - 1, 10).toISOString(),
+      linkedAnalyses: demoMatchIds.filter((_, i) => [2].includes(i)),
+    },
+    {
+      id: 'demo-player-deepak',
+      name: 'Deepak Shetty',
+      jerseyNumber: 12,
+      role: 'Batsman',
+      battingStyle: 'Right Hand',
+      bowlingStyle: 'Does Not Bowl',
+      age: 22,
+      phone: '9876667777',
+      notes: 'Reliable middle-order batsman. Excellent strike rotation.',
+      profilePicture: _generateSvgAvatar('Deepak Shetty', 12, 340),
+      createdAt: new Date(now.getFullYear(), now.getMonth() - 1, 11).toISOString(),
+      linkedAnalyses: demoMatchIds.filter((_, i) => [2].includes(i)),
+    },
+    {
+      id: 'demo-player-vikram',
+      name: 'Vikram Dessai',
+      jerseyNumber: 4,
+      role: 'Bowler',
+      battingStyle: 'Right Hand',
+      bowlingStyle: 'Right Arm Fast',
+      age: 24,
+      phone: '9877778888',
+      notes: 'Opening bowler. Generates good pace and bounce.',
+      profilePicture: _generateSvgAvatar('Vikram Dessai', 4, 190),
+      createdAt: new Date(now.getFullYear(), now.getMonth() - 1, 12).toISOString(),
+      linkedAnalyses: demoMatchIds.filter((_, i) => [2].includes(i)),
+    },
+    {
+      id: 'demo-player-nikhil',
+      name: 'Nikhil Kamat',
+      jerseyNumber: 15,
+      role: 'Batsman',
+      battingStyle: 'Right Hand',
+      bowlingStyle: 'Does Not Bowl',
+      age: 25,
+      phone: '9878889999',
+      notes: 'Middle-order batsman. Strong backfoot player.',
+      profilePicture: _generateSvgAvatar('Nikhil Kamat', 15, 290),
+      createdAt: new Date(now.getFullYear(), now.getMonth() - 1, 13).toISOString(),
+      linkedAnalyses: demoMatchIds.filter((_, i) => [2].includes(i)),
+    },
+    {
+      id: 'demo-player-prasad',
+      name: 'Prasad Gaonkar',
+      jerseyNumber: 6,
+      role: 'All-Rounder',
+      battingStyle: 'Right Hand',
+      bowlingStyle: 'Right Arm Medium',
+      age: 21,
+      phone: '9879990000',
+      notes: 'Exciting young prospect. Good fielder.',
+      profilePicture: _generateSvgAvatar('Prasad Gaonkar', 6, 20),
+      createdAt: new Date(now.getFullYear(), now.getMonth() - 1, 14).toISOString(),
+      linkedAnalyses: demoMatchIds.filter((_, i) => [2].includes(i)),
+    }
   ];
 
-  _writePlayers(demoPlayers);
+  const updated = [...existing];
+  demoPlayers.forEach((dp) => {
+    const foundIdx = updated.findIndex(
+      (p) => p.id === dp.id || p.name.trim().toLowerCase() === dp.name.trim().toLowerCase()
+    );
+    if (foundIdx === -1) {
+      updated.push(dp);
+      modified = true;
+    } else {
+      // Merge matching player, and preserve/merge their linkedAnalyses
+      const existingPlayer = updated[foundIdx];
+      const mergedAnalyses = Array.from(new Set([
+        ...(existingPlayer.linkedAnalyses || []),
+        ...(dp.linkedAnalyses || [])
+      ]));
+
+      // Update linkedAnalyses if changed
+      if (JSON.stringify(existingPlayer.linkedAnalyses) !== JSON.stringify(mergedAnalyses)) {
+        updated[foundIdx] = {
+          ...existingPlayer,
+          linkedAnalyses: mergedAnalyses
+        };
+        modified = true;
+      }
+    }
+  });
+
+  if (modified) {
+    _writePlayers(updated);
+  }
+
   localStorage.setItem(DEMO_PLAYERS_SEEDED_KEY, 'true');
-  return true;
+  return modified;
 };

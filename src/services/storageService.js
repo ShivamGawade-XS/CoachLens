@@ -356,7 +356,7 @@ export const storageService = {
               { name: 'Karan Nair',   role: 'Batsman',      jerseyNo: '5',  phone: '9856789012' },
               { name: 'Rohit Menon',  role: 'Wicketkeeper', jerseyNo: '1',  phone: '9867890123' },
               { name: 'Arjun Das',    role: 'Bowler',       jerseyNo: '9',  phone: '' },
-              { name: 'Priya Singh',  role: 'Bowler',       jerseyNo: '17', phone: '' },
+              { name: 'Priya Desai',  role: 'Bowler',       jerseyNo: '17', phone: '' },
               { name: 'Manish Tiwari', role: 'Allrounder', jerseyNo: '8',  phone: '' },
               { name: 'Sanjay Verma', role: 'Batsman',     jerseyNo: '4',  phone: '' },
               { name: 'Nikhil Rao',   role: 'Bowler',      jerseyNo: '19', phone: '' },
