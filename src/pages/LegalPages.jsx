@@ -51,3 +51,9 @@ export function TermsOfService() {
     </PageWrapper>
   );
 }
+
+export default function LegalPages({ page }) {
+  if (page === 'privacy') return <PrivacyPolicy />;
+  if (page === 'terms') return <TermsOfService />;
+  return <About />;
+}

@@ -138,19 +138,7 @@ Formatting: Use standard markdown headers (##), bold text, and bullet points. Do
 Match Data:
 {matchData}`;
 
-const getHeaders = () => {
-  let apiKey = import.meta.env.VITE_GROQ_API_KEY;
-  if (!apiKey && typeof window !== 'undefined') {
-    apiKey = localStorage.getItem('GROQ_API_KEY');
-  }
-  const headers = {
-    "Content-Type": "application/json"
-  };
-  if (apiKey) {
-    headers["Authorization"] = `Bearer ${apiKey}`;
-  }
-  return headers;
-};
+const getHeaders = () => ({ "Content-Type": "application/json" });
 
 export const groqService = {
   getTurningPoint: async (overData) => {

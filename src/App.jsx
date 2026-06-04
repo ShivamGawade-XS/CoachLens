@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useCallback, createContext, useContext } from 'react';
+import React, { useState, useCallback, createContext, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { X, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import { usePlan } from './hooks/usePlan';
-import UpgradeModal from './components/UpgradeModal/UpgradeModal';
-import PromoModal from './components/PromoModal/PromoModal';
 
 export const PlanContext = createContext(null);
 
@@ -11,27 +9,40 @@ export const PlanContext = createContext(null);
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Layouts
+// Layouts (always needed, not lazy)
 import PublicLayout from './components/Layout/PublicLayout';
 import AppLayout from './components/Layout/AppLayout';
 
-// Pages
+// Eagerly loaded (above-fold critical path)
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
-import Dashboard from './components/Dashboard/Dashboard';
-import AnalysisFlow from './pages/AnalysisFlow';
-import MatchResults from './pages/MatchResults';
-import PublicPlayerCard from './pages/PublicPlayerCard';
-import { About, PrivacyPolicy, TermsOfService } from './pages/LegalPages';
-import { Features, Pricing, Changelog, Documentation, ApiReference, Community, Blog } from './pages/MarketingPages';
-import Teams, { Settings } from './pages/AppPages';
-import TeamProfile from './pages/TeamProfile';
-import PlayerProfile from './pages/PlayerProfile';
-import ChatAssistant from './components/ChatAssistant/ChatAssistant';
-import CoachTools from './pages/CoachTools';
-import TeamRankings from './pages/TeamRankings';
-import ShareView from './pages/ShareView';
+
+// Lazy-loaded pages (split heavy chunks)
+const Dashboard      = lazy(() => import('./components/Dashboard/Dashboard'));
+const AnalysisFlow   = lazy(() => import('./pages/AnalysisFlow'));
+const MatchResults   = lazy(() => import('./pages/MatchResults'));
+const TeamProfile    = lazy(() => import('./pages/TeamProfile'));
+const PlayerProfile  = lazy(() => import('./pages/PlayerProfile'));
+const TeamRankings   = lazy(() => import('./pages/TeamRankings'));
+const CoachTools     = lazy(() => import('./pages/CoachTools'));
+const ShareView      = lazy(() => import('./pages/ShareView'));
+const PublicPlayerCard = lazy(() => import('./pages/PublicPlayerCard'));
+const AppPages       = lazy(() => import('./pages/AppPages'));
+const ChatAssistant  = lazy(() => import('./components/ChatAssistant/ChatAssistant'));
+const UpgradeModal   = lazy(() => import('./components/UpgradeModal/UpgradeModal'));
+const PromoModal     = lazy(() => import('./components/PromoModal/PromoModal'));
+
+// Legal & Marketing (rarely visited)
+const LegalPages     = lazy(() => import('./pages/LegalPages'));
+const MarketingPages = lazy(() => import('./pages/MarketingPages'));
+
+// Page-level fallback
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-[60vh]">
+    <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 /* ─── Global Toast System ─── */
 function Toast({ message, type = 'info', onClose }) {
@@ -103,66 +114,70 @@ function App() {
           ))}
         </div>
 
-        {showUpgrade && (
-          <UpgradeModal
-            onClose={() => setShowUpgrade(false)}
-            onGetPlan={() => {
-              window.open('https://wa.me/919999999999?text=Hi%2C%20I%27d%20like%20to%20get%20the%20CoachLens%20Team%20Plan%20%E2%80%94%20%E2%82%B999%2Fmonth', '_blank');
-            }}
-          />
-        )}
+        <Suspense fallback={null}>
+          {showUpgrade && (
+            <UpgradeModal
+              onClose={() => setShowUpgrade(false)}
+              onGetPlan={() => {
+                window.open('https://wa.me/919999999999?text=Hi%2C%20I%27d%20like%20to%20get%20the%20CoachLens%20Team%20Plan%20%E2%80%94%20%E2%82%B999%2Fmonth', '_blank');
+              }}
+            />
+          )}
 
-        {showPromo && (
-          <PromoModal
-            onClose={() => setShowPromo(false)}
-            onRedeem={(code) => {
-              const ok = plan.redeemPromo(code);
-              if (ok) addToast('🎉 Team Plan activated!', 'success');
-              return ok;
-            }}
-          />
-        )}
+          {showPromo && (
+            <PromoModal
+              onClose={() => setShowPromo(false)}
+              onRedeem={(code) => {
+                const ok = plan.redeemPromo(code);
+                if (ok) addToast('🎉 Team Plan activated!', 'success');
+                return ok;
+              }}
+            />
+          )}
 
-        <ChatAssistant />
+          <ChatAssistant />
+        </Suspense>
 
-        <Routes>
-          {/* Public Routes */}
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/terms" element={<TermsOfService />} />
-            <Route path="/features" element={<Features />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/changelog" element={<Changelog />} />
-            <Route path="/docs" element={<Documentation />} />
-            <Route path="/api" element={<ApiReference />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/blog" element={<Blog />} />
-          </Route>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            {/* Public Routes */}
+            <Route element={<PublicLayout />}>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/about" element={<LegalPages page="about" />} />
+              <Route path="/privacy" element={<LegalPages page="privacy" />} />
+              <Route path="/terms" element={<LegalPages page="terms" />} />
+              <Route path="/features" element={<MarketingPages page="features" />} />
+              <Route path="/pricing" element={<MarketingPages page="pricing" />} />
+              <Route path="/changelog" element={<MarketingPages page="changelog" />} />
+              <Route path="/docs" element={<MarketingPages page="docs" />} />
+              <Route path="/api" element={<MarketingPages page="api" />} />
+              <Route path="/community" element={<MarketingPages page="community" />} />
+              <Route path="/blog" element={<MarketingPages page="blog" />} />
+            </Route>
 
-          {/* Auth Routes (standalone, no layout wrapper) */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/card" element={<PublicPlayerCard />} />
-          <Route path="/share/:id" element={<ShareView />} />
+            {/* Auth Routes */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/card" element={<PublicPlayerCard />} />
+            <Route path="/share/:id" element={<ShareView />} />
 
-          {/* Authenticated App Routes */}
-          <Route element={<ProtectedRoute><AppLayout addToast={addToast} /></ProtectedRoute>}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/analyze" element={<AnalysisFlow addToast={addToast} />} />
-            <Route path="/match/:id" element={<MatchResults />} />
-            <Route path="/teams" element={<Teams addToast={addToast} />} />
-            <Route path="/teams/:teamId" element={<TeamProfile />} />
-            <Route path="/player/:playerName" element={<PlayerProfile />} />
-            <Route path="/settings" element={<Settings addToast={addToast} />} />
-            <Route path="/tools" element={<CoachTools />} />
-            <Route path="/rankings" element={<TeamRankings />} />
-          </Route>
+            {/* Authenticated App Routes */}
+            <Route element={<ProtectedRoute><AppLayout addToast={addToast} /></ProtectedRoute>}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/analyze" element={<AnalysisFlow addToast={addToast} />} />
+              <Route path="/match/:id" element={<MatchResults />} />
+              <Route path="/teams" element={<AppPages page="teams" addToast={addToast} />} />
+              <Route path="/teams/:teamId" element={<TeamProfile />} />
+              <Route path="/player/:playerName" element={<PlayerProfile />} />
+              <Route path="/settings" element={<AppPages page="settings" addToast={addToast} />} />
+              <Route path="/tools" element={<CoachTools />} />
+              <Route path="/rankings" element={<TeamRankings />} />
+            </Route>
 
-          {/* 404 Fallback */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
+            {/* 404 Fallback */}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </AuthProvider>
     </PlanContext.Provider>
@@ -170,3 +185,4 @@ function App() {
 }
 
 export default App;
+

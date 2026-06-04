@@ -67,12 +67,7 @@ export default function SquadRotationPlanner() {
     setError('');
     setResult(null);
 
-    try {
-      let apiKey = import.meta.env.VITE_GROQ_API_KEY;
-      if (!apiKey && typeof window !== 'undefined') apiKey = localStorage.getItem('GROQ_API_KEY');
-      if (!apiKey) throw new Error("No Groq API key configured.");
-
-      const prompt = `You are an expert cricket tournament strategist planning squad rotation across a multi-match tournament.
+    const prompt = `You are an expert cricket tournament strategist planning squad rotation across a multi-match tournament.
 
 Squad (${validSquad.length} players):
 ${validSquad.map((p, i) => `${i+1}. ${p.name} — ${p.role} — Fitness: ${p.fitness}`).join('\n')}
@@ -103,13 +98,15 @@ Return ONLY a JSON object:
   "strategy_note": "1-2 sentence overall tournament strategy"
 }`;
 
-      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    try {
+      const response = await fetch("/api/groq", {
         method: "POST",
-        headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: "llama-3.1-8b-instant",
           messages: [{ role: "user", content: prompt }],
-          temperature: 0.3, max_tokens: 1500,
+          temperature: 0.3,
+          max_tokens: 1500,
           response_format: { type: "json_object" }
         })
       });

@@ -185,3 +185,13 @@ export function Blog() {
     </PageWrapper>
   );
 }
+
+export default function MarketingPages({ page }) {
+  if (page === 'pricing') return <Pricing />;
+  if (page === 'changelog') return <Changelog />;
+  if (page === 'docs') return <Documentation />;
+  if (page === 'api') return <ApiReference />;
+  if (page === 'community') return <Community />;
+  if (page === 'blog') return <Blog />;
+  return <Features />;
+}
