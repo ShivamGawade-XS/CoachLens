@@ -17,7 +17,35 @@ CRITICAL: Generate all text fields strictly adhering to the requested Tone.
 - If Encouraging: Focus on positives, potential, and constructive learning.
 - If Brutal Honest: Do not hold back. Criticize poor numbers fiercely, use harsh truths.
 
-You must follow the JSON schema specified in the response_format. Generate player tags strictly from the enum list. Position must represent the key stat for the player (e.g., "45 (30)" or "3/15 (4)").`;
+You must return a JSON object matching this exact structure:
+{
+  "players": [
+    {
+      "name": "Player Name",
+      "role": "Batsman/Bowler/Allrounder/Wicketkeeper",
+      "position": "Key stat (e.g. '45 (30)' or '3/15 (4)') representing their match contribution",
+      "tag": "Aggressor" | "Anchor" | "Improving" | "Liability",
+      "whatWorked": "specific numbers-backed observation",
+      "whatFailed": "specific numbers-backed critique",
+      "nextMatch": "tactical focus instruction",
+      "drill": "concrete practice drill recommendation"
+    }
+  ],
+  "teamReport": {
+    "turningPoint": "momentum shift description citing a specific over and numbers",
+    "strongestPartnership": "partnership description with names and runs",
+    "bowlingInefficiency": "bowler rotation/inefficiency critique with overs/economy",
+    "scoringPattern": "team run scoring pattern observation"
+  },
+  "coachBrief": {
+    "battingOrder": "batting order swap suggestion with reason",
+    "bowlingRotation": "bowling changes recommendation with reason",
+    "playerOnNotice": "name of player on notice with reason",
+    "tacticalFocus": "core tactical focus for the next game"
+  }
+}
+
+Generate player tags strictly from the enum list ["Aggressor", "Anchor", "Improving", "Liability"].`;
 
 export default async function handler(req) {
   if (req.method !== 'POST') {
@@ -29,7 +57,6 @@ export default async function handler(req) {
 
   const upstashUrl = process.env.UPSTASH_REDIS_REST_URL;
   const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN;
-  const isProd = process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production';
 
   if (upstashUrl && upstashToken) {
     const ratelimit = new Ratelimit({
@@ -56,7 +83,7 @@ export default async function handler(req) {
     });
   }
 
-  const apiKey = process.env.GROQ_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY || process.env.VITE_GROQ_API_KEY;
   if (!apiKey) {
     return new Response(JSON.stringify({ error: 'Groq API key not configured on server' }), {
       status: 500,
@@ -88,60 +115,7 @@ export default async function handler(req) {
         temperature: 0.3,
         stream: true,
         response_format: {
-          type: "json_schema",
-          json_schema: {
-            name: "analysis_response",
-            schema: {
-              type: "object",
-              properties: {
-                players: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      name: { type: "string" },
-                      role: { type: "string" },
-                      position: { type: "string" },
-                      tag: {
-                        type: "string",
-                        enum: ["Aggressor", "Anchor", "Improving", "Liability"]
-                      },
-                      whatWorked: { type: "string" },
-                      whatFailed: { type: "string" },
-                      nextMatch: { type: "string" },
-                      drill: { type: "string" }
-                    },
-                    required: ["name", "role", "position", "tag", "whatWorked", "whatFailed", "nextMatch", "drill"],
-                    additionalProperties: false
-                  }
-                },
-                teamReport: {
-                  type: "object",
-                  properties: {
-                    turningPoint: { type: "string" },
-                    strongestPartnership: { type: "string" },
-                    bowlingInefficiency: { type: "string" },
-                    scoringPattern: { type: "string" }
-                  },
-                  required: ["turningPoint", "strongestPartnership", "bowlingInefficiency", "scoringPattern"],
-                  additionalProperties: false
-                },
-                coachBrief: {
-                  type: "object",
-                  properties: {
-                    battingOrder: { type: "string" },
-                    bowlingRotation: { type: "string" },
-                    playerOnNotice: { type: "string" },
-                    tacticalFocus: { type: "string" }
-                  },
-                  required: ["battingOrder", "bowlingRotation", "playerOnNotice", "tacticalFocus"],
-                  additionalProperties: false
-                }
-              },
-              required: ["players", "teamReport", "coachBrief"],
-              additionalProperties: false
-            }
-          }
+          type: "json_object"
         }
       })
     });

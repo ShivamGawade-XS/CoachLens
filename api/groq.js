@@ -16,7 +16,6 @@ export default async function handler(req) {
   // Rate Limiting
   const upstashUrl = process.env.UPSTASH_REDIS_REST_URL;
   const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN;
-  const isProd = process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production';
 
   if (upstashUrl && upstashToken) {
     const ratelimit = new Ratelimit({
@@ -34,7 +33,7 @@ export default async function handler(req) {
     }
   }
 
-  const apiKey = process.env.GROQ_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY || process.env.VITE_GROQ_API_KEY;
   if (!apiKey) {
     return new Response(JSON.stringify({ error: 'Groq API key not configured on server' }), {
       status: 500,
