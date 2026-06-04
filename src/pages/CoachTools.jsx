@@ -8,6 +8,7 @@ import ShotWeaknessMapper from '../components/ShotWeaknessMapper/ShotWeaknessMap
 import ScorecardScanner from '../components/ScorecardScanner/ScorecardScanner';
 import SquadRotationPlanner from '../components/SquadRotationPlanner/SquadRotationPlanner';
 import ChokeDetector from '../components/ChokeDetector/ChokeDetector';
+import ErrorBoundary from '../components/ErrorBoundary';
 
 const tools = [
   { key: 'live', label: 'Live Assistant', icon: <Radio size={18} />, description: 'Ball-by-ball dugout mode' },
@@ -55,27 +56,29 @@ export default function CoachTools() {
 
         {/* Tool Content */}
         <div className="flex-1 w-full max-w-3xl">
-          {activeTool === 'live' && <LiveMatchAssistant />}
-          {activeTool === 'target' && <TargetScoreAdvisor />}
-          {activeTool === 'bestxi' && <BestXISelector />}
-          {activeTool === 'compare' && <PlayerComparison />}
-          {activeTool === 'weakness' && <ShotWeaknessMapper />}
-          {activeTool === 'rotate' && <SquadRotationPlanner />}
-          {activeTool === 'choke' && <ChokeDetector />}
-          {activeTool === 'scanner' && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
-                  <Camera size={20} />
+          <ErrorBoundary>
+            {activeTool === 'live' && <LiveMatchAssistant />}
+            {activeTool === 'target' && <TargetScoreAdvisor />}
+            {activeTool === 'bestxi' && <BestXISelector />}
+            {activeTool === 'compare' && <PlayerComparison />}
+            {activeTool === 'weakness' && <ShotWeaknessMapper />}
+            {activeTool === 'rotate' && <SquadRotationPlanner />}
+            {activeTool === 'choke' && <ChokeDetector />}
+            {activeTool === 'scanner' && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
+                    <Camera size={20} />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-display text-textPrimary">Scorecard Photo Scanner</h2>
+                    <p className="text-xs text-textTertiary font-mono">OPTICAL CHARACTER RECOGNITION (OCR)</p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-lg font-display text-textPrimary">Scorecard Photo Scanner</h2>
-                  <p className="text-xs text-textTertiary font-mono">OPTICAL CHARACTER RECOGNITION (OCR)</p>
-                </div>
+                <ScorecardScanner />
               </div>
-              <ScorecardScanner />
-            </div>
-          )}
+            )}
+          </ErrorBoundary>
         </div>
       </div>
     </div>
