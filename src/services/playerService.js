@@ -496,8 +496,13 @@ export const seedDemoPlayers = (demoMatchIds = []) => {
         ...(dp.linkedAnalyses || [])
       ]));
 
-      // Update linkedAnalyses if changed
-      if (JSON.stringify(existingPlayer.linkedAnalyses) !== JSON.stringify(mergedAnalyses)) {
+      // Update linkedAnalyses only if the merged set contains new entries
+      const existingSet = existingPlayer.linkedAnalyses || [];
+      const hasNewEntries =
+        mergedAnalyses.length !== existingSet.length ||
+        mergedAnalyses.some((id) => !existingSet.includes(id));
+
+      if (hasNewEntries) {
         updated[foundIdx] = {
           ...existingPlayer,
           linkedAnalyses: mergedAnalyses

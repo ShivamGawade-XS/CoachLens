@@ -1,10 +1,8 @@
-/* eslint-disable react-refresh/only-export-components */
-import React, { useState, useEffect, useCallback, createContext, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { X, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import { usePlan } from './hooks/usePlan';
-
-export const PlanContext = createContext(null);
+import PlanContext from './contexts/PlanContext';
 
 // Auth
 import { AuthProvider } from './contexts/AuthContext';

@@ -85,6 +85,8 @@ export default async function handler(req) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
+        // Primary analysis uses the larger 70b model for deeper reasoning.
+        // Lightweight tool features (groqService.js) use the faster 8b model (GROQ_MODEL constant).
         model: "llama-3.3-70b-versatile",
         messages: [
           { role: "system", content: prompt },

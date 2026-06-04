@@ -7,5 +7,5 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Utility to check if we are actually connected or using placeholders
 export const isSupabaseConfigured = () => {
-  return import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY;
+  return !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
 };

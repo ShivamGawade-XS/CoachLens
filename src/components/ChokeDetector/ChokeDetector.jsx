@@ -44,8 +44,8 @@ export default function ChokeDetector() {
           playerStats[p.name] = {
             name: p.name,
             role: p.role,
-            league: { matches: 0, totalImpact: 0, runs: 0, balls: 0 },
-            knockout: { matches: 0, totalImpact: 0, runs: 0, balls: 0 }
+            league: { matches: 0, totalImpact: 0, runs: 0, balls: 0, innings: 0 },
+            knockout: { matches: 0, totalImpact: 0, runs: 0, balls: 0, innings: 0 }
           };
         }
 
@@ -58,6 +58,7 @@ export default function ChokeDetector() {
         if (matchStr) {
           statObj.runs += parseInt(matchStr[1]);
           statObj.balls += parseInt(matchStr[2]);
+          statObj.innings++;
         }
       });
     });
@@ -70,8 +71,8 @@ export default function ChokeDetector() {
         const knockoutImpact = p.knockout.totalImpact / p.knockout.matches;
         const impactDrop = leagueImpact - knockoutImpact;
         
-        const leagueAvg = p.league.runs > 0 ? (p.league.runs / p.league.matches).toFixed(1) : '--';
-        const knockoutAvg = p.knockout.runs > 0 ? (p.knockout.runs / p.knockout.matches).toFixed(1) : '--';
+        const leagueAvg = p.league.innings > 0 ? (p.league.runs / p.league.innings).toFixed(1) : '--';
+        const knockoutAvg = p.knockout.innings > 0 ? (p.knockout.runs / p.knockout.innings).toFixed(1) : '--';
         
         // Only include if there's a significant drop
         if (impactDrop >= 1.5 || (leagueAvg !== '--' && knockoutAvg !== '--' && parseFloat(leagueAvg) - parseFloat(knockoutAvg) > 10)) {
@@ -149,7 +150,7 @@ export default function ChokeDetector() {
                     <span className="text-2xl font-display text-textPrimary">{p.leagueImpact}</span>
                     <span className="text-xs font-mono text-textSecondary">avg impact</span>
                   </div>
-                  {p.leagueAvg !== '--' && <div className="text-xs font-mono text-textSecondary">~{p.leagueAvg} runs/match</div>}
+                  {p.leagueAvg !== '--' && <div className="text-xs font-mono text-textSecondary">~{p.leagueAvg} runs/inning</div>}
                 </div>
                 <div>
                   <div className="text-[10px] uppercase tracking-wider font-mono text-textTertiary mb-3 flex items-center gap-1"><Trophy size={12}/> Knockout Matches ({p.knockout.matches})</div>
@@ -157,7 +158,7 @@ export default function ChokeDetector() {
                     <span className="text-2xl font-display text-liability-text">{p.knockoutImpact}</span>
                     <span className="text-xs font-mono text-textSecondary">avg impact</span>
                   </div>
-                  {p.knockoutAvg !== '--' && <div className="text-xs font-mono text-liability-text">~{p.knockoutAvg} runs/match</div>}
+                  {p.knockoutAvg !== '--' && <div className="text-xs font-mono text-liability-text">~{p.knockoutAvg} runs/inning</div>}
                 </div>
               </div>
               <div className="px-6 py-4 bg-surface2/50 border-t border-border">

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ScoreboardInput from '../components/ScoreboardInput/ScoreboardInput';
 import { groqService } from '../services/groqService';
 import { storageService } from '../services/storageService';
-import { PlanContext } from '../App';
+import PlanContext from '../contexts/PlanContext';
 
 function LoadingScreen({ elapsed, thinkingText }) {
   const textareaRef = React.useRef(null);

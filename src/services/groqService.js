@@ -407,5 +407,61 @@ Return ONLY a JSON object:
     } catch {
       return { playing_xi: [], dropped: [], team_balance: "Unable to parse AI response" };
     }
+  },
+
+  getSquadRotationPlan: async (squad, matches) => {
+    const prompt = `You are an expert cricket tournament strategist planning squad rotation across a multi-match tournament.
+
+Squad (${squad.length} players):
+${squad.map((p, i) => `${i+1}. ${p.name} — ${p.role} — Fitness: ${p.fitness}`).join('\n')}
+
+Tournament Schedule (${matches.length} matches):
+${matches.map((m, i) => `Match ${i+1}: vs ${m.opponent} (${m.type})${m.date ? ' on ' + m.date : ''}`).join('\n')}
+
+Rules:
+- Select a playing XI for EACH match.
+- Rotate pace bowlers — max 3 consecutive matches for fast bowlers.
+- Rest key players before knockout matches.
+- Consider fitness status when selecting.
+- For each match, explain 1-2 key rotation decisions.
+
+Return ONLY a JSON object:
+{
+  "rotation_plan": [
+    {
+      "match": "vs Opponent (Type)",
+      "playing_xi": ["player names"],
+      "rested": ["player names"],
+      "key_decisions": ["1-sentence rotation reasoning"]
+    }
+  ],
+  "workload_summary": [
+    { "name": "player name", "matches_playing": <number>, "matches_rested": <number>, "note": "brief note" }
+  ],
+  "strategy_note": "1-2 sentence overall tournament strategy"
+}`;
+
+    const response = await fetch("/api/groq", {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify({
+        model: GROQ_MODEL,
+        messages: [{ role: "user", content: prompt }],
+        temperature: GROQ_TEMPERATURE.TACTICAL,
+        max_tokens: 1500,
+        response_format: { type: "json_object" }
+      })
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => null);
+      throw new Error(`API error: ${errData?.error?.message || response.statusText}`);
+    }
+    const data = await response.json();
+    try {
+      return JSON.parse(data.choices[0].message.content);
+    } catch {
+      return { rotation_plan: [], workload_summary: [], strategy_note: "Unable to parse AI response" };
+    }
   }
 };

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera, Upload, Loader2, Check, AlertCircle, RotateCcw, Copy, CheckCircle, Zap, Pencil } from 'lucide-react';
 import { groqService } from '../../services/groqService';
@@ -83,6 +83,14 @@ export default function ScorecardScanner({ onScanComplete }) {
   const [analyzeStep, setAnalyzeStep] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const fileRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (preview && preview.startsWith('blob:')) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];

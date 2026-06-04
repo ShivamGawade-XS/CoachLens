@@ -21,8 +21,11 @@ const SEEDED_KEY = STORAGE_KEYS.SEEDED;
 const MIGRATION_KEY = STORAGE_KEYS.SAMPLE_PATCH;
 
 // ── One-time migration: patch existing sample matches that are missing team_summary / coach_decisions ──
-(function migrateSampleMatches() {
-  if (localStorage.getItem(MIGRATION_KEY)) return;
+// Called lazily on the first getMatches() invocation to avoid side-effects at module import time.
+let _migrationRun = false;
+function migrateSampleMatches() {
+  if (_migrationRun || localStorage.getItem(MIGRATION_KEY)) { _migrationRun = true; return; }
+  _migrationRun = true;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return;
@@ -119,13 +122,14 @@ const MIGRATION_KEY = STORAGE_KEYS.SAMPLE_PATCH;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(matches));
     }
     localStorage.setItem(MIGRATION_KEY, 'true');
-  } catch (e) {
-    console.warn('Migration failed:', e);
+  } catch {
+    // Non-critical: migration failure does not block app startup
   }
-})();
+}
 
 export const storageService = {
   getMatches: async () => {
+    migrateSampleMatches();
     try {
       const localData = localStorage.getItem(STORAGE_KEY);
       const localMatches = localData ? JSON.parse(localData) : [];
@@ -162,7 +166,9 @@ export const storageService = {
           });
           return merged;
         } else {
-          console.warn("Supabase fetch failed or table missing, using local storage:", error);
+          if (import.meta.env.DEV) {
+            console.warn("Supabase fetch failed or table missing, using local storage:", error);
+          }
         }
       }
       return localMatches;
@@ -204,7 +210,9 @@ export const storageService = {
             processing_time: newMatch.processingTime || 0
           });
         if (error) {
-          console.warn("Supabase save warning:", error);
+          if (import.meta.env.DEV) {
+            console.warn("Supabase save warning:", error);
+          }
         }
       }
 
@@ -256,7 +264,9 @@ export const storageService = {
           .eq('id', id)
           .eq('user_id', userId);
         if (error) {
-          console.warn("Supabase update warning:", error);
+          if (import.meta.env.DEV) {
+            console.warn("Supabase update warning:", error);
+          }
         }
       }
       return updatedMatch;
@@ -280,7 +290,9 @@ export const storageService = {
           .eq('id', id)
           .eq('user_id', userId);
         if (error) {
-          console.warn("Supabase delete warning:", error);
+          if (import.meta.env.DEV) {
+            console.warn("Supabase delete warning:", error);
+          }
         }
       }
       return true;
@@ -534,7 +546,9 @@ export const storageService = {
         }
       }
     } catch (err) {
-      console.warn("Failed to sync teams to Supabase:", err);
+      if (import.meta.env.DEV) {
+        console.warn("Failed to sync teams to Supabase:", err);
+      }
     }
 
     // 2. Sync local matches
@@ -562,7 +576,9 @@ export const storageService = {
         }
       }
     } catch (err) {
-      console.warn("Failed to sync matches to Supabase:", err);
+      if (import.meta.env.DEV) {
+        console.warn("Failed to sync matches to Supabase:", err);
+      }
     }
   },
 
@@ -584,7 +600,9 @@ export const storageService = {
           });
       }
     } catch (err) {
-      console.warn("Background teams sync failed:", err);
+      if (import.meta.env.DEV) {
+        console.warn("Background teams sync failed:", err);
+      }
     }
   },
 
@@ -609,7 +627,9 @@ export const storageService = {
         return mappedTeams;
       }
     } catch (err) {
-      console.warn("Failed to fetch teams from Supabase:", err);
+      if (import.meta.env.DEV) {
+        console.warn("Failed to fetch teams from Supabase:", err);
+      }
     }
     return null;
   }

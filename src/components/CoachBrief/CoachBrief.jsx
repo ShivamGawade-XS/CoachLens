@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Download, AlertTriangle, Lock, Zap } from 'lucide-react';
 import TossAdvisor from './TossAdvisor';
-import { PlanContext } from '../../App';
+import PlanContext from '../../contexts/PlanContext';
 
 const decisions = [
   { num: '01', key: 'batting_order_change', label: 'Batting Order', icon: '🏏' },

@@ -41,8 +41,14 @@ export default async function handler(req) {
     });
   }
 
-  // Generate a signed token via HMAC-SHA256
-  const secret = process.env.PLAN_SECRET || process.env.GROQ_API_KEY || 'coachlens-fallback-secret';
+  // PLAN_SECRET is a dedicated signing key — never fall back to other API keys.
+  const secret = process.env.PLAN_SECRET;
+  if (!secret) {
+    return new Response(JSON.stringify({ valid: false, error: 'Plan signing key not configured' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
   const payload = JSON.stringify({
     plan: 'team',
     grantedAt: Date.now(),

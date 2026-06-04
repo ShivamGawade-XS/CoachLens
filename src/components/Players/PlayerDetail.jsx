@@ -23,6 +23,13 @@ const TAG_COLORS = {
   Liability: 'bg-liability-bg text-liability-text border-liability-border',
 };
 
+const TAG_ACCENT_BG = {
+  Aggressor: 'bg-aggressor-text',
+  Anchor:    'bg-anchor-text',
+  Improving: 'bg-improving-text',
+  Liability: 'bg-liability-text',
+};
+
 export default function PlayerDetail() {
   const { playerId } = useParams();
   const navigate = useNavigate();
@@ -265,8 +272,8 @@ export default function PlayerDetail() {
               >
                 {/* Left accent bar */}
                 <div className={`absolute left-0 top-0 bottom-0 w-1 ${
-                  match.tag && TAG_COLORS[match.tag]
-                    ? TAG_COLORS[match.tag].split(' ')[1]
+                  match.tag && TAG_ACCENT_BG[match.tag]
+                    ? TAG_ACCENT_BG[match.tag]
                     : 'bg-surface3'
                 }`} />
 

@@ -309,7 +309,7 @@
   .grid.grid-cols-4:not(.grid-cols-4-keep),
   .grid.grid-cols-3:not(.grid-cols-3-keep),
   .grid.grid-cols-2:not(.grid-cols-2-keep) {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: 1fr !important;
   }
 
   /* Trust bar vertical stack */

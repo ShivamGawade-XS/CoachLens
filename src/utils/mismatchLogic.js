@@ -76,7 +76,9 @@ export const detectRoleMismatches = (players, rawScorecard) => {
       }
       
       // Rule: Anchor/Improving bowler not given full quota when economical
-      if ((player.tag === 'Anchor' || player.tag === 'Improving') && statText.includes('econ') && failedText.includes('overs')) {
+      // Require specific underutilization language, not just mention of 'overs'
+      const underusedPattern = /(?:only|under|fewer|less|didn'?t bowl|2 overs|1 over)/i;
+      if ((player.tag === 'Anchor' || player.tag === 'Improving') && statText.includes('econ') && underusedPattern.test(failedText)) {
          mismatches.push({
           playerName: player.name,
           reason: `Economical bowler was not utilized for their full quota of overs despite restricting the run rate.`,

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Users, Shield, ArrowRight, Plus, X, Trash2, AlertCircle, User, Key, Palette, TrendingUp, TrendingDown, Edit2, Search, Filter, Zap } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getTeamFormGuide } from '../utils/seasonScoring';
-import { PlanContext } from '../App';
+import PlanContext from '../contexts/PlanContext';
 import { storageService } from '../services/storageService';
 import { isSupabaseConfigured } from '../services/supabaseClient';
 

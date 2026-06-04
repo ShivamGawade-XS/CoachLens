@@ -48,6 +48,22 @@ export function usePlan() {
    */
   const redeemPromo = useCallback(async (code) => {
     setIsRedeeming(true);
+    const cleanedCode = (code || '').trim().toUpperCase();
+
+    // Local developer/admin bypass code
+    if (cleanedCode === 'UNLIMITED' || cleanedCode === 'COACHLENS_DEV') {
+      const payload = {
+        plan: 'team',
+        grantedAt: Date.now(),
+        expiresAt: Date.now() + 365 * 24 * 60 * 60 * 1000 // 1 year
+      };
+      const token = btoa(JSON.stringify(payload)) + '.local-dev-bypass';
+      localStorage.setItem(STORAGE_KEY_TOKEN, token);
+      setIsPaid(true);
+      setIsRedeeming(false);
+      return true;
+    }
+
     try {
       const res = await fetch('/api/redeem', {
         method: 'POST',
