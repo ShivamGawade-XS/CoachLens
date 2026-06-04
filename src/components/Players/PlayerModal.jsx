@@ -134,7 +134,7 @@ export default function PlayerModal({ player = null, onSave, onClose }) {
       {/* Modal */}
       <div
         ref={modalRef}
-        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto glass-card rounded-2xl border border-border shadow-2xl animate-scale-pop"
+        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto modal-card rounded-2xl border border-border shadow-2xl animate-scale-pop"
       >
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between p-5 border-b border-border bg-surface1 backdrop-blur-md rounded-t-2xl">

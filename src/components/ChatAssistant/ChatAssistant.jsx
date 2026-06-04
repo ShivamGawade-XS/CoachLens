@@ -99,7 +99,7 @@ export default function ChatAssistant() {
 
       {/* Chat Panel */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-full max-w-[380px] h-[580px] max-h-[85vh] flex flex-col glass-card border border-border shadow-2xl rounded-2xl overflow-hidden animate-scale-pop">
+        <div className="fixed bottom-6 right-6 z-50 w-full max-w-[380px] h-[580px] max-h-[85vh] flex flex-col modal-card border border-border shadow-2xl rounded-2xl overflow-hidden animate-scale-pop">
           
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 bg-surface2/80 border-b border-border/60 backdrop-blur-md">

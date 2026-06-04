@@ -20,7 +20,7 @@ export default function PromoModal({ onClose, onRedeem }) {
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
       <div
-        className="relative glass-card rounded-2xl border border-border p-8 max-w-sm w-full shadow-2xl animate-fade-in"
+        className="relative modal-card rounded-2xl border border-border p-8 max-w-sm w-full shadow-2xl animate-fade-in"
         role="dialog"
         aria-modal="true"
         aria-labelledby="promo-modal-title"

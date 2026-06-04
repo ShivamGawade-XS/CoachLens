@@ -137,12 +137,32 @@
   }
   
   .glass-card {
-    @apply bg-surface1/95 backdrop-blur-xl border border-border shadow-2xl;
+    @apply bg-surface1/90 backdrop-blur-xl border border-border shadow-2xl;
+  }
+
+  .modal-card {
+    background: rgba(255, 255, 255, 0.94) !important;
+    backdrop-filter: blur(24px) !important;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid rgb(var(--color-border)) !important;
+  }
+
+  .dark .modal-card {
+    background: rgba(15, 23, 42, 0.92) !important;
+    backdrop-filter: blur(24px) !important;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.50) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
   }
 
   /* Upgrade modal backdrops globally for premium contrast and perfect readability */
   div.fixed[class*="z-"] > div.absolute.inset-0 {
-    backdrop-filter: blur(12px) !important;
+    background-color: rgba(15, 23, 42, 0.40) !important;
+    backdrop-filter: blur(16px) !important;
+  }
+
+  .dark div.fixed[class*="z-"] > div.absolute.inset-0 {
+    background-color: rgba(2, 6, 23, 0.85) !important;
+    backdrop-filter: blur(16px) !important;
   }
 
   .card-interactive {

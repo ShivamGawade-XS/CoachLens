@@ -325,7 +325,7 @@ export default function PlayerDetail() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setShowDeleteConfirm(false)}>
           <div className="absolute inset-0 bg-primary/70 backdrop-blur-sm" />
           <div
-            className="relative glass-card rounded-2xl p-6 max-w-sm w-full animate-scale-pop"
+            className="relative modal-card rounded-2xl p-6 max-w-sm w-full animate-scale-pop"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-3 mb-4">

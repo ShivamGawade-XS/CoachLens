@@ -206,7 +206,7 @@ export default function PlayerHealthTracker({ roster, onUpdateHealth }) {
       {editingPlayer && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-primary/60 backdrop-blur-sm" onClick={() => setEditingPlayer(null)} />
-          <div className="relative glass-card rounded-2xl p-6 w-full max-w-sm border border-border animate-scale-pop">
+          <div className="relative modal-card rounded-2xl p-6 w-full max-w-sm border border-border animate-scale-pop">
             <button onClick={() => setEditingPlayer(null)} className="absolute top-4 right-4 p-2 text-textTertiary hover:text-textPrimary">
               <X size={16} />
             </button>

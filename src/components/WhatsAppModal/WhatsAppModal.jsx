@@ -28,7 +28,7 @@ export default function WhatsAppModal({ players, messages, isGenerating, onClose
       <div className="absolute inset-0 bg-primary/70 backdrop-blur-sm" onClick={onClose} />
       
       {/* Modal */}
-      <div className="relative glass-card border border-border rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col mx-4 shadow-2xl animate-scale-pop">
+      <div className="relative modal-card border border-border rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col mx-4 shadow-2xl animate-scale-pop">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
           <div className="flex items-center gap-3">

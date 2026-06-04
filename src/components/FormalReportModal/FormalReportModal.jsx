@@ -114,7 +114,7 @@ export default function FormalReportModal({ match, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-primary/80 backdrop-blur-sm" onClick={onClose} />
       
-      <div className="relative w-full max-w-2xl bg-surface border border-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-scale-pop">
+      <div className="relative w-full max-w-2xl modal-card border border-border shadow-2xl flex flex-col max-h-[90vh] animate-scale-pop">
         
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-border bg-surface2/50 rounded-t-2xl shrink-0">

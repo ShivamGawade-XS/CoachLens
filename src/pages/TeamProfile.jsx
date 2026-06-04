@@ -441,7 +441,7 @@ export default function TeamProfile() {
       {showScheduleModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-primary/60 backdrop-blur-sm" onClick={() => setShowScheduleModal(false)} />
-          <div className="relative glass-card rounded-2xl p-8 w-full max-w-md border border-border animate-scale-pop">
+          <div className="relative modal-card rounded-2xl p-8 w-full max-w-md border border-border animate-scale-pop">
             <button onClick={() => setShowScheduleModal(false)} className="absolute top-4 right-4 p-2 text-textTertiary hover:text-textPrimary"><X size={16} /></button>
             <h2 className="text-xl font-display text-textPrimary mb-1">Schedule Match</h2>
             <p className="text-xs font-mono text-textSecondary mb-6">Add an upcoming fixture for {teamName}</p>
@@ -490,7 +490,7 @@ export default function TeamProfile() {
       {showModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-primary/60 backdrop-blur-sm" onClick={() => setShowModal(false)} />
-          <div className="relative glass-card rounded-2xl p-8 w-full max-w-md border border-border animate-scale-pop">
+          <div className="relative modal-card rounded-2xl p-8 w-full max-w-md border border-border animate-scale-pop">
             <button onClick={() => setShowModal(false)} className="absolute top-4 right-4 p-2 text-textTertiary hover:text-textPrimary"><X size={16} /></button>
             <h2 className="text-xl font-display text-textPrimary mb-1">Add Player</h2>
             <p className="text-xs font-mono text-textSecondary mb-6">Add to {teamName} roster</p>
@@ -538,7 +538,7 @@ export default function TeamProfile() {
       {editPlayer && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-primary/60 backdrop-blur-sm" onClick={() => setEditPlayer(null)} />
-          <div className="relative glass-card rounded-2xl p-8 w-full max-w-md border border-border animate-scale-pop">
+          <div className="relative modal-card rounded-2xl p-8 w-full max-w-md border border-border animate-scale-pop">
             <button onClick={() => setEditPlayer(null)} className="absolute top-4 right-4 p-2 text-textTertiary hover:text-textPrimary"><X size={16} /></button>
             <h2 className="text-xl font-display text-textPrimary mb-6">Edit Player</h2>
             <div className="space-y-4">

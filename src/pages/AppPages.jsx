@@ -490,7 +490,7 @@ export function Teams({ addToast }) {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-primary/60 backdrop-blur-sm" onClick={() => setShowModal(false)} />
-          <div className="relative glass-card rounded-2xl p-8 w-full max-w-md border border-border animate-scale-pop">
+          <div className="relative modal-card rounded-2xl p-8 w-full max-w-md border border-border animate-scale-pop">
             <button onClick={() => setShowModal(false)} className="absolute top-4 right-4 p-2 text-textTertiary hover:text-textPrimary transition-colors"><X size={16} /></button>
             <h2 className="text-xl font-display text-textPrimary mb-6">Create New Team</h2>
             {modalError && (
@@ -560,7 +560,7 @@ export function Teams({ addToast }) {
       {editingTeam && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-primary/60 backdrop-blur-sm" onClick={() => setEditingTeam(null)} />
-          <div className="relative glass-card rounded-2xl p-8 w-full max-w-md border border-border animate-scale-pop">
+          <div className="relative modal-card rounded-2xl p-8 w-full max-w-md border border-border animate-scale-pop">
             <button onClick={() => setEditingTeam(null)} className="absolute top-4 right-4 p-2 text-textTertiary hover:text-textPrimary transition-colors"><X size={16} /></button>
             <h2 className="text-xl font-display text-textPrimary mb-6">Edit Team</h2>
             {modalError && (
