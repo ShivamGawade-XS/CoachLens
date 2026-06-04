@@ -299,7 +299,89 @@ export const storageService = {
   },
 
   seedDemoMatches: async (userId) => {
+    // Helper to generate a premium base64 SVG logo for Panaji Panthers
+    const _generatePanthersLogo = () => {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <defs>
+          <linearGradient id="pantherBg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#1e1b4b"/>
+            <stop offset="100%" stop-color="#311042"/>
+          </linearGradient>
+          <linearGradient id="accentGold" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#fbbf24"/>
+            <stop offset="100%" stop-color="#d97706"/>
+          </linearGradient>
+        </defs>
+        <rect width="200" height="200" rx="40" fill="url(#pantherBg)"/>
+        <circle cx="100" cy="100" r="85" fill="none" stroke="url(#accentGold)" stroke-width="4" stroke-dasharray="6 4"/>
+        <path d="M70,80 L100,60 L130,80 L120,110 L100,125 L80,110 Z" fill="#d97706" opacity="0.3"/>
+        <polygon points="65,75 80,50 90,70" fill="url(#accentGold)"/>
+        <polygon points="135,75 120,50 110,70" fill="url(#accentGold)"/>
+        <polygon points="80,90 95,95 90,85" fill="#fef08a"/>
+        <polygon points="120,90 105,95 110,85" fill="#fef08a"/>
+        <path d="M100,95 L95,110 L105,110 Z" fill="#1e1b4b"/>
+        <path d="M90,120 Q100,130 110,120" stroke="url(#accentGold)" stroke-width="3" fill="none"/>
+        <text x="100" y="170" text-anchor="middle" font-family="'Impact', Arial, sans-serif" font-weight="900" font-size="16" fill="url(#accentGold)" letter-spacing="2">PANTHERS</text>
+      </svg>`;
+      try {
+        return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+      } catch {
+        return null;
+      }
+    };
+
+    // Helper to generate a premium base64 SVG logo for Margao Strikers
+    const _generateStrikersLogo = () => {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <defs>
+          <linearGradient id="strikersBg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#0f172a"/>
+            <stop offset="100%" stop-color="#1e1b4b"/>
+          </linearGradient>
+          <linearGradient id="accentYellow" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#fef08a"/>
+            <stop offset="100%" stop-color="#eab308"/>
+          </linearGradient>
+        </defs>
+        <rect width="200" height="200" rx="40" fill="url(#strikersBg)"/>
+        <circle cx="100" cy="100" r="85" fill="none" stroke="#38bdf8" stroke-width="3"/>
+        <polygon points="120,40 70,110 100,110 80,165 135,95 105,95" fill="url(#accentYellow)"/>
+        <text x="100" y="175" text-anchor="middle" font-family="'Impact', Arial, sans-serif" font-weight="900" font-size="16" fill="#38bdf8" letter-spacing="2">STRIKERS</text>
+      </svg>`;
+      try {
+        return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+      } catch {
+        return null;
+      }
+    };
+
     try {
+      // ── Seed/Patch Team Logos (always check/update to pre-populate existing accounts) ──
+      const teamsKey = `coachlens_teams_${userId || 'demo'}`;
+      const existingTeams = (() => {
+        try { return JSON.parse(localStorage.getItem(teamsKey) || '[]'); } catch { return []; }
+      })();
+
+      if (existingTeams.length > 0) {
+        let teamsUpdated = false;
+        const updatedTeams = existingTeams.map((t) => {
+          if (t.id === 'demo-team-panthers' && (!t.logo || !t.logo.startsWith('data:image/svg+xml'))) {
+            teamsUpdated = true;
+            return { ...t, logo: _generatePanthersLogo() };
+          }
+          if (t.id === 'demo-team-strikers' && (!t.logo || !t.logo.startsWith('data:image/svg+xml'))) {
+            teamsUpdated = true;
+            return { ...t, logo: _generateStrikersLogo() };
+          }
+          return t;
+        });
+
+        if (teamsUpdated) {
+          localStorage.setItem(teamsKey, JSON.stringify(updatedTeams));
+        }
+      }
+      // ─────────────────────────────────────────────────────────────────────────────────
+
       const alreadySeeded = localStorage.getItem(SEEDED_KEY);
       if (alreadySeeded) return false;
 
@@ -330,13 +412,7 @@ export const storageService = {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
       localStorage.setItem(SEEDED_KEY, 'true');
 
-      // ── Seed Demo Teams ───────────────────────────────────────────────
-      const teamsKey = `coachlens_teams_${userId || 'demo'}`;
-
-      const existingTeams = (() => {
-        try { return JSON.parse(localStorage.getItem(teamsKey) || '[]'); } catch { return []; }
-      })();
-
+      // ── Seed Demo Teams if missing ─────────────────────────────────────────
       if (existingTeams.length === 0) {
         const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 2);
         const nextWeek = new Date(now); nextWeek.setDate(now.getDate() + 8);
@@ -346,6 +422,7 @@ export const storageService = {
             id: 'demo-team-panthers',
             name: 'Panaji Panthers',
             emoji: '🐯',
+            logo: _generatePanthersLogo(),
             matches: 3,
             createdAt: new Date(now.getFullYear(), now.getMonth() - 2, 15).toISOString(),
             roster: [
@@ -384,6 +461,7 @@ export const storageService = {
             id: 'demo-team-strikers',
             name: 'Margao Strikers',
             emoji: '⚡',
+            logo: _generateStrikersLogo(),
             matches: 2,
             createdAt: new Date(now.getFullYear(), now.getMonth() - 1, 5).toISOString(),
             roster: [
@@ -414,7 +492,7 @@ export const storageService = {
 
         localStorage.setItem(teamsKey, JSON.stringify(demoTeams));
       }
-      // ─────────────────────────────────────────────────────────────────
+      // ───────────────────────────────────────────────────────────────────────
 
       // ── Seed Demo Players ──────────────────────────────────────────
       const demoMatchIds = demoKeys.map(k => `demo-${k}`);
