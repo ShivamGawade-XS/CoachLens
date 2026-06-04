@@ -109,7 +109,7 @@ const MIGRATION_KEY = 'coachlens_sample_patch_v2';
 })();
 
 export const storageService = {
-  getMatches: () => {
+  getMatches: async () => {
     try {
       const data = localStorage.getItem(STORAGE_KEY);
       return data ? JSON.parse(data) : [];
@@ -180,7 +180,7 @@ export const storageService = {
     }
   },
 
-  seedDemoMatches: (userId) => {
+  seedDemoMatches: async (userId) => {
     try {
       const alreadySeeded = localStorage.getItem(SEEDED_KEY);
       if (alreadySeeded) return false;
@@ -207,7 +207,7 @@ export const storageService = {
         };
       });
 
-      const existing = storageService.getMatches();
+      const existing = await storageService.getMatches();
       const merged = [...demoMatches, ...existing];
       localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
       localStorage.setItem(SEEDED_KEY, 'true');

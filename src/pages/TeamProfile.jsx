@@ -152,7 +152,12 @@ export default function TeamProfile() {
       });
       
       if (matchesUpdated) {
-        localStorage.setItem('coachlens_matches', JSON.stringify(updatedMatches));
+        // Update each affected match via the service layer
+        await Promise.all(
+          updatedMatches
+            .filter((m, i) => JSON.stringify(m) !== JSON.stringify(allMatches[i]))
+            .map(m => storageService.updateMatch(m.id, { analysis: m.analysis }))
+        );
       }
     }
 

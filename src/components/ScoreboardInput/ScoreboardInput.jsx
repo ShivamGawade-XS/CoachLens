@@ -118,8 +118,14 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
     }
   }, [scorecardText, inputMode]);
   
+  const MAX_SCORECARD_CHARS = 15000;
+
   const handleAnalyze = () => {
     if (scorecardText.length < 100) return;
+    if (scorecardText.length > MAX_SCORECARD_CHARS) {
+      setError(`Scorecard too large (${scorecardText.length.toLocaleString()} chars). Maximum is ${MAX_SCORECARD_CHARS.toLocaleString()} characters. Trim excess text and retry.`);
+      return;
+    }
     const { isValid, error: parseError } = parseScorecard(scorecardText);
     if (!isValid) {
       setError(parseError);

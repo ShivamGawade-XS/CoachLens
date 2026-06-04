@@ -6,11 +6,12 @@ import { X, Key, CheckCircle, AlertCircle } from 'lucide-react';
  */
 export default function PromoModal({ onClose, onRedeem }) {
   const [code, setCode] = useState('');
-  const [status, setStatus] = useState(null); // 'success' | 'error' | null
+  const [status, setStatus] = useState(null); // 'success' | 'error' | 'loading' | null
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const ok = onRedeem(code);
+    setStatus('loading');
+    const ok = await onRedeem(code);
     setStatus(ok ? 'success' : 'error');
     if (ok) setTimeout(onClose, 1500);
   };
@@ -69,10 +70,10 @@ export default function PromoModal({ onClose, onRedeem }) {
           <button
             id="promo-redeem-btn"
             type="submit"
-            disabled={!code.trim() || status === 'success'}
+            disabled={!code.trim() || status === 'success' || status === 'loading'}
             className="w-full bg-accent hover:bg-accentHover text-primary font-mono text-sm font-bold uppercase tracking-wider py-2.5 rounded-xl transition-colors disabled:opacity-40"
           >
-            Redeem
+            {status === 'loading' ? 'Verifying...' : 'Redeem'}
           </button>
         </form>
       </div>

@@ -4,6 +4,9 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  define: {
+    __BUILD_TIME__: JSON.stringify(Date.now().toString()),
+  },
   build: {
     rollupOptions: {
       output: {

@@ -188,8 +188,18 @@ export const authService = {
       return { success: false, error: 'No account found with this email.' };
     }
 
-    if (user.password !== hashPassword(password) && !isBase64Match(user.password, password)) {
+    const hashMatch = user.password === hashPassword(password);
+    const legacyMatch = !hashMatch && isBase64Match(user.password, password);
+
+    if (!hashMatch && !legacyMatch) {
       return { success: false, error: 'Incorrect password. Please try again.' };
+    }
+
+    // Auto-migrate legacy Base64 password to SHA-256 on first successful login
+    if (legacyMatch) {
+      const idx = users.findIndex(u => u.id === user.id);
+      users[idx].password = hashPassword(password);
+      saveUsers(users);
     }
 
     const sessionUser = { ...user };

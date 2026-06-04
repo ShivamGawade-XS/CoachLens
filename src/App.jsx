@@ -36,6 +36,7 @@ const PromoModal     = lazy(() => import('./components/PromoModal/PromoModal'));
 // Legal & Marketing (rarely visited)
 const LegalPages     = lazy(() => import('./pages/LegalPages'));
 const MarketingPages = lazy(() => import('./pages/MarketingPages'));
+const NotFound       = lazy(() => import('./pages/NotFound'));
 
 // Page-level fallback
 const PageLoader = () => (
@@ -119,7 +120,8 @@ function App() {
             <UpgradeModal
               onClose={() => setShowUpgrade(false)}
               onGetPlan={() => {
-                window.open('https://wa.me/919999999999?text=Hi%2C%20I%27d%20like%20to%20get%20the%20CoachLens%20Team%20Plan%20%E2%80%94%20%E2%82%B999%2Fmonth', '_blank');
+                const waNum = import.meta.env.VITE_CONTACT_WHATSAPP || '919999999999';
+                window.open(`https://wa.me/${waNum}?text=Hi%2C%20I%27d%20like%20to%20get%20the%20CoachLens%20Team%20Plan%20%E2%80%94%20%E2%82%B999%2Fmonth`, '_blank');
               }}
             />
           )}
@@ -127,8 +129,8 @@ function App() {
           {showPromo && (
             <PromoModal
               onClose={() => setShowPromo(false)}
-              onRedeem={(code) => {
-                const ok = plan.redeemPromo(code);
+              onRedeem={async (code) => {
+                const ok = await plan.redeemPromo(code);
                 if (ok) addToast('🎉 Team Plan activated!', 'success');
                 return ok;
               }}
@@ -174,8 +176,8 @@ function App() {
               <Route path="/rankings" element={<TeamRankings />} />
             </Route>
 
-            {/* 404 Fallback */}
-            <Route path="*" element={<Navigate to="/" />} />
+            {/* 404 */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
       </BrowserRouter>

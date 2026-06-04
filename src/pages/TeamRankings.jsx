@@ -3,13 +3,7 @@ import { Link } from 'react-router-dom';
 import { Trophy, TrendingUp, TrendingDown, Minus, Crown, Medal, Award, ChevronUp, ChevronDown, ArrowRight, Shield, Target, Zap, BarChart3 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getTeams } from './AppPages';
-
-function getAllMatches() {
-  try {
-    const d = localStorage.getItem('coachlens_matches');
-    return d ? JSON.parse(d) : [];
-  } catch { return []; }
-}
+import { storageService } from '../services/storageService';
 
 /* ─── Ranking Algorithm ─── */
 function computeRankings(teams, allMatches) {
@@ -117,7 +111,7 @@ export default function TeamRankings() {
   useEffect(() => {
     if (!user) return;
     setTeams(getTeams(user.id));
-    setAllMatches(getAllMatches());
+    storageService.getMatches().then(matches => setAllMatches(matches));
   }, [user]);
 
   const rankings = useMemo(() => computeRankings(teams, allMatches), [teams, allMatches]);

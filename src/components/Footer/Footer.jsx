@@ -41,7 +41,7 @@ export default function Footer() {
               <a href="https://x.com/Rahhhul21" target="_blank" rel="noreferrer" className="text-textTertiary hover:text-accent transition-colors"><Twitter size={18} /></a>
               <a href="https://github.com/ShivamGawade-XS" target="_blank" rel="noreferrer" className="text-textTertiary hover:text-accent transition-colors"><Github size={18} /></a>
               <a href="https://www.linkedin.com/in/shivam-gawade-96a94031b" target="_blank" rel="noreferrer" className="text-textTertiary hover:text-accent transition-colors"><Linkedin size={18} /></a>
-              <a href="mailto:shivamgawdenoise@gmail.com" className="text-textTertiary hover:text-accent transition-colors"><Mail size={18} /></a>
+              <a href={`mailto:${import.meta.env.VITE_CONTACT_EMAIL || 'shivamgawdenoise@gmail.com'}`} className="text-textTertiary hover:text-accent transition-colors"><Mail size={18} /></a>
             </div>
           </div>
 
@@ -74,7 +74,7 @@ export default function Footer() {
               <li><Link to="/about" className="text-sm text-textSecondary hover:text-accent transition-colors">About Us</Link></li>
               <li><Link to="/privacy" className="text-sm text-textSecondary hover:text-accent transition-colors">Privacy Policy</Link></li>
               <li><Link to="/terms" className="text-sm text-textSecondary hover:text-accent transition-colors">Terms of Service</Link></li>
-              <li><a href="mailto:shivamgawdenoise@gmail.com" className="text-sm text-textSecondary hover:text-accent transition-colors">Contact</a></li>
+              <li><a href={`mailto:${import.meta.env.VITE_CONTACT_EMAIL || 'shivamgawdenoise@gmail.com'}`} className="text-sm text-textSecondary hover:text-accent transition-colors">Contact</a></li>
             </ul>
           </div>
 

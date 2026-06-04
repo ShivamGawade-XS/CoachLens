@@ -113,19 +113,16 @@ export default function MatchResults() {
 
   const handleReanalyze = async () => {
     if (!match?.rawScorecard) {
-      alert("Old mock data cannot be reanalyzed. Generate a new match to test this feature.");
+      addToast?.('Old mock data cannot be reanalyzed. Generate a new match to test this feature.', 'warning');
       return;
     }
     setIsReanalyzing(true);
     try {
       const newAnalysis = await groqService.analyze(match.rawScorecard, match.format, match.phase, tone);
-      const updatedMatch = { ...match, analysis: newAnalysis };
-      const matches = await storageService.getMatches();
-      const updatedMatches = matches.map(m => m.id === match.id ? updatedMatch : m);
-      localStorage.setItem('coachlens_matches', JSON.stringify(updatedMatches));
-      setMatch(updatedMatch);
+      const updatedMatch = await storageService.updateMatch(match.id, { analysis: newAnalysis });
+      if (updatedMatch) setMatch(updatedMatch);
     } catch (err) {
-      alert(`Reanalysis failed: ${err.message}`);
+      addToast?.(`Reanalysis failed: ${err.message}`, 'error');
     } finally {
       setIsReanalyzing(false);
     }

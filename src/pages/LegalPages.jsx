@@ -24,9 +24,11 @@ export function About() {
 
       <div className="mt-12 pt-8 border-t border-border">
         <h2 className="text-textPrimary font-mono font-bold text-lg mb-4">Contact Us</h2>
-        <p className="mb-2">Built with ❤️ by <strong className="text-accent">Crimson Syndicate</strong></p>
-        <p className="flex items-center gap-2 text-sm"><span className="font-mono">📞</span> 8459810402</p>
-        <p className="flex items-center gap-2 text-sm mt-1"><span className="font-mono">✉️</span> <a href="mailto:shivamgawdenoise@gmail.com" className="text-accent hover:underline">shivamgawdenoise@gmail.com</a></p>
+        <p className="mb-2">Built with ❤️ by <strong className="text-accent">{import.meta.env.VITE_CONTACT_COMPANY || 'Crimson Syndicate'}</strong></p>
+        {(import.meta.env.VITE_CONTACT_PHONE !== 'false') && (
+          <p className="flex items-center gap-2 text-sm"><span className="font-mono">📞</span> {import.meta.env.VITE_CONTACT_PHONE || '8459810402'}</p>
+        )}
+        <p className="flex items-center gap-2 text-sm mt-1"><span className="font-mono">✉️</span> <a href={`mailto:${import.meta.env.VITE_CONTACT_EMAIL || 'shivamgawdenoise@gmail.com'}`} className="text-accent hover:underline">{import.meta.env.VITE_CONTACT_EMAIL || 'shivamgawdenoise@gmail.com'}</a></p>
       </div>
     </PageWrapper>
   );

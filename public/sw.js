@@ -1,4 +1,5 @@
-const CACHE_NAME = 'coachlens-cache-v1';
+const CACHE_VERSION = typeof __BUILD_TIME__ !== 'undefined' ? __BUILD_TIME__ : Date.now().toString();
+const CACHE_NAME = `coachlens-cache-${CACHE_VERSION}`;
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

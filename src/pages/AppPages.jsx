@@ -4,6 +4,7 @@ import { Trophy, Users, Shield, ArrowRight, Plus, X, Trash2, AlertCircle, User, 
 import { useAuth } from '../contexts/AuthContext';
 import { getTeamFormGuide } from '../utils/seasonScoring';
 import { PlanContext } from '../App';
+import { storageService } from '../services/storageService';
 
 const TEAMS_KEY = (userId) => `coachlens_teams_${userId}`;
 const SETTINGS_KEY = (userId) => `coachlens_settings_${userId}`;
@@ -26,12 +27,7 @@ function getSettings(userId) {
 function saveSettings(userId, settings) {
   localStorage.setItem(SETTINGS_KEY(userId), JSON.stringify(settings));
 }
-function getAllMatches() {
-  try {
-    const d = localStorage.getItem('coachlens_matches');
-    return d ? JSON.parse(d) : [];
-  } catch { return []; }
-}
+
 
 const TEAM_EMOJIS = ['🏏', '⚡', '🔥', '🦁', '🐯', '🦅', '🌊', '🌪️', '💪', '🏆'];
 
@@ -63,12 +59,12 @@ export function Teams({ addToast }) {
     reader.readAsDataURL(file);
   };
 
-  const loadTeams = () => {
+  const loadTeams = async () => {
     if (!user) return;
     const saved = getTeams(user.id);
     setTeams(saved);
 
-    const allMatches = getAllMatches();
+    const allMatches = await storageService.getMatches();
     const stats = {};
     saved.forEach(team => {
       const tm = allMatches.filter(m => m.teamName === team.name);
@@ -147,7 +143,7 @@ export function Teams({ addToast }) {
     addToast?.(`Team "${name}" deleted`, 'info');
   };
 
-  const handleEditSave = () => {
+  const handleEditSave = async () => {
     setModalError('');
     if (!editingTeam.name.trim()) return setModalError('Team name is required.');
     
@@ -167,11 +163,11 @@ export function Teams({ addToast }) {
 
     // If name changed, update all existing matches to keep history linked
     if (oldName !== newName) {
-      const allMatches = getAllMatches();
-      const updatedMatches = allMatches.map(m => 
-        m.teamName === oldName ? { ...m, teamName: newName } : m
-      );
-      localStorage.setItem('coachlens_matches', JSON.stringify(updatedMatches));
+      const allMatches = await storageService.getMatches();
+      const changedMatches = allMatches.filter(m => m.teamName === oldName);
+      await Promise.all(changedMatches.map(m =>
+        storageService.updateMatch(m.id, { teamName: newName })
+      ));
     }
 
     setEditingTeam(null);
@@ -179,7 +175,7 @@ export function Teams({ addToast }) {
     loadTeams();
   };
 
-  const loadSampleTeams = () => {
+  const loadSampleTeams = async () => {
     const now = new Date();
     
     // 1. Create Sample Teams
@@ -318,9 +314,8 @@ export function Teams({ addToast }) {
       }
     });
 
-    // 3. Save matches
-    const allMatches = getAllMatches();
-    localStorage.setItem('coachlens_matches', JSON.stringify([...randomMatches, ...allMatches]));
+    // 3. Save matches via service layer
+    await Promise.all(randomMatches.map(m => storageService.saveMatch(m)));
 
     // 4. Save teams
     const updatedTeams = [...sampleTeams, ...teams];

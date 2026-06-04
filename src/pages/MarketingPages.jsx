@@ -90,7 +90,7 @@ export function Pricing() {
             <li className="flex items-center gap-2 text-sm text-textSecondary"><CheckCircle size={16} className="text-accent"/> Custom AI Prompts</li>
             <li className="flex items-center gap-2 text-sm text-textSecondary"><CheckCircle size={16} className="text-accent"/> API Access</li>
           </ul>
-          <a href="mailto:shivamgawdenoise@gmail.com" className="block w-full text-center bg-surface2 hover:bg-surface3 text-textPrimary py-3 rounded-xl font-mono font-bold transition-all">Contact Sales</a>
+          <a href={`mailto:${import.meta.env.VITE_CONTACT_EMAIL || 'shivamgawdenoise@gmail.com'}`} className="block w-full text-center bg-surface2 hover:bg-surface3 text-textPrimary py-3 rounded-xl font-mono font-bold transition-all">Contact Sales</a>
         </div>
       </div>
     </PageWrapper>
@@ -149,7 +149,7 @@ export function ApiReference() {
         <Code size={48} className="mx-auto text-textTertiary mb-6 opacity-50" />
         <h2 className="text-2xl font-display text-textPrimary mb-4">Developer API Access</h2>
         <p className="text-textSecondary mb-8">API access is currently in closed beta and restricted to Academy tier subscribers. If you need early access to build integrations, please contact our team.</p>
-        <a href="mailto:shivamgawdenoise@gmail.com" className="text-accent hover:underline font-mono uppercase tracking-wider text-sm">Request API Keys</a>
+        <a href={`mailto:${import.meta.env.VITE_CONTACT_EMAIL || 'shivamgawdenoise@gmail.com'}`} className="text-accent hover:underline font-mono uppercase tracking-wider text-sm">Request API Keys</a>
       </div>
     </PageWrapper>
   );
