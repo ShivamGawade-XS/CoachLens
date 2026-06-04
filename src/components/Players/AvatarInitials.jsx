@@ -11,7 +11,7 @@ const getColorFromName = (name) => {
     hash |= 0; // Convert to 32-bit int
   }
   const hue = Math.abs(hash) % 360;
-  return `hsl(${hue}, 55%, 45%)`;
+  return `hsl(${hue}, 62%, 52%)`;
 };
 
 /**

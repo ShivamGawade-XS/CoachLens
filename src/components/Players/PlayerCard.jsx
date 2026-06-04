@@ -4,7 +4,7 @@ import AvatarInitials from './AvatarInitials';
 const ROLE_BADGE = {
   'Batsman':        'bg-anchor-bg text-anchor-text border-anchor-border',
   'Bowler':         'bg-aggressor-bg text-aggressor-text border-aggressor-border',
-  'All-Rounder':    'bg-[#2e1065]/60 text-purple-300 border-purple-500/40',
+  'All-Rounder':    'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-700/40',
   'Wicket-Keeper':  'bg-improving-bg text-improving-text border-improving-border',
 };
 

@@ -13,7 +13,7 @@ const BOWLING_STYLES = [
 const ROLE_COLORS = {
   'Batsman':        'bg-anchor-bg text-anchor-text border-anchor-border',
   'Bowler':         'bg-aggressor-bg text-aggressor-text border-aggressor-border',
-  'All-Rounder':    'bg-[#2e1065]/60 text-purple-300 border-purple-500/40',
+  'All-Rounder':    'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-700/40',
   'Wicket-Keeper':  'bg-improving-bg text-improving-text border-improving-border',
 };
 
@@ -137,7 +137,7 @@ export default function PlayerModal({ player = null, onSave, onClose }) {
         className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto modal-card rounded-2xl border border-border shadow-2xl animate-scale-pop"
       >
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between p-5 border-b border-border bg-surface1 backdrop-blur-md rounded-t-2xl">
+        <div className="sticky top-0 z-10 flex items-center justify-between p-5 border-b border-border rounded-t-2xl" style={{background: 'inherit'}}>
           <h2 className="text-lg font-display text-textPrimary">
             {isEdit ? 'Edit Player' : 'Add Player'}
           </h2>
@@ -329,7 +329,7 @@ export default function PlayerModal({ player = null, onSave, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 flex items-center gap-3 p-5 border-t border-border bg-surface1 backdrop-blur-md rounded-b-2xl">
+        <div className="sticky bottom-0 flex items-center gap-3 p-5 border-t border-border rounded-b-2xl" style={{background: 'inherit'}}>
           <button
             onClick={onClose}
             className="flex-1 px-4 py-3 rounded-xl bg-surface2 border border-border text-textSecondary font-mono text-sm font-bold uppercase tracking-wider hover:bg-surface3 transition-colors btn-press"

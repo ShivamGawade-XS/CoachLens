@@ -454,12 +454,12 @@ export default function TeamProfile() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest flex items-center gap-1"><Calendar size={9} /> Date *</label>
+                  <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest flex items-center gap-1 h-4"><Calendar size={9} /> Date *</label>
                   <input type="date" value={newSchedule.date} onChange={e => setNewSchedule(p => ({...p, date: e.target.value}))}
                     className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest flex items-center gap-1"><Clock size={9} /> Time</label>
+                  <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest flex items-center gap-1 h-4"><Clock size={9} /> Time</label>
                   <input type="time" value={newSchedule.time} onChange={e => setNewSchedule(p => ({...p, time: e.target.value}))}
                     className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all" />
                 </div>
@@ -505,7 +505,7 @@ export default function TeamProfile() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest">Role *</label>
+                  <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest flex items-center gap-1 h-4">Role *</label>
                   <select value={newPlayer.role} onChange={e => setNewPlayer(p => ({...p, role: e.target.value}))}
                     className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all appearance-none">
                     <option value="Batsman">Batsman</option>
@@ -515,7 +515,7 @@ export default function TeamProfile() {
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest flex items-center gap-1"><Hash size={9} /> Jersey No.</label>
+                  <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest flex items-center gap-1 h-4"><Hash size={9} /> Jersey No.</label>
                   <input type="number" min="1" max="99" value={newPlayer.jerseyNo} onChange={e => setNewPlayer(p => ({...p, jerseyNo: e.target.value}))}
                     placeholder="e.g. 18"
                     className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary placeholder:text-textTertiary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all" />
@@ -549,7 +549,7 @@ export default function TeamProfile() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest">Role</label>
+                  <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest flex items-center gap-1 h-4">Role</label>
                   <select value={editPlayer.role} onChange={e => setEditPlayer(p => ({...p, role: e.target.value}))}
                     className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary focus:outline-none focus:border-accent appearance-none">
                     <option value="Batsman">Batsman</option>
@@ -559,7 +559,7 @@ export default function TeamProfile() {
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest">Jersey No.</label>
+                  <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest flex items-center gap-1 h-4">Jersey No.</label>
                   <input type="number" value={editPlayer.jerseyNo || ''} onChange={e => setEditPlayer(p => ({...p, jerseyNo: e.target.value}))}
                     placeholder="e.g. 18"
                     className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary placeholder:text-textTertiary focus:outline-none focus:border-accent transition-all" />
