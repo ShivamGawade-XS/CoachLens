@@ -64,33 +64,30 @@ CoachLens is a **client-heavy, AI-first web application**. All intelligence runs
 
 | Technology | Purpose |
 |---|---|
-| **Groq API** | Inference provider — sub-3-second responses |
-| **llama-3.1-8b-instant** | Model — fast, instruction-following, JSON reliable |
+| Groq API | Inference provider — sub-3-second responses |
+| **llama-3.3-70b-versatile** | Model — larger, deep reasoning capabilities (used for primary scorecard analysis) |
+| **llama-3.1-8b-instant** | Model — fast, instruction-following, JSON reliable (used for lightweight tool features) |
 
 **Why Groq over OpenAI?**
 - Free tier with daily token limits sufficient for hackathon demo
 - 3–5× faster than GPT-4o at equivalent tasks
-- `llama-3.1-8b-instant` reliably follows JSON schema with `response_format: { type: "json_object" }`
 - Token costs remain zero for prototype phase
 
-**Why 8b-instant over 70b-versatile?**
-After hitting `llama-3.3-70b-versatile` TPD limits (100,000 tokens/day), the system was migrated to `llama-3.1-8b-instant` which provides 14× the token budget at the same quality for structured JSON tasks.
+**Model Selection Strategy:**
+- **llama-3.3-70b-versatile**: Used for primary post-match scorecard analysis (`api/analyze.js`) where deep reasoning and detailed tactical insights are required.
+- **llama-3.1-8b-instant**: Used for lightweight live match tool features (`groqService.js`) to provide rapid responses and fit comfortably within the free tier token budget limits.
 
 **API Configuration (current):**
 ```javascript
-const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+const response = await fetch("/api/groq", {
   method: "POST",
-  headers: {
-    "Authorization": `Bearer ${apiKey}`,
-    "Content-Type": "application/json"
-  },
+  headers: getHeaders(),
   body: JSON.stringify({
-    model: "llama-3.1-8b-instant",
+    model: GROQ_MODEL,
     messages: [
-      { role: "system", content: processedPrompt },
-      { role: "user", content: scorecardText }
+      { role: "user", content: prompt }
     ],
-    temperature: 0.3,
+    temperature: GROQ_TEMPERATURE.TACTICAL,
     max_tokens: 1500,
     response_format: { type: "json_object" }
   })

@@ -107,7 +107,7 @@ npm run build
 | Layer | Tool |
 |---|---|
 | Frontend | React 18 + Tailwind CSS |
-| AI Engine | Groq API (`llama-3.1-8b-instant`) |
+| AI Engine | Groq API (`llama-3.3-70b-versatile` & `llama-3.1-8b-instant`) |
 | Visualisation | Recharts (line charts, momentum maps) |
 | OCR | Tesseract.js v5 (client-side, no API) |
 | PDF Export | html2canvas + jsPDF |
@@ -208,7 +208,7 @@ Rules:
 ```
 
 Temperature: `0.3` — maximises factual consistency, minimises hallucination.  
-Model: `llama-3.1-8b-instant` — fastest inference, within free tier TPD limits.
+Models: `llama-3.3-70b-versatile` (deep reasoning for scorecard analysis) and `llama-3.1-8b-instant` (lightweight tools).
 
 ---
 
