@@ -717,12 +717,27 @@ export function Settings({ addToast }) {
       <div className="glass-card rounded-2xl overflow-hidden">
         <div className="p-6 space-y-4">
           <SectionHeader icon={<User size={12} />} title="Profile Information" />
-          <div className="flex items-center gap-4 mb-4 p-4 bg-surface2 rounded-xl border border-border">
-            <div className="w-14 h-14 rounded-full bg-accent/20 border-2 border-accent/30 flex items-center justify-center text-accent font-mono font-bold text-xl">{user?.avatar || '?'}</div>
-            <div>
-              <div className="font-medium text-textPrimary">{profile.fullName || 'Your Name'}</div>
-              <div className="text-xs text-textTertiary font-mono">{profile.email}</div>
-              <div className="text-[10px] text-accent font-mono mt-0.5">{profile.role} · {profile.experience}</div>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 p-4 bg-surface2 rounded-xl border border-border">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-accent/20 border-2 border-accent/30 flex items-center justify-center text-accent font-mono font-bold text-xl">{user?.avatar || '?'}</div>
+              <div>
+                <div className="font-medium text-textPrimary">{profile.fullName || 'Your Name'}</div>
+                <div className="text-xs text-textTertiary font-mono">{profile.email}</div>
+                <div className="text-[10px] text-accent font-mono mt-0.5">{profile.role} · {profile.experience}</div>
+              </div>
+            </div>
+            <div className="self-start sm:self-center">
+              {isSupabaseConfigured() ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-aggressor-bg/20 border border-aggressor-border/30 text-aggressor-text shadow-[0_0_10px_rgba(34,197,94,0.05)]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-aggressor-text animate-pulse" />
+                  Cloud Sync Active
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-surface3 border border-border text-textTertiary">
+                  <span className="w-1.5 h-1.5 rounded-full bg-textTertiary" />
+                  Local Cache Mode
+                </span>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

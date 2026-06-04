@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { Plus, Trophy, Home, Settings, LogOut, LayoutDashboard, Menu, X, Wrench, BarChart3 } from 'lucide-react';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
@@ -9,6 +9,26 @@ export default function AppLayout({ addToast }) {
   const location = useLocation();
   const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      addToast?.('Dugout network re-connected. Sync active.', 'success');
+    };
+    const handleOffline = () => {
+      setIsOnline(false);
+      addToast?.('Dugout offline mode active. Using local data.', 'warning');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [addToast]);
 
   const handleNewAnalysis = () => {
     setIsMobileMenuOpen(false);
@@ -150,6 +170,12 @@ export default function AppLayout({ addToast }) {
 
         {/* ── Main Content Area ── */}
         <main className="flex-1 overflow-y-auto">
+          {!isOnline && (
+            <div className="bg-amber-500/10 border-b border-amber-500/20 text-amber-300 px-6 py-3 text-xs font-mono flex items-center justify-center gap-2 relative z-50 animate-pulse">
+              <span className="text-amber-500">📶</span>
+              <span>Dugout Offline Mode active. Matches are loaded from local cache. AI analysis will require internet.</span>
+            </div>
+          )}
           <Outlet context={{ addToast }} />
         </main>
       </div>
