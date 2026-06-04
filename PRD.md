@@ -2,7 +2,7 @@
 # CoachLens — AI Dugout Intelligence for Amateur Cricket
 
 **Version:** 2.0  
-**Authors:** Shivam Mahesh Gawade, Ashwith Ashok Shetty, Rahul Ravi Rathod  
+**Team:** Crimson Syndicate (Shivam Mahesh Gawade [Leader], Ashwith Ashok Shetty, Rahul Ravi Rathod)  
 **Last Updated:** May 2026
 
 ---
