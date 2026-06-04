@@ -2,9 +2,7 @@
 # CoachLens — AI Dugout Intelligence for Amateur Cricket
 
 **Version:** 2.0  
-**Authors:** Crimson Syndicate (Shivam Mahesh Gawade, Ashwith Ashok Shetty, Rahul Ravi Rathod)  
-**Hackathon:** GBOA Code Premier League 2026 — Round 2  
-**Institution:** Agnel Institute of Technology and Design (AITD), Goa University  
+**Authors:** Shivam Mahesh Gawade, Ashwith Ashok Shetty, Rahul Ravi Rathod  
 **Last Updated:** May 2026
 
 ---

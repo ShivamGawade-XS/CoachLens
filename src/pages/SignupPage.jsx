@@ -175,7 +175,7 @@ export default function SignupPage() {
                     autoComplete="name"
                     value={form.fullName}
                     onChange={handleChange}
-                    placeholder="Coach Shivam Gawade"
+                    placeholder="e.g. Coach Ashwith"
                     className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary placeholder:text-textTertiary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all"
                   />
                 </div>
@@ -295,7 +295,7 @@ export default function SignupPage() {
                     type="text"
                     value={form.organization}
                     onChange={handleChange}
-                    placeholder="AITD Cricket Academy (optional)"
+                    placeholder="Premier Cricket Club (optional)"
                     className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 text-sm text-textPrimary placeholder:text-textTertiary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all"
                   />
                 </div>

@@ -2,8 +2,7 @@
 # CoachLens — UI/UX Design System & Component Specifications
 
 **Version:** 1.0  
-**Authors:** Crimson Syndicate (Shivam Mahesh Gawade, Ashwith Ashok Shetty, Rahul Ravi Rathod)  
-**Hackathon:** GBOA Code Premier League 2026 — Round 2
+**Authors:** Shivam Mahesh Gawade, Ashwith Ashok Shetty, Rahul Ravi Rathod  
 
 ---
 

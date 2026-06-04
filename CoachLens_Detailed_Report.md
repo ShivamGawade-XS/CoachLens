@@ -6,7 +6,7 @@
 
 CoachLens bridges this gap by transforming raw scorecard data—collected via manual input, text paste, or direct optical character recognition (OCR) photo scans—into structured, actionable coaching intelligence. Operating in under 30 seconds via the Groq API (powered by `llama-3.1-8b-instant`), CoachLens provides comprehensive post-match reports, real-time live match advice, and sophisticated tournament management utilities, all within a completely free infrastructure footprint.
 
-Built by Crimson Syndicate (AITD, Goa) for the GBOA Code Premier League 2026, the application acts as the "intelligence layer" that sits atop traditional scorekeeping tools.
+Built as a modern digital solution for coaches, the application acts as the "intelligence layer" that sits atop traditional scorekeeping tools.
 
 ---
 
