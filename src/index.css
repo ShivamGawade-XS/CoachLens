@@ -133,11 +133,16 @@
 
 @layer components {
   .glass {
-    @apply backdrop-blur-xl bg-surface1/70 border-border;
+    @apply backdrop-blur-xl bg-surface1/90 border-border;
   }
   
   .glass-card {
-    @apply bg-surface1/60 backdrop-blur-md border border-border shadow-2xl;
+    @apply bg-surface1/95 backdrop-blur-xl border border-border shadow-2xl;
+  }
+
+  /* Upgrade modal backdrops globally for premium contrast and perfect readability */
+  div.fixed[class*="z-"] > div.absolute.inset-0 {
+    backdrop-filter: blur(12px) !important;
   }
 
   .card-interactive {

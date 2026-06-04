@@ -137,7 +137,7 @@ export default function PlayerModal({ player = null, onSave, onClose }) {
         className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto glass-card rounded-2xl border border-border shadow-2xl animate-scale-pop"
       >
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between p-5 border-b border-border bg-surface1/90 backdrop-blur-md rounded-t-2xl">
+        <div className="sticky top-0 z-10 flex items-center justify-between p-5 border-b border-border bg-surface1 backdrop-blur-md rounded-t-2xl">
           <h2 className="text-lg font-display text-textPrimary">
             {isEdit ? 'Edit Player' : 'Add Player'}
           </h2>
@@ -329,7 +329,7 @@ export default function PlayerModal({ player = null, onSave, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 flex items-center gap-3 p-5 border-t border-border bg-surface1/90 backdrop-blur-md rounded-b-2xl">
+        <div className="sticky bottom-0 flex items-center gap-3 p-5 border-t border-border bg-surface1 backdrop-blur-md rounded-b-2xl">
           <button
             onClick={onClose}
             className="flex-1 px-4 py-3 rounded-xl bg-surface2 border border-border text-textSecondary font-mono text-sm font-bold uppercase tracking-wider hover:bg-surface3 transition-colors btn-press"
