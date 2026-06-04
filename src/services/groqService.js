@@ -180,8 +180,7 @@ export const groqService = {
     }
   },
 
-  analyze: async (scorecardText, format = 'T20', phase = 'Overall', tone = 'Direct', progressCallback = null) => {
-    if (progressCallback) progressCallback('stage1');
+  analyze: async (scorecardText, format = 'T20', phase = 'Overall', tone = 'Direct', onChunk = null) => {
     try {
       const response = await fetch('/api/analyze', {
         method: 'POST',
@@ -191,18 +190,76 @@ export const groqService = {
         body: JSON.stringify({ scorecard: scorecardText, format, phase, tone })
       });
 
-      if (progressCallback) progressCallback('stage2');
-
       if (!response.ok) {
         const errData = await response.json().catch(() => null);
         throw new Error(errData?.error || response.statusText || 'Failed to analyze scorecard');
       }
 
-      if (progressCallback) progressCallback('stage3');
-      const data = await response.json();
-      if (progressCallback) progressCallback('stage4');
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let buffer = '';
+      let accumulatedText = '';
 
-      return data;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          const cleaned = line.trim();
+          if (!cleaned) continue;
+          if (cleaned === 'data: [DONE]') continue;
+
+          if (cleaned.startsWith('data: ')) {
+            try {
+              const parsed = JSON.parse(cleaned.slice(6));
+              const content = parsed.choices[0]?.delta?.content || '';
+              if (content) {
+                accumulatedText += content;
+                if (onChunk) onChunk(accumulatedText);
+              }
+            } catch (e) {
+              console.error("Stream parse error:", e);
+            }
+          }
+        }
+      }
+
+      let data;
+      try {
+        data = JSON.parse(accumulatedText);
+      } catch (e) {
+        throw new Error(`Failed to parse Groq response: ${e.message}. Raw: ${accumulatedText.slice(0, 100)}`);
+      }
+
+      return {
+        players: (data.players || []).map(p => ({
+          name: p.name,
+          role: p.role,
+          tag: p.tag,
+          key_stat: p.position,
+          match_impact: "8",
+          what_worked: p.whatWorked,
+          what_failed: p.whatFailed,
+          next_match_instruction: p.nextMatch,
+          practice_drill: p.drill
+        })),
+        team_summary: {
+          what_won_lost_match: data.teamReport?.turningPoint,
+          strongest_partnership: data.teamReport?.strongestPartnership,
+          bowling_inefficiency: data.teamReport?.bowlingInefficiency,
+          pattern: data.teamReport?.scoringPattern
+        },
+        coach_decisions: {
+          batting_order_change: data.coachBrief?.battingOrder,
+          bowling_rotation: data.coachBrief?.bowlingRotation,
+          player_on_notice: data.coachBrief?.playerOnNotice,
+          tactical_focus_next_game: data.coachBrief?.tacticalFocus
+        }
+      };
     } catch (error) {
       console.warn("API failed:", error);
       throw error;

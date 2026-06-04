@@ -12,6 +12,7 @@ import WhatsAppModal from '../components/WhatsAppModal/WhatsAppModal';
 import FormalReportModal from '../components/FormalReportModal/FormalReportModal';
 import InstagramCard from '../components/InstagramCard/InstagramCard';
 import { detectRoleMismatches } from '../utils/mismatchLogic';
+import ErrorBoundary from '../components/ErrorBoundary';
 
 export default function MatchResults() {
   const { id } = useParams();
@@ -222,56 +223,62 @@ export default function MatchResults() {
       {/* Content */}
       <div id="export-content-area" className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-16 bg-primary">
         {activeTab === 'players' && (
-          <>
-            {/* Generate WhatsApp Button */}
-            {match.analysis.players?.length > 0 && (
-              <div className="flex justify-end mb-6">
-                <button
-                  onClick={handleGenerateWhatsApp}
-                  className="flex items-center gap-2 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] border border-[#25D366]/30 px-4 py-2.5 rounded-xl text-xs font-mono font-medium uppercase tracking-wider transition-all btn-press"
-                >
-                  <MessageCircle size={14} />
-                  Generate WhatsApp Messages
-                </button>
-              </div>
-            )}
+          <ErrorBoundary>
+            <>
+              {/* Generate WhatsApp Button */}
+              {match.analysis.players?.length > 0 && (
+                <div className="flex justify-end mb-6">
+                  <button
+                    onClick={handleGenerateWhatsApp}
+                    className="flex items-center gap-2 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] border border-[#25D366]/30 px-4 py-2.5 rounded-xl text-xs font-mono font-medium uppercase tracking-wider transition-all btn-press"
+                  >
+                    <MessageCircle size={14} />
+                    Generate WhatsApp Messages
+                  </button>
+                </div>
+              )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {match.analysis.players && match.analysis.players.map((player, idx) => {
-                const mismatch = roleMismatches.find(m => m.playerName === player.name);
-                return (
-                  <div key={idx} className="animate-fade-in-up" style={{ animationDelay: `${idx * 80}ms`, opacity: 0 }}>
-                    <PlayerCard 
-                      player={player} 
-                      mismatch={mismatch}
-                      onViewMismatch={() => setActiveTab('brief')}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          </>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {match.analysis.players && match.analysis.players.map((player, idx) => {
+                  const mismatch = roleMismatches.find(m => m.playerName === player.name);
+                  return (
+                    <div key={idx} className="animate-fade-in-up" style={{ animationDelay: `${idx * 80}ms`, opacity: 0 }}>
+                      <PlayerCard 
+                        player={player} 
+                        mismatch={mismatch}
+                        onViewMismatch={() => setActiveTab('brief')}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          </ErrorBoundary>
         )}
 
         {activeTab === 'team' && (
-          <div className="animate-fade-in">
-            <TeamReport
-              report={match.analysis.team_summary}
-              rawScorecard={match.rawScorecard}
-              teamName={match.teamName}
-              opponent={match.opponent}
-            />
-          </div>
+          <ErrorBoundary>
+            <div className="animate-fade-in">
+              <TeamReport
+                report={match.analysis.team_summary}
+                rawScorecard={match.rawScorecard}
+                teamName={match.teamName}
+                opponent={match.opponent}
+              />
+            </div>
+          </ErrorBoundary>
         )}
 
         {activeTab === 'brief' && (
-          <div className="animate-fade-in">
-            <CoachBrief 
-              match={match} 
-              brief={match.analysis.coach_decisions} 
-              flaggedMismatches={roleMismatches}
-            />
-          </div>
+          <ErrorBoundary>
+            <div className="animate-fade-in">
+              <CoachBrief 
+                match={match} 
+                brief={match.analysis.coach_decisions} 
+                flaggedMismatches={roleMismatches}
+              />
+            </div>
+          </ErrorBoundary>
         )}
 
         {/* Timing Display */}

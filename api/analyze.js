@@ -1,32 +1,8 @@
-const PLAYER_PROMPT = `You are an expert cricket coach analyst. Analyze this match scorecard and return ONLY a JSON object. No preamble.
-Match Format: {format}
-Match Phase Focus: {phase}
-Tone: {tone}
-Scorecard: {scorecard}
+export const config = {
+  runtime: 'edge',
+};
 
-CRITICAL: Generate all text fields (what_worked, what_failed, instructions) strictly adhering to the requested Tone.
-- If Direct: Be purely objective and analytical.
-- If Encouraging: Focus on positives, potential, and constructive learning.
-- If Brutal Honest: Do not hold back. Criticize poor numbers fiercely, use harsh truths.
-
-Return exactly this structure:
-{
-  "players": [
-    {
-      "name": "player name",
-      "role": "batsman/bowler/allrounder",
-      "tag": "Anchor|Aggressor|Liability|Improving",
-      "key_stat": "e.g. 45 (30)",
-      "match_impact": "impact score out of 10",
-      "what_worked": "specific and factual",
-      "what_failed": "specific and factual",
-      "next_match_instruction": "one concrete actionable change",
-      "practice_drill": "one specific drill"
-    }
-  ]
-}`;
-
-const TEAM_PROMPT = `You are an expert cricket coach analyst. Analyze this match scorecard and return ONLY a JSON object. No preamble.
+const CONSOLIDATED_PROMPT = `You are an expert cricket coach analyst. Analyze this match scorecard and return ONLY a JSON object. No preamble.
 Match Format: {format}
 Match Phase Focus: {phase}
 Tone: {tone}
@@ -37,63 +13,40 @@ CRITICAL: Generate all text fields strictly adhering to the requested Tone.
 - If Encouraging: Focus on positives, potential, and constructive learning.
 - If Brutal Honest: Do not hold back. Criticize poor numbers fiercely, use harsh truths.
 
-Return exactly this structure:
-{
-  "team_summary": {
-    "what_won_lost_match": "specific over and event",
-    "strongest_partnership": "player names and runs",
-    "bowling_inefficiency": "specific bowler and overs",
-    "pattern": "one key team-level tactical observation"
-  }
-}`;
+You must follow the JSON schema specified in the response_format. Generate player tags strictly from the enum list. Position must represent the key stat for the player (e.g., "45 (30)" or "3/15 (4)").`;
 
-const BRIEF_PROMPT = `You are an expert cricket coach analyst. Analyze this match scorecard and return ONLY a JSON object. No preamble.
-Match Format: {format}
-Match Phase Focus: {phase}
-Tone: {tone}
-Scorecard: {scorecard}
-
-CRITICAL: Generate all text fields strictly adhering to the requested Tone.
-- If Direct: Be purely objective and analytical.
-- If Encouraging: Focus on positives, potential, and constructive learning.
-- If Brutal Honest: Do not hold back. Criticize poor numbers fiercely, use harsh truths.
-
-Return exactly this structure:
-{
-  "coach_decisions": {
-    "batting_order_change": "specific swap with reason",
-    "bowling_rotation": "specific change with reason",
-    "player_on_notice": "name and why",
-    "tactical_focus_next_game": "one sentence"
-  }
-}`;
-
-export default async function handler(req, res) {
+export default async function handler(req) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
+    return new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
+      status: 405,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
-  const { scorecard, format = 'T20', phase = 'Overall', tone = 'Direct' } = req.body || {};
+  const { scorecard, format = 'T20', phase = 'Overall', tone = 'Direct' } = await req.json().catch(() => ({}));
 
   if (!scorecard) {
-    return res.status(400).json({ error: 'Missing scorecard data' });
+    return new Response(JSON.stringify({ error: 'Missing scorecard data' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ error: 'Groq API key not configured on server' });
+    return new Response(JSON.stringify({ error: 'Groq API key not configured on server' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
-  const processPrompt = (promptTemplate) => {
-    return promptTemplate
-      .replace('{format}', format)
-      .replace('{phase}', phase)
-      .replace('{tone}', tone)
-      .replace('{scorecard}', scorecard);
-  };
+  const prompt = CONSOLIDATED_PROMPT
+    .replace('{format}', format)
+    .replace('{phase}', phase)
+    .replace('{tone}', tone)
+    .replace('{scorecard}', scorecard);
 
-  const runCall = async (promptTemplate, maxTokens = 1500) => {
-    const prompt = processPrompt(promptTemplate);
+  try {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -107,55 +60,87 @@ export default async function handler(req, res) {
           { role: "user", content: scorecard }
         ],
         temperature: 0.3,
-        max_tokens: maxTokens,
-        response_format: { type: "json_object" }
+        stream: true,
+        response_format: {
+          type: "json_schema",
+          json_schema: {
+            name: "analysis_response",
+            schema: {
+              type: "object",
+              properties: {
+                players: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      name: { type: "string" },
+                      role: { type: "string" },
+                      position: { type: "string" },
+                      tag: {
+                        type: "string",
+                        enum: ["Aggressor", "Anchor", "Improving", "Liability"]
+                      },
+                      whatWorked: { type: "string" },
+                      whatFailed: { type: "string" },
+                      nextMatch: { type: "string" },
+                      drill: { type: "string" }
+                    },
+                    required: ["name", "role", "position", "tag", "whatWorked", "whatFailed", "nextMatch", "drill"],
+                    additionalProperties: false
+                  }
+                },
+                teamReport: {
+                  type: "object",
+                  properties: {
+                    turningPoint: { type: "string" },
+                    strongestPartnership: { type: "string" },
+                    bowlingInefficiency: { type: "string" },
+                    scoringPattern: { type: "string" }
+                  },
+                  required: ["turningPoint", "strongestPartnership", "bowlingInefficiency", "scoringPattern"],
+                  additionalProperties: false
+                },
+                coachBrief: {
+                  type: "object",
+                  properties: {
+                    battingOrder: { type: "string" },
+                    bowlingRotation: { type: "string" },
+                    playerOnNotice: { type: "string" },
+                    tacticalFocus: { type: "string" }
+                  },
+                  required: ["battingOrder", "bowlingRotation", "playerOnNotice", "tacticalFocus"],
+                  additionalProperties: false
+                }
+              },
+              required: ["players", "teamReport", "coachBrief"],
+              additionalProperties: false
+            }
+          }
+        }
       })
     });
 
     if (!response.ok) {
       const errData = await response.json().catch(() => null);
       const errMsg = errData?.error?.message || response.statusText;
-      throw new Error(`Groq API error: ${errMsg}`);
+      return new Response(JSON.stringify({ error: `Groq API error: ${errMsg}` }), {
+        status: response.status,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
 
-    const data = await response.json();
-    const rawResponse = data.choices[0].message.content;
-    try {
-      return JSON.parse(rawResponse);
-    } catch (e) {
-      return JSON.parse(rawResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim());
-    }
-  };
-
-  try {
-    const [playersData, teamData, briefData] = await Promise.all([
-      runCall(PLAYER_PROMPT, 800),
-      runCall(TEAM_PROMPT, 400),
-      runCall(BRIEF_PROMPT, 400)
-    ]);
-
-    const extractKey = (obj, expectedKey) => {
-      if (!obj) return null;
-      if (obj[expectedKey]) return obj[expectedKey];
-      const key = Object.keys(obj).find(k => k.toLowerCase() === expectedKey.toLowerCase());
-      if (key) return obj[key];
-      const values = Object.values(obj);
-      if (expectedKey === 'players') {
-        if (Array.isArray(obj)) return obj;
-        if (values.length === 1 && Array.isArray(values[0])) return values[0];
-      } else {
-        if (values.length === 1 && typeof values[0] === 'object') return values[0];
-      }
-      return null;
-    };
-
-    return res.status(200).json({
-      players: extractKey(playersData, 'players') || [],
-      team_summary: extractKey(teamData, 'team_summary') || {},
-      coach_decisions: extractKey(briefData, 'coach_decisions') || {}
+    return new Response(response.body, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
     });
   } catch (error) {
-    console.error("Analysis handler failed:", error);
-    return res.status(500).json({ error: error.message });
+    console.error("Edge handler failed:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }
