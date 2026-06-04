@@ -42,10 +42,23 @@ export default function Teams({ addToast }) {
   const { user } = useAuth();
   const [teams, setTeams] = useState([]);
   const [teamStats, setTeamStats] = useState({});
-  const [showModal, setShowModal] = useState(false);
-  const [newTeam, setNewTeam] = useState({ name: '', emoji: '🏏' });
+  const [newTeam, setNewTeam] = useState({ name: '', emoji: '🏏', logo: null });
   const [modalError, setModalError] = useState('');
   const [editingTeam, setEditingTeam] = useState(null);
+
+  const handleLogoUpload = (e, isEdit = false) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (isEdit) {
+        setEditingTeam(prev => prev ? { ...prev, logo: reader.result } : null);
+      } else {
+        setNewTeam(prev => ({ ...prev, logo: reader.result }));
+      }
+    };
+    reader.readAsDataURL(file);
+  };
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('recent');
 
@@ -112,6 +125,7 @@ export default function Teams({ addToast }) {
       id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
       name: newTeam.name.trim(),
       emoji: newTeam.emoji,
+      logo: newTeam.logo || null,
       roster: [],
       matches: 0,
       createdAt: new Date().toISOString(),
@@ -119,7 +133,7 @@ export default function Teams({ addToast }) {
     const updated = [team, ...teams];
     saveTeams(user.id, updated);
     setTeams(updated);
-    setNewTeam({ name: '', emoji: '🏏' });
+    setNewTeam({ name: '', emoji: '🏏', logo: null });
     setShowModal(false);
     addToast?.(`Team "${team.name}" created`, 'success');
     loadTeams();
@@ -145,7 +159,7 @@ export default function Teams({ addToast }) {
     const newName = editingTeam.name.trim();
 
     const updatedTeams = teams.map(t => 
-      t.id === editingTeam.id ? { ...t, name: newName, emoji: editingTeam.emoji } : t
+      t.id === editingTeam.id ? { ...t, name: newName, emoji: editingTeam.emoji, logo: editingTeam.logo || null } : t
     );
     saveTeams(user.id, updatedTeams);
     setTeams(updatedTeams);
@@ -388,8 +402,12 @@ export default function Teams({ addToast }) {
             return (
               <div key={team.id} className="glass-card rounded-2xl p-6 group transition-all hover:border-accent/30 flex flex-col">
                 <div className="flex items-center gap-4 mb-5">
-                  <div className="w-14 h-14 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center text-2xl shrink-0">
-                    {team.emoji || '🏏'}
+                  <div className="w-14 h-14 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center text-2xl shrink-0 overflow-hidden">
+                    {team.logo ? (
+                      <img src={team.logo} alt={team.name} className="w-full h-full object-cover" />
+                    ) : (
+                      team.emoji || '🏏'
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-xl font-display text-textPrimary truncate">{team.name}</h3>
@@ -398,7 +416,7 @@ export default function Teams({ addToast }) {
                   {s.weeklyImprovement === 'up' && <div className="px-2 py-1 rounded-lg bg-aggressor-bg/30 border border-aggressor-border/50 text-aggressor-text text-[10px] font-mono font-bold flex items-center gap-1"><TrendingUp size={10} /> Improving</div>}
                   {s.weeklyImprovement === 'down' && <div className="px-2 py-1 rounded-lg bg-liability-bg/30 border border-liability-border/50 text-liability-text text-[10px] font-mono font-bold flex items-center gap-1"><TrendingDown size={10} /> Slump</div>}
                   <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                    <button onClick={() => setEditingTeam({ id: team.id, name: team.name, emoji: team.emoji })} className="p-2 rounded-lg text-textTertiary hover:text-textPrimary hover:bg-surface3 transition-colors" title="Edit team"><Edit2 size={14} /></button>
+                    <button onClick={() => setEditingTeam({ id: team.id, name: team.name, emoji: team.emoji, logo: team.logo || null })} className="p-2 rounded-lg text-textTertiary hover:text-textPrimary hover:bg-surface3 transition-colors" title="Edit team"><Edit2 size={14} /></button>
                     <button onClick={() => handleDelete(team.id, team.name)} className="p-2 rounded-lg text-textTertiary hover:text-liability-text hover:bg-liability-bg/50 transition-colors" title="Delete team"><Trash2 size={14} /></button>
                   </div>
                 </div>
@@ -479,6 +497,36 @@ export default function Teams({ addToast }) {
                 </div>
               </div>
               <div className="space-y-2">
+                <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest block">Team Logo</label>
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-xl bg-surface2 border border-border flex items-center justify-center text-2xl shrink-0 overflow-hidden relative group">
+                    {newTeam.logo ? (
+                      <>
+                        <img src={newTeam.logo} alt="Preview" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => setNewTeam(p => ({ ...p, logo: null }))}
+                          className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-mono uppercase"
+                        >
+                          Remove
+                        </button>
+                      </>
+                    ) : (
+                      <span className="text-textTertiary">📷</span>
+                    )}
+                  </div>
+                  <label className="cursor-pointer bg-surface2 hover:bg-surface3 border border-border text-textSecondary hover:text-textPrimary px-4 py-2.5 rounded-xl text-xs font-mono transition-colors uppercase tracking-wider">
+                    Upload Logo
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleLogoUpload(e, false)}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              </div>
+              <div className="space-y-2">
                 <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest">Team Name</label>
                 <input
                   value={newTeam.name}
@@ -516,6 +564,36 @@ export default function Teams({ addToast }) {
                       {e}
                     </button>
                   ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] text-textSecondary uppercase font-mono tracking-widest block">Team Logo</label>
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-xl bg-surface2 border border-border flex items-center justify-center text-2xl shrink-0 overflow-hidden relative group">
+                    {editingTeam.logo ? (
+                      <>
+                        <img src={editingTeam.logo} alt="Preview" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => setEditingTeam(p => ({ ...p, logo: null }))}
+                          className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-mono uppercase"
+                        >
+                          Remove
+                        </button>
+                      </>
+                    ) : (
+                      <span className="text-textTertiary">📷</span>
+                    )}
+                  </div>
+                  <label className="cursor-pointer bg-surface2 hover:bg-surface3 border border-border text-textSecondary hover:text-textPrimary px-4 py-2.5 rounded-xl text-xs font-mono transition-colors uppercase tracking-wider">
+                    Upload Logo
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleLogoUpload(e, true)}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
               </div>
               <div className="space-y-2">

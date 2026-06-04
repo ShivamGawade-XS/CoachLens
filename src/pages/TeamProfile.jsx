@@ -224,9 +224,15 @@ export default function TeamProfile() {
         </button>
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <span className="text-2xl">{teamObj?.emoji || '🏏'}</span>
+            <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-2xl shrink-0 overflow-hidden">
+              {teamObj?.logo ? (
+                <img src={teamObj.logo} alt={teamName} className="w-full h-full object-cover" />
+              ) : (
+                teamObj?.emoji || '🏏'
+              )}
+            </div>
             <div>
-              <h1 className="text-display-lg font-display text-textPrimary">{teamName}</h1>
+              <h1 className="text-display-lg font-display text-textPrimary leading-none mb-1">{teamName}</h1>
               <p className="text-sm font-mono text-textSecondary">Team Profile · {roster.length} Players</p>
             </div>
           </div>

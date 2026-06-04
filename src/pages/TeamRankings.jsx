@@ -80,6 +80,7 @@ function computeRankings(teams, allMatches) {
       id: team.id,
       name: team.name,
       emoji: team.emoji,
+      logo: team.logo || null,
       played: total,
       wins,
       losses,
@@ -156,8 +157,12 @@ export default function TeamRankings() {
               <span className="text-[10px] font-mono text-textTertiary uppercase tracking-widest">Current Leader</span>
             </div>
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-yellow-400/10 border border-yellow-400/20 flex items-center justify-center text-3xl">
-                {topTeam.emoji}
+              <div className="w-16 h-16 rounded-2xl bg-yellow-400/10 border border-yellow-400/20 flex items-center justify-center text-3xl overflow-hidden shrink-0">
+                {topTeam.logo ? (
+                  <img src={topTeam.logo} alt={topTeam.name} className="w-full h-full object-cover" />
+                ) : (
+                  topTeam.emoji
+                )}
               </div>
               <div className="flex-1">
                 <h2 className="text-2xl font-display text-textPrimary">{topTeam.name}</h2>
@@ -261,8 +266,12 @@ export default function TeamRankings() {
 
                   {/* Team Name */}
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-xl bg-surface3 border border-border flex items-center justify-center text-xl shrink-0 group-hover:border-accent/30 transition-colors">
-                      {team.emoji}
+                    <div className="w-10 h-10 rounded-xl bg-surface3 border border-border flex items-center justify-center text-xl shrink-0 group-hover:border-accent/30 transition-colors overflow-hidden">
+                      {team.logo ? (
+                        <img src={team.logo} alt={team.name} className="w-full h-full object-cover" />
+                      ) : (
+                        team.emoji
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-semibold text-textPrimary truncate group-hover:text-accent transition-colors">{team.name}</div>
@@ -351,8 +360,12 @@ export default function TeamRankings() {
                       <span className="text-lg font-display text-textTertiary">{idx + 1}</span>
                     )}
                   </div>
-                  <div className="w-10 h-10 rounded-xl bg-surface3 border border-border flex items-center justify-center text-lg shrink-0">
-                    {team.emoji}
+                  <div className="w-10 h-10 rounded-xl bg-surface3 border border-border flex items-center justify-center text-lg shrink-0 overflow-hidden">
+                    {team.logo ? (
+                      <img src={team.logo} alt={team.name} className="w-full h-full object-cover" />
+                    ) : (
+                      team.emoji
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-semibold text-textPrimary truncate">{team.name}</div>
