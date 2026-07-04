@@ -137,7 +137,7 @@ export default function TeamReport({ report, rawScorecard, teamName, opponent })
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto py-2">
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style>{`
         @media print {
           body {
             background: white !important;
@@ -164,7 +164,7 @@ export default function TeamReport({ report, rawScorecard, teamName, opponent })
             margin-top: 1rem !important;
           }
         }
-      `}} />
+      `}</style>
 
       {/* Header and Print PDF CTA */}
       <div className="flex justify-between items-center print-hide">

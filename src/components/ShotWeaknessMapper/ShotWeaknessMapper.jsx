@@ -156,7 +156,7 @@ export default function ShotWeaknessMapper() {
                           <span className="font-display text-textPrimary">{label}</span>
                           <span className={`text-[9px] uppercase tracking-wider font-mono px-2 py-0.5 rounded border ${badgeColorMap[color] || badgeColorMap.anchor}`}>{data.severity}</span>
                         </div>
-                        <p className="text-[11px] font-mono text-textTertiary mt-1">vs {data.matches.slice(0, 3).join(', ')}{data.matches.length > 3 ? ` +${data.matches.length - 3} more` : ''}</p>
+                        <p className="text-[11px] font-mono text-textTertiary mt-1">vs {data.matches.slice(0, 3).join(', ')}{data.matches.length > 3 ? ` (and ${data.matches.length - 3} others)` : ''}</p>
                       </div>
                       <div className="text-right">
                         <span className="text-2xl font-display text-accent">{data.count}×</span>

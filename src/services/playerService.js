@@ -224,10 +224,10 @@ const _generateSvgAvatar = (name, jerseyNumber, accentHue) => {
 
   // Use btoa for base64 encoding
   try {
-    return 'data:image/svg+xml;base64,' + btoa(svg);
+    return `data:image/svg+xml;base64,${btoa(svg)}`;
   } catch {
     // Fallback for unicode issues
-    return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+    return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`;
   }
 };
 

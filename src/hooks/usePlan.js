@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { FREE_LIMIT, STORAGE_KEYS } from '../constants';
 
-const STORAGE_KEY_TOKEN  = STORAGE_KEYS.PLAN_TOKEN;
+const STORAGE_KEY_TOKEN  = STORAGE_KEYS.PLAN_STATUS_KEY;
 const STORAGE_KEY_COUNT  = STORAGE_KEYS.ANALYSIS_COUNT;
 
 /**

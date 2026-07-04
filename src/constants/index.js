@@ -25,7 +25,7 @@ export const STORAGE_KEYS = {
   SYS_KEY: 'coachlens_sys_k',
   TEAMS_PREFIX: 'coachlens_teams_',
   SETTINGS_PREFIX: 'coachlens_settings_',
-  PLAN_TOKEN: 'coachlens_plan_token',
+  PLAN_STATUS_KEY: 'coachlens_plan_status',
   ANALYSIS_COUNT: 'coachlens_analysis_count'
 };
 
