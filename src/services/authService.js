@@ -32,9 +32,13 @@ const isBase64Match = (storedHash, plainPassword) => {
 const getObfuscationKey = () => {
   let key = localStorage.getItem(STORAGE_KEYS.SYS_KEY);
   if (!key) {
-    key = crypto.randomUUID
-      ? crypto.randomUUID()
-      : Math.random().toString(36).substring(2) + Date.now().toString(36);
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      key = crypto.randomUUID();
+    } else {
+      const array = new Uint32Array(4);
+      (typeof crypto !== 'undefined' ? crypto : self.crypto).getRandomValues(array);
+      key = Array.from(array, num => num.toString(36)).join('-');
+    }
     localStorage.setItem(STORAGE_KEYS.SYS_KEY, key);
   }
   let numKey = 0;

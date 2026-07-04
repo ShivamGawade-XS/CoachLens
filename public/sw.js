@@ -8,26 +8,32 @@ const ASSETS_TO_CACHE = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
-  );
+  event.waitUntil((async () => {
+    try {
+      const cache = await caches.open(CACHE_NAME);
+      await cache.addAll(ASSETS_TO_CACHE);
+    } catch (err) {
+      console.error('Service Worker installation caching failed:', err);
+    }
+  })());
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cache) => {
+  event.waitUntil((async () => {
+    try {
+      const cacheNames = await caches.keys();
+      await Promise.all(
+        cacheNames.map(async (cache) => {
           if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
+            await caches.delete(cache);
           }
         })
       );
-    })
-  );
+    } catch (err) {
+      console.error('Service Worker activation cleanup failed:', err);
+    }
+  })());
   self.clients.claim();
 });
 
@@ -37,25 +43,42 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (url.pathname.startsWith('/api') || url.hostname.includes('supabase') || url.hostname.includes('groq') || url.hostname.includes('hot-update')) return;
 
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+  event.respondWith((async () => {
+    try {
+      const cachedResponse = await caches.match(event.request);
       if (cachedResponse) {
         return cachedResponse;
       }
-      return fetch(event.request).then((networkResponse) => {
+      
+      try {
+        const networkResponse = await fetch(event.request);
         if (!networkResponse || networkResponse.status !== 200) {
           return networkResponse;
         }
+        
         const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
+        // Run cache writing in background asynchronously
+        (async () => {
+          try {
+            const cache = await caches.open(CACHE_NAME);
+            await cache.put(event.request, responseToCache);
+          } catch (err) {
+            console.error('Service Worker cache put failed:', err);
+          }
+        })();
+        
         return networkResponse;
-      }).catch(() => {
+      } catch (err) {
+        console.warn('Network request failed in fetch event:', err);
         if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
+          const fallback = await caches.match('/index.html');
+          if (fallback) return fallback;
         }
-      });
-    })
-  );
+        return new Response('Network error occurred', { status: 503, statusText: 'Service Unavailable' });
+      }
+    } catch (err) {
+      console.error('Service Worker cache match error:', err);
+      return fetch(event.request);
+    }
+  })());
 });

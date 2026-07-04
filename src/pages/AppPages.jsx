@@ -120,12 +120,17 @@ export function Teams({ addToast }) {
     loadTeams();
 
     if (isSupabaseConfigured()) {
-      storageService.fetchTeamsFromSupabase(user.id).then(dbTeams => {
-        if (dbTeams && dbTeams.length > 0) {
-          localStorage.setItem(`coachlens_teams_${user.id}`, JSON.stringify(dbTeams));
-          loadTeams();
+      (async () => {
+        try {
+          const dbTeams = await storageService.fetchTeamsFromSupabase(user.id);
+          if (dbTeams && dbTeams.length > 0) {
+            localStorage.setItem(`coachlens_teams_${user.id}`, JSON.stringify(dbTeams));
+            loadTeams();
+          }
+        } catch (err) {
+          console.error("Failed to fetch teams:", err);
         }
-      });
+      })();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
@@ -287,6 +292,12 @@ export function Teams({ addToast }) {
       'Maintain current template — execution was near-perfect.'
     ];
 
+    const secureRandom = () => {
+      const a = new Uint32Array(1);
+      (window.crypto || self.crypto).getRandomValues(a);
+      return a[0] / 0xffffffff;
+    };
+
     sampleTeams.forEach(team => {
       for(let i=0; i<5; i++) {
         const matchDate = new Date(now);
@@ -295,15 +306,15 @@ export function Teams({ addToast }) {
         const playersAnalysis = team.roster.map(p => ({
           name: p.name,
           role: p.role,
-          tag: tags[Math.floor(Math.random() * tags.length)],
-          key_stat: `${Math.floor(Math.random() * 50 + 10)} (${Math.floor(Math.random() * 30 + 10)})`,
-          match_impact: (Math.random() * 5 + 5).toFixed(1),
+          tag: tags[Math.floor(secureRandom() * tags.length)],
+          key_stat: `${Math.floor(secureRandom() * 50 + 10)} (${Math.floor(secureRandom() * 30 + 10)})`,
+          match_impact: (secureRandom() * 5 + 5).toFixed(1),
           what_worked: 'Solid contribution with both intent and execution.',
           what_failed: 'Needs to convert starts into bigger scores.',
           next_match_instruction: 'Focus on strike rotation in middle overs.',
           practice_drill: 'Net sessions targeting specific weak zones.'
         }));
-
+        
         randomMatches.push({
           id: `sample-match-${team.id}-${i}`,
           date: matchDate.toISOString(),
@@ -311,7 +322,7 @@ export function Teams({ addToast }) {
           phase: 'Full Match',
           teamName: team.name,
           opponent: opponents[i % opponents.length],
-          result: results[Math.floor(Math.random() * results.length)],
+          result: results[Math.floor(secureRandom() * results.length)],
           analysis: {
             players: playersAnalysis,
             team_summary: {

@@ -111,7 +111,14 @@ export default function TeamRankings() {
   useEffect(() => {
     if (!user) return;
     setTeams(getTeams(user.id));
-    storageService.getMatches().then(matches => setAllMatches(matches));
+    (async () => {
+      try {
+        const matches = await storageService.getMatches();
+        setAllMatches(matches);
+      } catch (err) {
+        console.error("Failed to load matches for rankings:", err);
+      }
+    })();
   }, [user]);
 
   const rankings = useMemo(() => computeRankings(teams, allMatches), [teams, allMatches]);
