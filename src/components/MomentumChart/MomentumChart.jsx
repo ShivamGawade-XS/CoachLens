@@ -6,6 +6,12 @@ import {
 import { groqService } from '../../services/groqService';
 import { TrendingUp } from 'lucide-react';
 
+const secureRandom = () => {
+  const arr = new Uint32Array(1);
+  (window.crypto || self.crypto).getRandomValues(arr);
+  return arr[0] / 0xffffffff;
+};
+
 // ─── Over-by-over parser ──────────────────────────────────────────
 // Supports formats:
 //   "Over 1: 5 runs, 0 wickets"
@@ -98,8 +104,8 @@ function parseOverData(rawScorecard) {
   if (teamBOvers.length < 5) {
     teamBOvers = teamAOvers.map(o => ({
       over: o.over,
-      runs: Math.max(0, o.runs + Math.floor(Math.random() * 5) - 2),
-      wickets: Math.random() > 0.85 ? 1 : 0
+      runs: Math.max(0, o.runs + Math.floor(secureRandom() * 5) - 2),
+      wickets: secureRandom() > 0.85 ? 1 : 0
     }));
   }
 
@@ -181,7 +187,7 @@ function ChartSkeleton() {
           <div
             key={i}
             className="flex-1 bg-surface2 rounded-t"
-            style={{ height: `${20 + Math.random() * 70}%` }}
+            style={{ height: `${20 + secureRandom() * 70}%` }}
           />
         ))}
       </div>

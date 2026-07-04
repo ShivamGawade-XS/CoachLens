@@ -91,7 +91,7 @@ function App() {
   const plan = usePlan();
 
   const addToast = useCallback((message, type = 'info') => {
-    const id = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    const id = `${Date.now()}-${self.crypto.randomUUID()}`;
     setToasts(prev => [...prev, { id, message, type }]);
   }, []);
 
