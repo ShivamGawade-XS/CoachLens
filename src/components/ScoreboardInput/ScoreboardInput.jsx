@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronLeft, Clipboard, AlertCircle } from 'lucide-react';
+import { ChevronLeft, Clipboard, AlertCircle, Link, CheckCircle, Loader, ArrowRight, ExternalLink } from 'lucide-react';
 import { parseScorecard } from '../../utils/parseScorecard';
+import { normalizeScorecardText, looksLikeUrl } from '../../utils/normalizeScorecardText';
 import { MATCH_FORMATS, PHASE_OPTIONS } from '../../constants';
 
 const SAMPLE_SCORECARD = `Panaji Panthers vs Margao Strikers - T20 Match
@@ -106,7 +107,10 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
   const [inputMode, setInputMode] = useState('paste');
   const [importUrl, setImportUrl] = useState('');
   const [isImporting, setIsImporting] = useState(false);
+  const [importGuide, setImportGuide] = useState(null); // { title, steps, url, name }
+  const [importSuccess, setImportSuccess] = useState(false);
   const [error, setError] = useState(null);
+  const [urlError, setUrlError] = useState(null);
   const [showExample, setShowExample] = useState(false);
   const textareaRef = useRef(null);
 
@@ -118,8 +122,18 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
       textareaRef.current.style.overflowY = textareaRef.current.scrollHeight > 320 ? 'auto' : 'hidden';
     }
   }, [scorecardText, inputMode]);
-  
+
   const MAX_SCORECARD_CHARS = 15000;
+
+  const handleScorecardChange = (e) => {
+    const val = e.target.value;
+    setScorecardText(val);
+    setError(null);
+    // Auto-detect URL pasted into text area → offer to switch to URL tab
+    if (looksLikeUrl(val.trim())) {
+      setError('That looks like a URL — switch to the Import URL tab to auto-import.');
+    }
+  };
 
   const handleAnalyze = () => {
     if (scorecardText.length < 100) return;
@@ -127,13 +141,15 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
       setError(`Scorecard too large (${scorecardText.length.toLocaleString()} chars). Maximum is ${MAX_SCORECARD_CHARS.toLocaleString()} characters. Trim excess text and retry.`);
       return;
     }
-    const { isValid, error: parseError } = parseScorecard(scorecardText);
+    const normalized = normalizeScorecardText(scorecardText);
+    const { isValid, error: parseError, hint } = parseScorecard(normalized);
     if (!isValid) {
       setError(parseError);
+      if (hint === 'url_tab') setInputMode('url');
       return;
     }
     setError(null);
-    onAnalyze(format, phase, scorecardText);
+    onAnalyze(format, phase, normalized);
   };
 
   const handleLoadSample = () => {
@@ -142,16 +158,59 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
   };
 
   const handleImportUrl = async () => {
-    if (!importUrl) return;
+    if (!importUrl.trim()) return;
     setIsImporting(true);
-    
-    // Simulate scraping latency
-    setTimeout(() => {
-      setScorecardText(SAMPLE_SCORECARD);
-      setInputMode('paste');
+    setUrlError(null);
+    setImportGuide(null);
+    setImportSuccess(false);
+
+    try {
+      const res = await fetch('/api/import-scorecard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: importUrl.trim() }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setUrlError(data.error || 'Import failed. Please try again.');
+        return;
+      }
+
+      if (data.success && data.scorecard) {
+        // Auto-import succeeded
+        const normalized = normalizeScorecardText(data.scorecard);
+        setScorecardText(normalized);
+        setImportSuccess(true);
+        setImportUrl('');
+        setTimeout(() => {
+          setInputMode('paste');
+          setImportSuccess(false);
+        }, 1500);
+      } else {
+        // Blocked or parse failed — show platform-specific guide
+        if (data.guide) {
+          setImportGuide(data.guide);
+        } else {
+          setUrlError(data.error || 'Could not extract scorecard. Please paste the text manually.');
+        }
+      }
+    } catch (err) {
+      setUrlError('Network error. Check your connection and try again.');
+    } finally {
       setIsImporting(false);
-      setImportUrl('');
-    }, 2000);
+    }
+  };
+
+  const handleUrlKeyDown = (e) => {
+    if (e.key === 'Enter') handleImportUrl();
+  };
+
+  const switchToPasteTab = () => {
+    setInputMode('paste');
+    setImportGuide(null);
+    setUrlError(null);
   };
 
   const formats = MATCH_FORMATS;
@@ -282,7 +341,7 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
                   <textarea 
                     ref={textareaRef}
                     value={scorecardText}
-                    onChange={(e) => { setScorecardText(e.target.value); setError(null); }}
+                    onChange={handleScorecardChange}
                     placeholder="Paste CricHeroes scorecard, plain text, or any structured data here..."
                     className="w-full bg-surface2 border border-border rounded-xl px-4 py-3 md:p-4 pb-12 text-textPrimary placeholder-textTertiary focus:outline-none focus:border-accent focus:shadow-glow-accent font-mono text-sm resize-none transition-all duration-200"
                     style={{ minHeight: '140px', maxHeight: '320px', height: 'auto' }}
@@ -308,29 +367,134 @@ export default function ScoreboardInput({ onAnalyze, onBack }) {
               </>
             ) : (
               <div className="space-y-4 animate-fade-in">
-                <div className="bg-surface2/50 border border-border rounded-xl p-6 text-center">
-                  <div className="w-12 h-12 bg-accent/10 text-accent rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Clipboard size={20} />
+                {/* Success state */}
+                {importSuccess && (
+                  <div className="flex items-center gap-3 p-4 rounded-xl bg-improving-bg/50 border border-improving-border text-improving-text text-sm animate-scale-pop">
+                    <CheckCircle size={16} className="shrink-0" />
+                    <span>Scorecard extracted! Switching to paste tab…</span>
                   </div>
-                  <h3 className="text-sm font-medium text-textPrimary mb-1">CricHeroes Auto-Import</h3>
-                  <p className="text-xs text-textSecondary mb-4 max-w-sm mx-auto">
-                    Paste a CricHeroes match URL to automatically extract the scorecard and over-by-over momentum data.
-                  </p>
-                  <input 
-                    type="url"
-                    value={importUrl}
-                    onChange={(e) => setImportUrl(e.target.value)}
-                    placeholder="https://cricheroes.in/scorecard/..."
-                    className="w-full bg-primary border border-border rounded-lg px-4 py-3 text-sm text-textPrimary focus:outline-none focus:border-accent font-mono transition-colors"
-                  />
-                  <button 
-                    onClick={handleImportUrl}
-                    disabled={isImporting || !importUrl}
-                    className="mt-4 bg-surface3 text-textPrimary border border-border px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-surface3/80 transition-colors w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isImporting ? 'Extracting...' : 'Import Match Data'}
-                  </button>
-                </div>
+                )}
+
+                {/* URL input + import button */}
+                {!importGuide && !importSuccess && (
+                  <div className="bg-surface2/50 border border-border rounded-xl p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 bg-accent/10 text-accent rounded-full flex items-center justify-center shrink-0">
+                        <Link size={18} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium text-textPrimary">CricHeroes Auto-Import</h3>
+                        <p className="text-xs text-textSecondary mt-0.5">
+                          Paste a CricHeroes match URL to automatically extract the scorecard.
+                        </p>
+                      </div>
+                    </div>
+
+                    <input
+                      type="url"
+                      value={importUrl}
+                      onChange={(e) => { setImportUrl(e.target.value); setUrlError(null); }}
+                      onKeyDown={handleUrlKeyDown}
+                      placeholder="https://cricheroes.in/scorecard/..."
+                      className="w-full bg-primary border border-border rounded-lg px-4 py-3 text-sm text-textPrimary focus:outline-none focus:border-accent font-mono transition-colors mb-3"
+                    />
+
+                    {urlError && (
+                      <p className="text-liability-text text-xs flex items-center gap-1.5 mb-3 animate-fade-in">
+                        <AlertCircle size={12} className="shrink-0" />
+                        {urlError}
+                      </p>
+                    )}
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={handleImportUrl}
+                        disabled={isImporting || !importUrl.trim()}
+                        className="flex items-center gap-2 bg-accent hover:bg-accentHover text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isImporting ? (
+                          <>
+                            <Loader size={14} className="animate-spin" />
+                            Extracting…
+                          </>
+                        ) : (
+                          <>
+                            <ArrowRight size={14} />
+                            Import Match
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={switchToPasteTab}
+                        className="px-5 py-2.5 text-sm text-textSecondary hover:text-textPrimary border border-border rounded-lg transition-colors"
+                      >
+                        Paste manually
+                      </button>
+                    </div>
+
+                    <p className="text-[10px] text-textTertiary font-mono mt-4">
+                      Supports: cricheroes.in · espncricinfo.com · cricbuzz.com
+                    </p>
+                  </div>
+                )}
+
+                {/* Smart guide fallback — shown when server-side fetch is blocked */}
+                {importGuide && !importSuccess && (
+                  <div className="bg-surface2/50 border border-border rounded-xl p-6 animate-fade-in">
+                    <div className="flex items-center gap-3 mb-5">
+                      <div className="w-10 h-10 bg-anchor-bg text-anchor-text rounded-full flex items-center justify-center shrink-0 text-lg font-display">
+                        📋
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium text-textPrimary">
+                          Import from {importGuide.name}
+                        </h3>
+                        <p className="text-xs text-textSecondary mt-0.5">
+                          Auto-import is unavailable for this URL. Follow these steps:
+                        </p>
+                      </div>
+                    </div>
+
+                    <ol className="space-y-3 mb-5">
+                      {importGuide.steps.map((step, i) => (
+                        <li key={i} className="flex items-start gap-3">
+                          <span className="w-5 h-5 bg-accent/15 text-accent rounded-full flex items-center justify-center text-[10px] font-mono font-bold shrink-0 mt-0.5">
+                            {i + 1}
+                          </span>
+                          <span className="text-sm text-textSecondary">{step}</span>
+                        </li>
+                      ))}
+                    </ol>
+
+                    {importGuide.url && (
+                      <a
+                        href={importGuide.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs text-accent hover:text-accentHover font-mono transition-colors mb-5"
+                      >
+                        <ExternalLink size={11} />
+                        Open scorecard page
+                      </a>
+                    )}
+
+                    <div className="flex gap-3 pt-4 border-t border-border">
+                      <button
+                        onClick={switchToPasteTab}
+                        className="flex items-center gap-2 bg-accent hover:bg-accentHover text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                      >
+                        <Clipboard size={14} />
+                        Go to Paste Tab
+                      </button>
+                      <button
+                        onClick={() => { setImportGuide(null); setImportUrl(''); }}
+                        className="px-5 py-2.5 text-sm text-textSecondary hover:text-textPrimary border border-border rounded-lg transition-colors"
+                      >
+                        Try another URL
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
