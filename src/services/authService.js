@@ -149,7 +149,7 @@ export const authService = {
 
     const sessionUser = { ...newUser };
     delete sessionUser.password;
-    localStorage.setItem(SESSION_KEY, JSON.stringify(sessionUser));
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(sessionUser));
 
     return { success: true, user: sessionUser };
   },
@@ -192,7 +192,7 @@ export const authService = {
 
     const sessionUser = { ...user };
     delete sessionUser.password;
-    localStorage.setItem(SESSION_KEY, JSON.stringify(sessionUser));
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(sessionUser));
 
     return { success: true, user: sessionUser };
   },
@@ -204,7 +204,7 @@ export const authService = {
     if (isSupabaseConfigured()) {
       await supabase.auth.signOut();
     }
-    localStorage.removeItem(SESSION_KEY);
+    sessionStorage.removeItem(SESSION_KEY);
   },
 
   /**
@@ -213,7 +213,7 @@ export const authService = {
    */
   getCurrentUser() {
     try {
-      const data = localStorage.getItem(SESSION_KEY);
+      const data = sessionStorage.getItem(SESSION_KEY);
       return data ? JSON.parse(data) : null;
     } catch {
       return null;
@@ -259,7 +259,7 @@ export const authService = {
 
     const sessionUser = { ...updatedUser };
     delete sessionUser.password;
-    localStorage.setItem(SESSION_KEY, JSON.stringify(sessionUser));
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(sessionUser));
 
     return { success: true, user: sessionUser };
   },
@@ -305,7 +305,7 @@ export const authService = {
 
     localStorage.removeItem(`${STORAGE_KEYS.TEAMS_PREFIX}${session.id}`);
     localStorage.removeItem(`${STORAGE_KEYS.SETTINGS_PREFIX}${session.id}`);
-    localStorage.removeItem(SESSION_KEY);
+    sessionStorage.removeItem(SESSION_KEY);
 
     return { success: true };
   },

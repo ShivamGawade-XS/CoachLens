@@ -83,6 +83,37 @@ export default async function handler(req) {
     });
   }
 
+  // Guard: reject oversized payloads to prevent Groq quota exhaustion
+  if (typeof scorecard !== 'string' || scorecard.length > 20000) {
+    return new Response(JSON.stringify({ error: 'Scorecard too long. Maximum 20,000 characters.' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  // Whitelist enum inputs — reject anything that doesn't match known values
+  const VALID_FORMATS = ['T20', 'ODI'];
+  const VALID_PHASES = ['Full Match', 'Powerplay', 'Middle Overs', 'Death Overs', 'Overall'];
+  const VALID_TONES = ['Direct', 'Encouraging', 'Brutal Honest'];
+  const safeFormat = VALID_FORMATS.includes(format) ? format : 'T20';
+  const safePhase = VALID_PHASES.includes(phase) ? phase : 'Full Match';
+  const safeTone = VALID_TONES.includes(tone) ? tone : 'Direct';
+
+  // Sanitize scorecard: strip prompt-injection patterns (instruction overrides)
+  // Removes lines that attempt to hijack the system prompt
+  const INJECTION_PATTERNS = [
+    /ignore\s+(all\s+)?(previous|prior|above)\s+instructions?/gi,
+    /disregard\s+(all\s+)?(previous|prior)\s+(instructions?|context)/gi,
+    /you\s+are\s+now\s+(a|an)\s+/gi,
+    /act\s+as\s+(a|an)\s+/gi,
+    /system\s+prompt/gi,
+    /\[\[?(system|assistant|human|user)\]?\]/gi,
+  ];
+  const sanitizedScorecard = INJECTION_PATTERNS.reduce(
+    (text, pattern) => text.replace(pattern, '[removed]'),
+    scorecard
+  );
+
   const apiKey = process.env.GROQ_API_KEY || process.env.VITE_GROQ_API_KEY;
   if (!apiKey) {
     return new Response(JSON.stringify({ error: 'Groq API key not configured on server' }), {
@@ -92,10 +123,10 @@ export default async function handler(req) {
   }
 
   const prompt = CONSOLIDATED_PROMPT
-    .replace('{format}', format)
-    .replace('{phase}', phase)
-    .replace('{tone}', tone)
-    .replace('{scorecard}', scorecard);
+    .replace('{format}', safeFormat)
+    .replace('{phase}', safePhase)
+    .replace('{tone}', safeTone)
+    .replace('{scorecard}', sanitizedScorecard);
 
   try {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {

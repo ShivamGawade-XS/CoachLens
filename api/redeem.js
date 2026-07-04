@@ -33,8 +33,33 @@ export default async function handler(req) {
     });
   }
 
-  // Case-insensitive comparison
-  if (code.trim().toUpperCase() !== serverCode.trim().toUpperCase()) {
+  // Constant-time comparison to prevent timing oracle attacks.
+  // We sign both codes with HMAC-SHA-256 and compare the signatures,
+  // which makes the comparison timing independent of input length.
+  const encoder = new TextEncoder();
+  const hmacKey = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(serverCode.trim().toUpperCase()),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign', 'verify']
+  );
+  const codeSignature = await crypto.subtle.sign(
+    'HMAC',
+    hmacKey,
+    encoder.encode(code.trim().toUpperCase())
+  );
+  const serverSignature = await crypto.subtle.sign(
+    'HMAC',
+    hmacKey,
+    encoder.encode(serverCode.trim().toUpperCase())
+  );
+  const codeBytes = new Uint8Array(codeSignature);
+  const serverBytes = new Uint8Array(serverSignature);
+  const codesMatch = codeBytes.length === serverBytes.length &&
+    codeBytes.every((b, i) => b === serverBytes[i]);
+
+  if (!codesMatch) {
     return new Response(JSON.stringify({ valid: false, error: 'Invalid promo code' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
@@ -56,7 +81,6 @@ export default async function handler(req) {
     expiresAt: Date.now() + 365 * 24 * 60 * 60 * 1000
   });
 
-  const encoder = new TextEncoder();
   const keyMaterial = await crypto.subtle.importKey(
     'raw',
     encoder.encode(secret),
