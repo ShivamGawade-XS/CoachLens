@@ -2,7 +2,7 @@
  * CoachLens Constants Configuration
  */
 
-export const GROQ_MODEL = 'llama-3.1-8b-instant';
+export const GROQ_MODEL = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GROQ_MODEL) || 'openai/gpt-oss-20b';
 
 export const GROQ_TEMPERATURE = {
   TURNING_POINT: 0.2,

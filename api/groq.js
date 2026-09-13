@@ -50,14 +50,55 @@ export default async function handler(req) {
       });
     }
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body)
-    });
+    const requestedModel = body.model || process.env.GROQ_MODEL || 'openai/gpt-oss-20b';
+    const candidateModels = [...new Set([
+      requestedModel,
+      process.env.GROQ_MODEL,
+      'openai/gpt-oss-20b',
+      'openai/gpt-oss-120b',
+      'llama-3.1-8b-instant',
+      'llama-3.3-70b-versatile'
+    ].filter(Boolean))];
+
+    let response = null;
+    let lastErrorMsg = '';
+
+    for (const model of candidateModels) {
+      const payload = { ...body, model };
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        response = res;
+        break;
+      }
+
+      const errClone = res.clone();
+      const errData = await errClone.json().catch(() => null);
+      lastErrorMsg = errData?.error?.message || res.statusText;
+      console.warn(`Groq model ${model} failed in api/groq (${lastErrorMsg}). Trying next candidate...`);
+
+      // If unauthorized (401), fail fast
+      if (res.status === 401) {
+        return new Response(JSON.stringify({ error: `Groq API error: ${lastErrorMsg}` }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    if (!response || !response.ok) {
+      return new Response(JSON.stringify({ error: `Groq API error: ${lastErrorMsg || 'All candidate models failed'}` }), {
+        status: response ? response.status : 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
 
     return new Response(response.body, {
       status: response.status,

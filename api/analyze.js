@@ -128,34 +128,64 @@ export default async function handler(req) {
     .replace('{tone}', safeTone)
     .replace('{scorecard}', sanitizedScorecard);
 
-  try {
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        // Primary analysis uses the larger 70b model for deeper reasoning.
-        // Lightweight tool features (groqService.js) use the faster 8b model (GROQ_MODEL constant).
-        model: "llama-3.3-70b-versatile",
-        messages: [
-          { role: "system", content: prompt },
-          { role: "user", content: scorecard }
-        ],
-        temperature: 0.3,
-        stream: true,
-        response_format: {
-          type: "json_object"
-        }
-      })
-    });
+  const candidateModels = [
+    process.env.GROQ_ANALYZE_MODEL,
+    process.env.GROQ_MODEL,
+    'openai/gpt-oss-120b',
+    'llama-3.3-70b-versatile',
+    'openai/gpt-oss-20b',
+    'llama-3.1-8b-instant'
+  ].filter(Boolean);
 
-    if (!response.ok) {
-      const errData = await response.json().catch(() => null);
-      const errMsg = errData?.error?.message || response.statusText;
-      return new Response(JSON.stringify({ error: `Groq API error: ${errMsg}` }), {
-        status: response.status,
+  const modelsToTry = [...new Set(candidateModels)];
+
+  try {
+    let response = null;
+    let lastErrorMsg = '';
+
+    for (const model of modelsToTry) {
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: prompt },
+            { role: "user", content: scorecard }
+          ],
+          temperature: 0.3,
+          stream: true,
+          response_format: {
+            type: "json_object"
+          }
+        })
+      });
+
+      if (res.ok) {
+        response = res;
+        break;
+      }
+
+      const errClone = res.clone();
+      const errData = await errClone.json().catch(() => null);
+      lastErrorMsg = errData?.error?.message || res.statusText;
+      console.warn(`Groq model ${model} failed (${lastErrorMsg}). Trying next candidate...`);
+
+      // If unauthorized (401), fail fast
+      if (res.status === 401) {
+        return new Response(JSON.stringify({ error: `Groq API error: ${lastErrorMsg}` }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    if (!response || !response.ok) {
+      return new Response(JSON.stringify({ error: `Groq API error: ${lastErrorMsg || 'All candidate models failed'}` }), {
+        status: response ? response.status : 500,
         headers: { 'Content-Type': 'application/json' }
       });
     }
